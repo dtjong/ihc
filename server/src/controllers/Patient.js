@@ -93,8 +93,30 @@ const PatientController = {
   GetUpdates: function(req, res){
   },
   GetSoap: function(req, res){
+    SoapModel.findOne({patientKey: req.params.key, date: req.params.date}, function(err, soap) {
+      if(!soap) {
+        err = new Error("Patient with key " + req.params.key + " does not have a soap for the date " + req.params.date);
+      }
+
+      if (err) {
+        res.json({status: false, error: err.message});
+        return;
+      }
+      res.json({status: true, soap: soap});
+    });
   },
   GetStatus: function(req, res){
+    StatusModel.findOne({patientKey: req.params.key, date: req.params.date}, function(err, patientStatus) {
+      if (!patientStatus) {
+        err = new Error("Status of patient with key " + req.params.key + " for the date " + req.params.date + " does not exist");
+      }
+  
+      if (err) {
+        res.json({status: false, error: err.message});
+        return
+      }
+      res.json({status: true, patientStatus: patientStatus});
+    });
   },
   GetTriage: function(req, res){
   },
