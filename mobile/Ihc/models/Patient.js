@@ -65,20 +65,20 @@ export default class Patient {
     const patient = Object.assign({}, form);
     patient.birthday = stringDate(form.birthday);
     patient.key = Patient.makeKey(patient);
+    patient.needToUpload = false;
     if(form.newPatient) {
       // 1 is male, 2 is female
       patient.gender = form.gender === 'Male' ? 1 : 2;
-      patient.lastUpdated = new Date().getTime();
     }
     return patient;
   }
 
   // Can pass in parameters to override defaults, mostly useful for tests
-  static getInstance(key = 'firstname&father&mother&20000101', firstName = "firstname",
-    fatherName = "father",
-      motherName = "mother", birthday = "20000101", gender = 1, phone = null,
-      motherHeight = 100, fatherHeight = 100, medications = [], soaps = [],
-      triages = [], statuses = [], lastUpdated = new Date().getTime()) {
+  static getInstance(lastUpdated = new Date().getTime(),
+    key = 'firstname&father&mother&20000101', firstName = "firstname",
+    fatherName = "father", motherName = "mother", birthday = "20000101",
+    gender = 1, phone = null, motherHeight = 100, fatherHeight = 100,
+    medications = [], soaps = [], triages = [], statuses = []) {
     return {
       key, firstName, fatherName, motherName, birthday, gender, phone, motherHeight,
       fatherHeight, medications, soaps, triages, statuses, lastUpdated
@@ -103,6 +103,7 @@ Patient.schema = {
     soaps: 'Soap[]',
     triages: 'Triage[]',
     statuses: 'Status[]',
-    lastUpdated: 'int' // timestamp
+    lastUpdated: 'int', // timestamp
+    needToUpload: 'bool'
   }
 };

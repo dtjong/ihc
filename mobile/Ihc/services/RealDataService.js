@@ -1,22 +1,26 @@
 // This file should hold all the fetch() calls to the Express server
 // and the local database calls to the Realm DB
 // TODO: Keep realm in sync with mongo
+// All lastUpdated fields on mobile-side should be handled within this file.
+
 import Patient from '../models/Patient';
 import Status from '../models/Status';
 import Soap from '../models/Soap';
 import Triage from '../models/Triage';
 import DrugUpdate from '../models/DrugUpdate';
+import Settings from '../models/Settings';
 
 import Realm from 'realm';
 import {stringDate} from '../util/Date';
 
 const realm = new Realm({
-  schema: [Patient, Status, Soap, Triage, DrugUpdate],
+  schema: [Patient, Status, Soap, Triage, DrugUpdate, Settings],
   deleteRealmIfMigrationNeeded: true, // TODO: delete when done with dev
 });
 
 export function createPatient(patient) {
   try {
+    const timestamp = new Date().getTime();
     const patientObjs = realm.objects('Patient').filtered('key = "' + patient.key + '"');
     const existingPatient = patientObjs['0'];
 
@@ -26,6 +30,9 @@ export function createPatient(patient) {
 
     // Also sign them in
     const statusObj = Status.newStatus(patient);
+
+    statusObj.lastUpdated = timestamp;
+    patient.lastUpdated = timestamp;
 
     realm.write(() => {
       patient.statuses = [statusObj];
@@ -50,7 +57,9 @@ export function signinPatient(patientForm) {
       throw new Error("More than one patient with key" + patientForm.key);
     }
 
+    const timestamp = new Date().getTime();
     const statusObj = Status.newStatus(patientForm);
+    statusObj.lastUpdated = timestamp;
 
     for ( var k in patient.statuses ){
       if(patient.statuses[k].date === statusObj.date) {
@@ -78,9 +87,17 @@ export function updateStatus(patientKey, strDate, field, value) {
       throw new Error("Status doesn't exist");
     }
 
+    const patient = realm.objects('Patient').filtered('key = "' + patientKey + '"')['0'];
+    if(!patient) {
+      return Promise.reject(new Error('Patient does not exist'));
+    }
+
+    const timestamp = new Date().getTime();
+
     realm.write(() => {
       statusObj[field] = value;
-      statusObj.lastUpdated = new Date().getTime();
+      statusObj.lastUpdated = timestamp;
+      patient.lastUpdated = timestamp;
     });
     return Promise.resolve(true);
   } catch (e) {
@@ -96,7 +113,11 @@ export function createDrugUpdate(update) {
       throw new Error("Patient doesn't exist");
     }
 
+    const timestamp = new Date().getTime();
+    update.lastUpdated = timestamp;
+
     realm.write(() => {
+      patient.lastUpdated = timestamp;
       // If an object for that drug and date already exists, update it
       for (var m in patient.medications) {
         const old = patient.medications[m];
@@ -128,11 +149,15 @@ export function updateSoap(update) {
       throw new Error("Patient doesn't exist");
     }
 
+    const timestamp = new Date().getTime();
+    update.lastUpdated = timestamp;
+
     const soap = realm.objects('Soap').filtered('date = "' +
         stringDate(new Date) + '" AND patientKey = "' + update.patientKey +
         '"')['0'];
 
     realm.write(() => {
+      patient.lastUpdated = timestamp;
       // If an object for that date already exists, update it
       if(soap) {
         const properties = Object.keys(Soap.schema.properties);
@@ -172,7 +197,11 @@ export function updateTriage(update) {
         stringDate(new Date) + '" AND patientKey = "' + update.patientKey +
         '"')['0'];
 
+    const timestamp = new Date().getTime();
+    update.lastUpdated = timestamp;
+
     realm.write(() => {
+      patient.lastUpdated = timestamp;
       // If an object for that date already exists, update it
       if(triage) {
         const properties = Object.keys(Triage.schema.properties);
@@ -211,10 +240,6 @@ export function getPatients() {
   return realm.objects('Patient');
 }
 
-export function getUpdates(param) {
-  return []; // Return whatever sample data you want
-}
-
 /*
  * Return the statuses of the patients that are active and for this date
  */
@@ -235,6 +260,151 @@ export function getMedicationUpdates(patientKey) {
   return Promise.resolve(updates);
 }
 
+export function uploadUpdates() {
+  // const patients = Object.values(realm.objects('Patient').filtered('needToUpload = true'));
+  const patients = Object.values(realm.objects('Patient'));
+  // TODO: Fetch call to server
+  fetch('route/', {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      patients: patients
+    }),
+  }).then(response => {
+    return Promise.resolve(true);
+  }).catch(err => {
+    return Promise.reject(err);
+  });
+}
+
+export function downloadUpdates() {
+  let settings = realm.objects('Settings');
+  settings = settings ? settings['0'] : undefined;
+
+  const lastSynced = settings ? settings.lastSynced : 0;
+
+  // TODO: Fetch call to server, passing in lastSynced value
+  return fetch('route/' + lastSynced)
+    .then(response => {
+      const patients = response.body.patients;
+      return handleDownloadedPatients(patients, settings);
+    }).catch(err => {
+      return Promise.reject(err);
+    });
+}
+
+/**
+ * Returns array of Promises. Should be one promise for each updated object that
+ * resolves to true, plus one additional promise that is there by default to
+ * avoid an error in case no objects were updated. 
+ * No promise is added if incomingPatient is ignored because it is older
+ * than existingPatient
+ */
+function handleDownloadedPatients(patients, settings) {
+  // Give array at least one promise to resolve
+  const promises = [Promise.resolve(true)];
+
+  try {
+    patients.forEach( incomingPatient => {
+
+      const existingPatient = realm.objects('Patient')
+        .filtered('key = "' + incomingPatient.key + '"')['0'];
+
+      if(!existingPatient) {
+        throw new Error("Patient with key " + incomingPatient.key
+          + " doesnt exist. This shouldnt have happened...");
+      }
+
+      if (incomingPatient.lastUpdated <= existingPatient.lastUpdated) {
+        // Don't need to update
+        // TODO: If incomingPatient.lastUpdated < existingPatient.lastUpdated, then
+        // probably means this tablet didn't send their updates to the server...
+        // Send some kind of message?
+        return;
+      }
+
+      // TODO update existing Patient object itself in case changes were made
+      // there
+
+      incomingPatient.soaps.forEach(incomingSoap => {
+        promises.push(updateObject(existingPatient, 'soaps', incomingSoap));
+      });
+      incomingPatient.triages.forEach(incomingTriage => {
+        promises.push(updateObject(existingPatient, 'triages', incomingTriage));
+      });
+      incomingPatient.medications.forEach(incomingDrugUpdate => {
+        promises.push(updateObject(existingPatient, 'medications',
+            incomingDrugUpdate));
+      });
+      incomingPatient.statuses.forEach(incomingStatus => {
+        promises.push(updateObject(existingPatient, 'statuses', incomingStatus));
+      });
+
+      // Update that patient's updated timestamp
+      realm.write(() => {
+        existingPatient.lastUpdated = incomingPatient.lastUpdated;
+      });
+    });
+
+    realm.write(() => {
+      if(!settings) {
+        realm.create('Settings', {lastSynced: new Date().getTime()})
+        return;
+      }
+      settings.lastSynced = new Date().getTime();
+    });
+
+    return Promise.all(promises);
+
+  } catch (e) {
+    return Promise.reject(e);
+  }
+}
+
 function createMatrix(data, columnOrder) {
   return data.map((obj) => columnOrder.map( (key) => obj[key] ));
+}
+
+/**
+ * Type: string of either 'soaps', 'triages', 'medications', or 'statuses'
+ * Returns true Promise if updated successfully, false if wasn't updated
+ */
+function updateObject(existingPatient, type, incomingObject) {
+  // Find existing form/object that corresponds to the incoming one
+  let existingObject = {};
+  if (type === 'medications') {
+    existingObject = existingPatient.medications.find( med => {
+      return incomingObject.date === med.date && incomingObject.name === med.name;
+    });
+  } else {
+    existingObject = existingPatient[type].find( obj => {
+      return incomingObject.date === obj.date;
+    });
+  }
+  try {
+    // If old object doesn't exist, then just add the new object to the patient
+    if(!existingObject) {
+      realm.write(() => {
+        existingPatient[type].push(incomingObject);
+      });
+      return Promise.resolve(true);
+    }
+
+    if(incomingObject.lastUpdated > existingObject.lastUpdated) {
+      realm.write(() => {
+        const properties = Object.keys(incomingObject);
+        properties.forEach( p => {
+          existingObject[p] = incomingObject[p];
+        });
+      });
+      return Promise.resolve(true);
+    }
+
+    return Promise.resolve(false);
+  } catch (e) {
+    return Promise.reject(e);
+  }
 }

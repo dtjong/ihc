@@ -356,7 +356,7 @@ router.get('/patient/:key/soap/:date', PatientController.GetSoap);
 router.get('/patient/:key/status/:date', PatientController.GetStatus);
   ```
   returns: {
-    status: StatusModel
+    patientStatus: StatusModel
   }
   ```
 

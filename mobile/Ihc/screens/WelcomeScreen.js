@@ -11,6 +11,7 @@ import data from '../services/DataService';
 export default class WelcomeScreen extends Component<{}> {
   constructor(props) {
     super(props);
+    this.state = {loading: false, error: null};
   }
 
   goToSignin = () => {
@@ -27,11 +28,38 @@ export default class WelcomeScreen extends Component<{}> {
     });
   }
 
-  // TODO: Download updates from server and add them to local storage
-  sync = () => {
+  // TODO: When updates fail, mark the patient's needToUpload: true
+  upload = () => {
+    this.setState({loading: true});
+    data.uploadUpdates()
+      .then(() => {
+        this.setState({loading: false});
+      })
+      .catch(err => {
+        this.setState({error: err.message, loading: false});
+      });
+  }
+
+  download = () => {
+    this.setState({loading: true});
+    data.downloadUpdates()
+      .then(() => {
+        this.setState({loading: false});
+      })
+      .catch(err => {
+        this.setState({error: err.message, loading: false});
+      });
   }
 
   render() {
+    if(this.state.loading) {
+      return (
+        <View style={styles.container}>
+          <Text>Loading...</Text>
+        </View>
+      )
+    }
+
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
@@ -43,8 +71,11 @@ export default class WelcomeScreen extends Component<{}> {
         <Button onPress={this.goToSelectPatient}
           title="Select Patient"
         />
-        <Button onPress={this.sync}
-          title="Sync"
+        <Button onPress={this.upload}
+          title="Upload updates"
+        />
+        <Button onPress={this.download}
+          title="Download updates"
         />
       </View>
     );

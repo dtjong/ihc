@@ -39,7 +39,6 @@ export default class Triage {
   static extractFromForm(form, patientKey) {
     const triage = Object.assign({}, form);
     triage.patientKey = patientKey;
-    triage.lastUpdated = new Date().getTime();
     return triage;
   }
 

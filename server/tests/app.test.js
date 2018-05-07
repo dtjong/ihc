@@ -110,7 +110,7 @@ describe('Test GetPatients routes', ()=>{
     mocks.push(mock1);
 
     return request(app).get('/patients')
-      .expect({status: true, patients:patientList});
+      .expect({status: true, patients: patientList});
   });
 
   test('should return error message if Patient List does not exist', () => {
@@ -347,6 +347,7 @@ describe('Test UpdateSoap routes', () => {
       .then(response => {
         expect(JSON.parse(response.text)).toEqual({status: true});
         expect(oldPatient.soaps).toEqual([newSoap]);
+        expect(oldPatient.lastUpdated).toEqual(newSoap.lastUpdated);
       });
   });
 
@@ -389,6 +390,7 @@ describe('Test UpdateSoap routes', () => {
       .then(response => {
         expect(JSON.parse(response.text)).toEqual({status: true});
         expect(oldPatient.soaps).toEqual([newSoap]);
+        expect(oldPatient.lastUpdated).toEqual(newSoap.lastUpdated);
       });
   });
 
