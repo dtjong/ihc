@@ -5,9 +5,72 @@ import Realm, {mockObjects, mockCreate, mockWrite} from '../__mocks__/realm';
 import Patient from '../models/Patient';
 import Soap from '../models/Soap';
 import DrugUpdate from '../models/DrugUpdate';
+import Status from '../models/Status';
 
 jest.mock('realm');
 global.fetch = require('jest-fetch-mock')
+
+describe('Create patient', () => {
+  beforeEach(() => {
+    fetch.resetMocks();
+    Realm.mockClear();
+    mockObjects.mockClear();
+    mockCreate.mockClear();
+  });
+
+  it('successfully creates a patient that didnt exist before', done => {
+    // Mock the fetch() server call
+    fetch.mockResponse(JSON.stringify({status: true}));
+    // This createPatient() calls realm.objects(...).filtered(), so have to
+    // return an object with a filtered function that returns the data we want
+    mockObjects.mockImplementation(() => {
+      return { filtered: () => { return {} }};
+    });
+
+    const now = new Date().getTime();
+    // Makes the test use "now" as the timestamp whenever we call new
+    // Date().getTime();
+    sinon.useFakeTimers(now);
+
+    const patient = Patient.getInstance();
+
+    const expectedPatient = Patient.getInstance();
+    expectedPatient.lastUpdated = now;
+    const statusObj = Status.newStatus(expectedPatient);
+    expectedPatient.statuses = [statusObj];
+
+    data.createPatient(patient)
+        .then( result => {
+          expect(mockCreate).toHaveBeenCalledWith('Patient', expectedPatient);
+          expect(result).toEqual(true);
+          done();
+        })
+        .catch( err => {
+          done.fail(err);
+        });
+  });
+
+  it('doesnt create a patient that did exist before', done => {
+    fetch.mockResponse(JSON.stringify({status: true}));
+    mockObjects.mockImplementation(() => {
+      return { filtered: () => { return { 0: Patient.getInstance() } }};
+    });
+    const now = new Date().getTime();
+    sinon.useFakeTimers(now);
+
+    const patient = Patient.getInstance();
+
+    data.createPatient(patient)
+        .then( result => {
+          done.fail(new Error("Error should be thrown"));
+        })
+        .catch( err => {
+          expect(mockCreate).not.toHaveBeenCalled();
+          expect(patient.needToUpload).toEqual(true);
+          done();
+        });
+  });
+});
 
 describe('Download updates', () => {
   beforeEach(() => {
@@ -18,9 +81,9 @@ describe('Download updates', () => {
   });
 
   it('handles 0 patients when no prior settings exist', done => {
-    fetch.mockResponse({patients: []});
+    fetch.mockResponse(JSON.stringify({patients: []}));
     mockObjects.mockImplementation(() => {
-      return undefined;
+      return {};
     });
 
     const now = new Date().getTime();
@@ -38,7 +101,7 @@ describe('Download updates', () => {
   });
 
   it('handles 0 patients when a prior settings exists', done => {
-    fetch.mockResponse({patients: []});
+    fetch.mockResponse(JSON.stringify({patients: []}));
 
     // Just need to return a Settings object with any value
     const settings = { lastSynced: 100 };
@@ -69,7 +132,7 @@ describe('Download updates', () => {
     const soap = Soap.getInstance();
     newPatient.soaps = [soap];
 
-    fetch.mockResponse({patients: [newPatient]});
+    fetch.mockResponse(JSON.stringify({patients: [newPatient]}));
 
     const settings = { lastSynced: 100 };
     mockObjects.mockImplementation((type) => {
@@ -114,11 +177,11 @@ describe('Download updates', () => {
     newSoap.subjective = "Updated subjective";
     newPatient.soaps = [newSoap];
 
-    fetch.mockResponse({patients: [newPatient]});
+    fetch.mockResponse(JSON.stringify({patients: [newPatient]}));
 
     mockObjects.mockImplementation((type) => {
       if(type === 'Settings')
-        return undefined;
+        return {};
       else if(type === 'Patient') {
         const obj = {
           0: oldPatient,
@@ -158,11 +221,11 @@ describe('Download updates', () => {
     newSoap.subjective = "Updated subjective";
     newPatient.soaps = [newSoap];
 
-    fetch.mockResponse({patients: [newPatient]});
+    fetch.mockResponse(JSON.stringify({patients: [newPatient]}));
 
     mockObjects.mockImplementation((type) => {
       if(type === 'Settings')
-        return undefined;
+        return {};
       else if(type === 'Patient') {
         const obj = {
           0: oldPatient,
@@ -202,11 +265,11 @@ describe('Download updates', () => {
     incomingSoap.subjective = "Older subjective";
     incomingPatient.soaps = [incomingSoap];
 
-    fetch.mockResponse({patients: [incomingPatient]});
+    fetch.mockResponse(JSON.stringify({patients: [incomingPatient]}));
 
     mockObjects.mockImplementation((type) => {
       if(type === 'Settings')
-        return undefined;
+        return {};
       else if(type === 'Patient') {
         const obj = {
           0: existingPatient,
@@ -270,7 +333,7 @@ describe('Download updates', () => {
       Object.assign({}, existingPatients[4])
     ];
 
-    fetch.mockResponse({patients: incomingPatients});
+    fetch.mockResponse(JSON.stringify({patients: incomingPatients}));
 
     const settings = { lastSynced: 100 };
     let counter = 0; // number of types realm.objects('Patient') has been called

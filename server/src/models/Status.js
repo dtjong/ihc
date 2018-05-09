@@ -7,10 +7,11 @@ const StatusSchema = Schema({
   birthday: String,
   date: String,
   active: Boolean,
-  checkinTime: Number,
-  triageCompleted: Number,
+  checkinTime: Number, // timestamp, milliseconds
+  triageCompleted: Number, // timestamps for when completed
   doctorCompleted: Number,
   pharmacyCompleted: Number,
+  notes: String,
   lastUpdated: Number // timestamp
 });
 const StatusModel = mongoose.model('Status', StatusSchema);

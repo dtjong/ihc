@@ -79,7 +79,7 @@ const PatientController = {
 
       //update function, replaces old pation object with passed in 'new patient' info boject
       oldPatient.set(req.body.patient);
-      //saves it, callback function to handle error 
+      //saves it, callback function to handle error
       oldPatient.save(function(e, p) {
         if(e) {
           res.json({status: false, error: e.message});
@@ -119,6 +119,16 @@ const PatientController = {
     });
   },
   GetTriage: function(req, res){
+    TriageModel.findOne({patientKey: req.params.key, date: req.params.date}, function(err, triage) {
+      if(!triage) {
+        err = new Error("Patient with key " + req.params.key + " doesn't exist or patient didn't come in on " + req.params.date);
+      }
+      if(err) {
+        res.json({status: false, error: err.message});
+        return;
+      }
+      res.json({status: true, triage: triage});
+    });
   },
   GetDrugUpdates: function(req, res){
   },
@@ -167,6 +177,46 @@ const PatientController = {
     });
   },
   UpdateStatus: function(req, res){
+    PatientModel.findOne({key: req.params.key}, function(err, patient) {
+      if(!patient) {
+        err = new Error("Patient with key " + req.params.key + " doesn't exist");
+      }
+
+      for (let [i,status] of patient.statuses.entries()) {
+        if (status.date = req.params.date) {
+        //status is not updated
+          if (status.lastUpdated > req.body.status.lastUpdated) {
+            res.json({
+              status: false,
+              error: "Status sent is not up-to-date. Sync required."
+            })
+            return;
+          }
+
+          patient.statuses[i] = req.body.status;
+          patient.save(function(err) {
+            if(err) {
+              res.json({status: false, error: err.message});
+              return;
+            }
+            res.json({status: true});
+            return;
+          });
+          return;
+        }
+      }
+
+      //status does not exist yet
+      patient.statuses.push(req.body.status);
+      patient.save(function(err) {
+        if (err) {
+          res.json({status: false, error: err.message});
+          return;
+        }
+        res.json({status: true});
+        return;
+      });
+  });
   },
   UpdateTriage: function(req, res){
   },

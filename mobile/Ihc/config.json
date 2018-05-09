@@ -1,3 +1,4 @@
 {
-  "dataService" : "RealDataService"
+  "dataService" : "RealDataService",
+  "fetchUrl" : "http://128.54.171.73:8000"
 }
