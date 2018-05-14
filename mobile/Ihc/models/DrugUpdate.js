@@ -18,7 +18,7 @@ export default class DrugUpdate {
       frequency: '1',
       duration: '1',
       lastUpdated: new Date().getTime()
-    }
+    };
   }
 }
 

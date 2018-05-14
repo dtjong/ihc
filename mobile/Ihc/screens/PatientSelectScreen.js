@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  Button,
   Text,
   TouchableOpacity,
   View
@@ -16,7 +15,7 @@ export default class PatientSelectScreen extends Component<{}> {
 
     this.rowNum = 0;
     this.tableHeaders = ['Name', 'Birthday', 'Checkin', 'Triage', 'Doctor',
-            'Pharmacy', 'Notes'];
+      'Pharmacy', 'Notes'];
     this.state = {
       loading: false,
       rows: [],
@@ -65,35 +64,33 @@ export default class PatientSelectScreen extends Component<{}> {
           // TODO: format birthday, add ability to add notes
           switch(i) {
             case 1: // birthday
-                return <Text>{shortDate(e)}</Text>;
+              return <Text>{shortDate(e)}</Text>;
             case 2: // checkin time
             case 3: // triage time
             case 4: // doctor time
             case 5: // pharmacy time
               // No time provided
               if(!e)
-                return <Text></Text>
-
+                return <Text></Text>;
               const time = new Date(e);
               // TODO: update checkintime format
-              return <Text>{`${time.getHours()}:${time.getMinutes()}`}</Text>
-              break;
+              return <Text>{`${time.getHours()}:${time.getMinutes()}`}</Text>;
             case 7: // patient Key
               return;
             default:
-              return <Text>{e}</Text>
+              return <Text>{e}</Text>;
           }
         })() }
       </View>
     ) );
     return (
       <TouchableOpacity style={tableStyles.rowContainer}
-          key={`row${this.rowNum++}`} onPress={() => this.goToPatient(data)}>
+        key={`row${this.rowNum++}`} onPress={() => this.goToPatient(data)}>
         <View style={tableStyles.rowContainer} key={keyFn(cols.length)}>
           {cols}
         </View>
       </TouchableOpacity>
-    )
+    );
   }
 
   render() {
@@ -105,7 +102,7 @@ export default class PatientSelectScreen extends Component<{}> {
           </Text>
           <Text>Loading...</Text>
         </View>
-      )
+      );
     }
     return (
       <View style={styles.container}>

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -237,3 +238,4 @@ const styles = StyleSheet.create({
 ScatterPlot.propTypes = propTypes;
 ScatterPlot.defaultProps = defaultProps
 export default ScatterPlot;
+/* eslint-enable */

@@ -15,7 +15,7 @@ export default class Status {
       active: true,
       checkinTime: new Date().getTime(),
       lastUpdated: new Date().getTime(),
-    }
+    };
     return obj;
   }
 }

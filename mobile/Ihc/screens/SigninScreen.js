@@ -19,7 +19,7 @@ export default class SigninScreen extends Component<{}> {
       formValues: {newPatient: false},
       formType: this.Signin,
       error: '',
-    }
+    };
   }
 
   Signin = t.struct({
@@ -50,17 +50,17 @@ export default class SigninScreen extends Component<{}> {
 
   options = {
     fields: {
-      motherName: {label: "Mother's last name"},
-      fatherName: {label: "Father's last name"},
+      motherName: {label: 'Mother\'s last name'},
+      fatherName: {label: 'Father\'s last name'},
       birthday: {
-        label: "Birthday",
+        label: 'Birthday',
         mode: 'date',
         config: {
           format: formatDate,
           dialogMode: 'spinner'
         }
       },
-      newPatient: {label: "New patient?"},
+      newPatient: {label: 'New patient?'},
     }
   }
 
@@ -81,32 +81,33 @@ export default class SigninScreen extends Component<{}> {
     if(form.newPatient) {
       const patient = Patient.extractFromForm(form);
       data.createPatient(patient)
-          .then( () => {
-            this.setState({
-              // Clear form, reset to Signin form
-              formValues: {newPatient: false},
-              formType: this.Signin,
-              successMsg: `${patient.firstName} added successfully`,
-              error: null
-            });
-          })
-          .catch( (e) => {
-            this.setState({error: e.message, successMsg: null});
+        .then( () => {
+          this.setState({
+            // Clear form, reset to Signin form
+            formValues: {newPatient: false},
+            formType: this.Signin,
+            successMsg: `${patient.firstName} added successfully`,
+            error: null
           });
+        })
+        .catch( (e) => {
+          this.setState({error: e.message, successMsg: null});
+        });
     } else {
       const patient = Patient.extractFromForm(form);
       data.signinPatient(patient)
-          .then( () => {
-            this.setState({
-              // Clear form, reset to Signin form
-              formValues: {newPatient: false},
-              formType: this.Signin,
-              successMsg: `${patient.firstName} signed in successfully`,
-            });
-          })
-          .catch( (e) => {
-            this.setState({formValues: form, error: e.message, successMsg: null});
+        .then( () => {
+          this.setState({
+            // Clear form, reset to Signin form
+            formValues: {newPatient: false},
+            formType: this.Signin,
+            successMsg: `${patient.firstName} signed in successfully`,
+            error: null
           });
+        })
+        .catch( (e) => {
+          this.setState({formValues: form, error: e.message, successMsg: null});
+        });
     }
   }
 
@@ -118,7 +119,7 @@ export default class SigninScreen extends Component<{}> {
         </Text>
 
         <View style={styles.form}>
-          <Form ref="form" type={this.state.formType}
+          <Form ref='form' type={this.state.formType}
             value={this.state.formValues}
             options={this.options}
             onChange={this.onFormChange}
@@ -129,7 +130,7 @@ export default class SigninScreen extends Component<{}> {
           </Text>
 
           <Button onPress={this.submit}
-            title="Submit" />
+            title='Submit' />
 
           <Text style={styles.success}>
             {this.state.successMsg}

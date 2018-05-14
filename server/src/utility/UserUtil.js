@@ -6,7 +6,7 @@
  *  Takes in an object with birthday, firstname, lastname fields
  */
 export function userHash(obj) {
-  return obj.birthday + obj.firstname + "&" + obj.lastname;
+  return obj.birthday + obj.firstname + '&' + obj.lastname;
 }
 
 /**

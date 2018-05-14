@@ -6,7 +6,7 @@ import {
   View
 } from 'react-native';
 import data from '../services/DataService';
-import MedicationTable, {tableStyles} from '../components/MedicationTable';
+import MedicationTable  from '../components/MedicationTable';
 import {stringDate} from '../util/Date';
 
 export default class MedicationScreen extends Component<{}> {
@@ -64,7 +64,7 @@ export default class MedicationScreen extends Component<{}> {
   }
 
   // TODO
-  discontinueMedication = (prevDrugUpdate) => {
+  discontinueMedication = () => {
   }
 
   createNewMedication = () => {
@@ -110,17 +110,17 @@ export default class MedicationScreen extends Component<{}> {
 
   completed = () => {
     data.updateStatus(this.props.patientKey, stringDate(new Date()),
-        'pharmacyCompleted', new Date().getTime())
-        .then( () => {
-          this.setState({
-            successMsg: 'Pharmacy marked as completed',
-            error: null
-          });
-        })
-        .catch( (e) => {
-          this.setState({error: 'No status exists for today. Should not need to' +
-            'mark as completed.', successMsg: null});
+      'pharmacyCompleted', new Date().getTime())
+      .then( () => {
+        this.setState({
+          successMsg: 'Pharmacy marked as completed',
+          error: null
         });
+      })
+      .catch( () => {
+        this.setState({error: 'No status exists for today. Should not need to' +
+          'mark as completed.', successMsg: null});
+      });
   }
 
   render() {
@@ -135,8 +135,8 @@ export default class MedicationScreen extends Component<{}> {
 
           <View style={styles.footer}>
             <TouchableOpacity
-                style={styles.buttonContainer}
-                onPress={this.createNewMedication}>
+              style={styles.buttonContainer}
+              onPress={this.createNewMedication}>
               <Text style={styles.button}>New Medication</Text>
             </TouchableOpacity>
           </View>
@@ -162,7 +162,7 @@ export default class MedicationScreen extends Component<{}> {
             updates={this.state.updates}
             dateToUpdates={this.state.dateToUpdates}
             drugNames={this.state.drugNames}
-           />
+          />
         </View>
 
         <View style={styles.footerContainer}>
@@ -174,14 +174,14 @@ export default class MedicationScreen extends Component<{}> {
               {this.state.error}
             </Text>
             <TouchableOpacity
-                style={styles.buttonContainer}
-                onPress={this.createNewMedication}>
+              style={styles.buttonContainer}
+              onPress={this.createNewMedication}>
               <Text style={styles.button}>New Medication</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-                style={styles.buttonContainer}
-                onPress={this.completed}>
+              style={styles.buttonContainer}
+              onPress={this.completed}>
               <Text style={styles.button}>Completed</Text>
             </TouchableOpacity>
           </View>

@@ -6,11 +6,9 @@ import {
   ScrollView,
   View
 } from 'react-native';
-import {formatDate} from '../util/Date';
 var t = require('tcomb-form-native');
 var Form = t.form.Form;
 import data from '../services/DataService';
-import Patient from '../models/Patient';
 import Triage from '../models/Triage';
 import {stringDate} from '../util/Date';
 
@@ -38,17 +36,17 @@ export default class TriageScreen extends Component<{}> {
       disableLabs: false,
       disableUrine: false,
       todayDate: startingFormValues.date,
-    }
+    };
   }
 
   // TODO: any other styling? multiline fields needed?
   options = {
     fields: {
-      statusClarification: {label: "Status clarification (if picked Other)"},
-      pregnancyTest: {label: "Pregnancy test positive?"},
-      fasting: {label: "Did this patient fast?"},
-      urineTestDone: {label: "Did they take a urine test?"},
-      labsDone: {label: "Did they get labs done?"},
+      statusClarification: {label: 'Status clarification (if picked Other)'},
+      pregnancyTest: {label: 'Pregnancy test positive?'},
+      fasting: {label: 'Did this patient fast?'},
+      urineTestDone: {label: 'Did they take a urine test?'},
+      labsDone: {label: 'Did they get labs done?'},
       date: {
         editable: false,
       }
@@ -105,16 +103,16 @@ export default class TriageScreen extends Component<{}> {
 
   completed = () => {
     data.updateStatus(this.props.patientKey, this.state.todayDate,
-        'triageCompleted', new Date().getTime())
-        .then( () => {
-          this.setState({
-            successMsg: 'Triage marked as completed, but not yet submitted',
-            error: null
-          });
-        })
-        .catch( (e) => {
-          this.setState({error: e.message, successMsg: null});
+      'triageCompleted', new Date().getTime())
+      .then( () => {
+        this.setState({
+          successMsg: 'Triage marked as completed, but not yet submitted',
+          error: null
         });
+      })
+      .catch( (e) => {
+        this.setState({error: e.message, successMsg: null});
+      });
   }
 
   submit = () => {
@@ -126,15 +124,15 @@ export default class TriageScreen extends Component<{}> {
     const triage = Triage.extractFromForm(form, this.props.patientKey);
 
     data.updateTriage(triage)
-        .then( () => {
-          this.setState({
-            successMsg: 'Triage updated successfully',
-            error: null
-          });
-        })
-        .catch( (e) => {
-          this.setState({error: e.message, successMsg: null});
+      .then( () => {
+        this.setState({
+          successMsg: 'Triage updated successfully',
+          error: null
         });
+      })
+      .catch( (e) => {
+        this.setState({error: e.message, successMsg: null});
+      });
   }
 
   render() {
@@ -145,7 +143,7 @@ export default class TriageScreen extends Component<{}> {
         </Text>
 
         <View style={styles.form}>
-          <Form ref="form"
+          <Form ref='form'
             type={this.state.formType}
             value={this.state.formValues}
             options={this.options}
@@ -158,11 +156,11 @@ export default class TriageScreen extends Component<{}> {
 
           <Button onPress={this.completed}
             styles={styles.button}
-            title="Triage completed" />
+            title='Triage completed' />
 
           <Button onPress={this.submit}
             styles={styles.button}
-            title="Update" />
+            title='Update' />
 
           <Text style={styles.success}>
             {this.state.successMsg}

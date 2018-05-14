@@ -3,8 +3,8 @@
  * app.listen() is in the init.js file for testing purposes
  */
 
-import express from "express"
-import bodyParser from "body-parser"
+import express from 'express';
+import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import methodOverride from 'method-override';
@@ -21,9 +21,6 @@ var corsOptions = {
 app.use(cors);
 */
 
-// Can customize port on CLI by doing `node build/init.js PORT_NUMBER`
-const port = process.argv[2] || config.port;
-
 const app = express();
 app.use(morgan('dev'));
 // Allow JSON
@@ -37,7 +34,9 @@ if(!global.__TEST__) {
 
   //This callback will be triggered once the connection is successfully established to MongoDB
   mongoose.connection.on('connected', function () {
+    /* eslint-disable no-console */
     console.log('Mongoose default connection open to ' + config.db);
+    /* eslint-enable no-console */
   });
 }
 
@@ -50,6 +49,7 @@ app.use('/', routes);
 app.use(catchError);
 function catchError(err, req, res, next) {
   res.status(500).send({ error: err.message });
+  next();
 }
 
 module.exports = app;

@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import {
-  Platform,
   StyleSheet,
   TouchableOpacity,
   Text,
   View,
 } from 'react-native';
-import { Col, Row, Grid } from "react-native-easy-grid";
+import { Col, Grid } from 'react-native-easy-grid';
 
 export default class PatientHomeScreen extends Component<{}> {
   /*
@@ -79,30 +78,25 @@ export default class PatientHomeScreen extends Component<{}> {
         <View style={styles.gridContainer}>
           <Grid>
             <Col style={styles.col}>
-              <TouchableOpacity style={styles.buttonContainer}
-                  onPress={this.goToTriage}>
+              <TouchableOpacity style={styles.buttonContainer} onPress={this.goToTriage}>
                 <Text style={styles.button}>Triage</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.buttonContainer}
-                  onPress={this.goToSoap}>
+              <TouchableOpacity style={styles.buttonContainer} onPress={this.goToSoap}>
                 <Text style={styles.button}>SOAP</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.buttonContainer}
-                  onPress={this.goToMedicationList}>
+              <TouchableOpacity style={styles.buttonContainer} onPress={this.goToMedicationList}>
                 <Text style={styles.button}>Medications</Text>
               </TouchableOpacity>
             </Col>
 
             <Col style={styles.col}>
-              <TouchableOpacity style={styles.buttonContainer}
-                  onPress={this.goToHistory}>
+              <TouchableOpacity style={styles.buttonContainer} onPress={this.goToHistory}>
                 <Text style={styles.button}>History</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.buttonContainer}
-                  onPress={this.goToGrowthChart}>
+              <TouchableOpacity style={styles.buttonContainer} onPress={this.goToGrowthChart}>
                 <Text style={styles.button}>Growth Chart</Text>
               </TouchableOpacity>
             </Col>

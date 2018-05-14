@@ -1,9 +1,9 @@
 export function formatDate(date) {
   var monthNames = [
-    "January", "February", "March",
-    "April", "May", "June", "July",
-    "August", "September", "October",
-    "November", "December"
+    'January', 'February', 'March',
+    'April', 'May', 'June', 'July',
+    'August', 'September', 'October',
+    'November', 'December'
   ];
 
   var day = date.getDate();
@@ -26,5 +26,5 @@ export function shortDate(date) {
 export function stringDate(dateObj) {
   const month = dateObj.getMonth()+1 < 10 ? '0' + (dateObj.getMonth()+1) : dateObj.getMonth()+1;
   const date = dateObj.getDate()+1 < 10 ? '0' + (dateObj.getDate()+1) : dateObj.getDate()+1;
-  return `${dateObj.getFullYear()}${month}${date}`
+  return `${dateObj.getFullYear()}${month}${date}`;
 }

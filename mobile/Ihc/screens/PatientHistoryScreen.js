@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
 import {
-  Platform,
   StyleSheet,
   TouchableOpacity,
   Text,
   View,
-  ScrollView,
 } from 'react-native';
-import { Col, Row, Grid } from "react-native-easy-grid";
+import { Col, Grid } from 'react-native-easy-grid';
 import data from '../services/DataService';
-import Patient from '../models/Patient';
 import {formatDate} from '../util/Date';
 import {shortDate} from '../util/Date';
 
@@ -76,7 +73,7 @@ export default class PatientHistoryScreen extends Component<{}> {
           </Text>
           <Text>Loading...</Text>
         </View>
-      )
+      );
     }
     if (this.state.patient == null) {
       return (
@@ -86,7 +83,7 @@ export default class PatientHistoryScreen extends Component<{}> {
           </Text>
           <Text>Patient doesnt exist...</Text>
         </View>
-      )
+      );
     }
     return (
       <View style={styles.container}>
@@ -104,7 +101,7 @@ export default class PatientHistoryScreen extends Component<{}> {
             <Col style={styles.col}>
               {this.state.patient.soaps.map( (soap, i) => 
                 <TouchableOpacity key={i} style={styles.buttonContainer}
-                    onPress={() => this.goToSoap(soap.date)}>
+                  onPress={() => this.goToSoap(soap.date)}>
                   <Text style={styles.button}>SOAP</Text>
                 </TouchableOpacity> ) }
             </Col>
@@ -112,7 +109,7 @@ export default class PatientHistoryScreen extends Component<{}> {
             <Col style={styles.col}>
               {this.state.patient.soaps.map( (soap, i) => 
                 <TouchableOpacity key={i} style={styles.buttonContainer}
-                    onPress={() => this.goToTriage(soap.date)}>
+                  onPress={() => this.goToTriage(soap.date)}>
                   <Text style={styles.button}>Triage</Text>
                 </TouchableOpacity> ) }
             </Col>

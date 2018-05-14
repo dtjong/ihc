@@ -1,3 +1,4 @@
+/* eslint-disable */
 // UNDER NEW SETUP, THIS FILE ISN'T USED
 // BUT MAY BE USEFUL TO HAVE TO SEE HOW PREVIOUS SETUP WAS DONE.
 // DELETE WHEN DONE
@@ -277,3 +278,4 @@ export function addUpdates(updates, groupId, database, timestamp) {
     });
 }
 
+/* eslint-enable */

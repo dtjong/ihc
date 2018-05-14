@@ -3,8 +3,6 @@
 import PatientModel from '../models/Patient';
 import SoapModel from '../models/Soap';
 import StatusModel from '../models/Status';
-import TriageModel from '../models/Triage';
-import DrugUpdateModel from '../models/DrugUpdate';
 
 //function params for all calls are generally the same function(req,res)
 const PatientController = {
@@ -14,10 +12,10 @@ const PatientController = {
     //this function finds ONE document in the patientModel container
     //first parameter is an object with the attribute(s) that the function is trying to match to a document with in the container
     //second parameter is a callback function once the function finds the document, or an error occurs
-      //params for this function is err (in case an error occur) and patient (the returned object)
+    //params for this function is err (in case an error occur) and patient (the returned object)
     PatientModel.findOne({key: req.params.key}, function(err, patient) {
       if(!patient) {
-        err = new Error("Patient with key " + req.params.key + " doesn't exist");
+        err = new Error('Patient with key ' + req.params.key + ' doesn\'t exist');
       }
       if(err) {
         res.json({status: false, error: err.message});
@@ -30,16 +28,64 @@ const PatientController = {
     });
   },
   GetPatients: function(req, res){
-    PatientModel.find({},function(err, patientList){
-      if(!patientList || patientList.length == 0){
-        err = new Error("No Patients Exist");
-      }
+    const timestamp = parseInt(req.params.lastUpdated);
+    // couldn't convert properly
+    if(isNaN(timestamp)) {
+      res.json({status:false, error: 'Error converting lastUpdated to int'});
+      return;
+    }
+
+    PatientModel.find({ lastUpdated: {$gt: timestamp} },function(err, patientList){
       if(err){
-        res.json({status:false, error:err.message});
+        res.json({status:false, error: err.message});
         return;
       }
       res.json({status: true, patients: patientList});
     });
+  },
+  UpdatePatients: function(req, res){
+    const patients = req.body.patients;
+    const errors = [];
+    let addedCount = 0;
+    let updatedCount = 0;
+
+    patients.forEach(patient => {
+      PatientModel.findOne({key: patient.key}, function(err, oldPatient) {
+        if(err) {
+          errors.push(err.message);
+          return;
+        }
+
+        // If no patient exists on the server, add them
+        if(!oldPatient) {
+          PatientModel.create(patient, function(err) {
+            if(err)
+              errors.push(err);
+            else
+              addedCount++;
+          });
+          return;
+        }
+
+        // For updates, make sure the incoming object is up to date
+        if(oldPatient.lastUpdated > patient.lastUpdated) {
+          errors.push('Patient sent is not up-to-date. Sync required.');
+        }
+
+        // TODO: Iterate through forms and update individually if lastUpdated
+        // works out, instead of a blanket set() call
+        oldPatient.set(patient);
+        //saves it, callback function to handle error
+        oldPatient.save(function(e) {
+          if(e) {
+            errors.push(e);
+          } else {
+            updatedCount++;
+          }
+        });
+      });
+    });
+    res.json({errors: errors, addedCount: addedCount, updatedCount: updatedCount});
   },
   CreatePatient: function(req, res){
     // Check that no patient with that key exists
@@ -47,7 +93,7 @@ const PatientController = {
       if (patient) {
         // Hopefully shouldn't happen, but would be rare enough to not worry
         // about
-        err = new Error("Patient already exists with that name and birthday. Use a different name");
+        err = new Error('Patient already exists with that name and birthday. Use a different name');
       }
       if(err) {
         res.json({status: false, error: err.message});
@@ -55,32 +101,39 @@ const PatientController = {
       }
     });
 
-    const patient = PatientModel.create(req.body.patient, function (err) {
+    PatientModel.create(req.body.patient, function (err) {
       if(err) {
         res.json({status: false, error: err.message});
         return;
       }
       res.json({status: true});
-    })
+    });
   },
   UpdatePatient: function(req, res){
     PatientModel.findOne({key: req.params.key}, function(err, oldPatient) {
       if(!oldPatient) {
-        err = new Error("Patient with key " + req.params.key + " doesn't exist");
+        err = new Error('Patient with key ' + req.params.key + ' doesn\'t exist');
       }
       // For updates, make sure the incoming object is up to date
       if(oldPatient.lastUpdated > req.body.patient.lastUpdated) {
-        err = new Error("Patient sent is not up-to-date. Sync required.");
+        err = new Error('Patient sent is not up-to-date. Sync required.');
       }
       if(err) {
         res.json({status: false, error: err.message});
         return;
       }
 
-      //update function, replaces old pation object with passed in 'new patient' info boject
-      oldPatient.set(req.body.patient);
-      //saves it, callback function to handle error
-      oldPatient.save(function(e, p) {
+
+      // Only update the given properties
+      const properties = ['birthday', 'gender', 'phone', 'motherHeight', 'fatherHeight', 'lastUpdated'];
+      properties.forEach( p => {
+        if(req.body.patient[p])
+          oldPatient[p] = req.body.patient[p];
+      });
+
+      //saves it, callback function to handle error 
+      oldPatient.save(function(e) {
+
         if(e) {
           res.json({status: false, error: e.message});
           return;
@@ -88,14 +141,12 @@ const PatientController = {
         res.json({status: true});
         return;
       });
-    })
-  },
-  GetUpdates: function(req, res){
+    });
   },
   GetSoap: function(req, res){
     SoapModel.findOne({patientKey: req.params.key, date: req.params.date}, function(err, soap) {
       if(!soap) {
-        err = new Error("Patient with key " + req.params.key + " does not have a soap for the date " + req.params.date);
+        err = new Error('Patient with key ' + req.params.key + ' does not have a soap for the date ' + req.params.date);
       }
 
       if (err) {
@@ -108,14 +159,23 @@ const PatientController = {
   GetStatus: function(req, res){
     StatusModel.findOne({patientKey: req.params.key, date: req.params.date}, function(err, patientStatus) {
       if (!patientStatus) {
-        err = new Error("Status of patient with key " + req.params.key + " for the date " + req.params.date + " does not exist");
+        err = new Error('Status of patient with key ' + req.params.key + ' for the date ' + req.params.date + ' does not exist');
       }
   
       if (err) {
         res.json({status: false, error: err.message});
-        return
+        return;
       }
       res.json({status: true, patientStatus: patientStatus});
+    });
+  },
+  GetStatuses: function(req, res){
+    StatusModel.find({date: req.params.date}, function(err, statuses) {
+      if (err) {
+        res.json({status: false, error: err.message});
+        return;
+      }
+      res.json({status: true, patientStatuses: statuses});
     });
   },
   GetTriage: function(req, res){
@@ -135,7 +195,7 @@ const PatientController = {
   UpdateSoap: function(req, res){
     PatientModel.findOne({key: req.params.key}, function(err, patient) {
       if(!patient) {
-        err = new Error("Patient with key " + req.params.key + " doesn't exist");
+        err = new Error('Patient with key ' + req.params.key + ' doesn\'t exist');
       }
 
       for(let [i,soap] of patient.soaps.entries()) {
@@ -144,7 +204,7 @@ const PatientController = {
           if(soap.lastUpdated > req.body.soap.lastUpdated) {
             res.json({
               status: false,
-              error: "Soap sent is not up-to-date. Sync required."
+              error: 'Soap sent is not up-to-date. Sync required.'
             });
             return;
           }
@@ -179,17 +239,17 @@ const PatientController = {
   UpdateStatus: function(req, res){
     PatientModel.findOne({key: req.params.key}, function(err, patient) {
       if(!patient) {
-        err = new Error("Patient with key " + req.params.key + " doesn't exist");
+        err = new Error('Patient with key ' + req.params.key + ' doesn\'t exist');
       }
 
       for (let [i,status] of patient.statuses.entries()) {
-        if (status.date = req.params.date) {
-        //status is not updated
+        if (status.date === req.params.date) {
+          //status should not be updated
           if (status.lastUpdated > req.body.status.lastUpdated) {
             res.json({
               status: false,
-              error: "Status sent is not up-to-date. Sync required."
-            })
+              error: 'Status sent is not up-to-date. Sync required.'
+            });
             return;
           }
 
@@ -216,7 +276,7 @@ const PatientController = {
         res.json({status: true});
         return;
       });
-  });
+    });
   },
   UpdateTriage: function(req, res){
   },

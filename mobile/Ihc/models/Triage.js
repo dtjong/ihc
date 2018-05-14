@@ -1,5 +1,5 @@
+/* eslint-disable no-undef */
 var t = require('tcomb-form-native');
-import {stringDate} from '../util/Date';
 
 export default class Triage {
 
@@ -44,8 +44,8 @@ export default class Triage {
 
   // Can pass in parameters to override defaults, mostly useful for tests
   static getInstance(patientKey = 'firstname&father&mother&20000101',
-      date = '20180101', age = 18, weight = 75, height = 100,
-      lastUpdated = new Date().getTime()) {
+    date = '20180101', age = 18, weight = 75, height = 100,
+    lastUpdated = new Date().getTime()) {
     return {
       patientKey: patientKey,
       date: date,
@@ -112,7 +112,7 @@ Triage.schema = {
     hasInsurance: 'bool',
     location: 'string', // Girasoles or TJP or somewhere else
     arrivalTime: 'int?', // should match checkin time from Status
-        //make optional so don't have to deal with it for now
+    //make optional so don't have to deal with it for now
     timeIn: 'string',
     timeOut: 'string',
     triager: 'string', // Name of triager
@@ -223,7 +223,7 @@ urineTestObject = {
   bilirubin: t.maybe(t.String),
   ph: t.maybe(t.String),
   glucose: t.maybe(t.String),
-}
+};
 
 MaleTriageUrine = MaleTriage.extend(urineTestObject);
 MaleTriageLabsUrine = MaleTriageLabs.extend(urineTestObject);
@@ -246,3 +246,5 @@ FemaleTriageLabs = FemaleTriage.extend({
 
 FemaleTriageUrine = FemaleTriage.extend(urineTestObject);
 FemaleTriageLabsUrine = FemaleTriageLabs.extend(urineTestObject);
+
+/* eslint-enable no-undef */

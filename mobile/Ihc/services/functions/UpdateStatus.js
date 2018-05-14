@@ -6,7 +6,7 @@ export function updateStatusHelper(patientKey, strDate, field, value, realm, fet
       + patientKey + '" AND date = "' + strDate + '"');
     const statusObj = statusObjs['0'];
     if(!statusObj) {
-      throw new Error("Status doesn't exist");
+      throw new Error('Status doesn\'t exist');
     }
 
     const patient = realm.objects('Patient').filtered('key = "' + patientKey + '"')['0'];

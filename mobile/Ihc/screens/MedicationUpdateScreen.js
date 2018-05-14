@@ -9,7 +9,6 @@ import {
 var t = require('tcomb-form-native');
 var Form = t.form.Form;
 import data from '../services/DataService';
-import {stringDate} from '../util/Date';
 import DrugUpdate from '../models/DrugUpdate';
 
 export default class MedicationUpdateScreen extends Component<{}> {
@@ -24,7 +23,7 @@ export default class MedicationUpdateScreen extends Component<{}> {
     this.state = {
       formValues: this.props.drugUpdate,
       error: '',
-    }
+    };
   }
 
   DrugUpdateForm = t.struct({
@@ -53,16 +52,16 @@ export default class MedicationUpdateScreen extends Component<{}> {
     }
     const form = Object.assign({}, this.refs.form.getValue());
 
-    update = DrugUpdate.extractFromForm(form, this.props.patientKey);
+    const update = DrugUpdate.extractFromForm(form, this.props.patientKey);
 
     data.createDrugUpdate(update)
-        .then( () => {
-          // Go back to previous page
-          this.props.navigator.pop();
-        })
-        .catch( (e) => {
-          this.setState({error: e.message});
-        });
+      .then( () => {
+        // Go back to previous page
+        this.props.navigator.pop();
+      })
+      .catch( (e) => {
+        this.setState({error: e.message});
+      });
   }
 
   render() {
@@ -100,11 +99,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
-  },
-  success: {
-    textAlign: 'center',
-    color: 'green',
-    margin: 10,
   },
   error: {
     textAlign: 'center',
