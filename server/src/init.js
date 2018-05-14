@@ -8,5 +8,7 @@ const port = process.argv[2] || config.port;
 //Express application will listen to port mentioned in our configuration
 app.listen(port, function(err){
   if(err) throw err;
-  console.log("App listening on port "+port);
+  /* eslint-disable no-console */
+  console.log('App listening on port '+port);
+  /* eslint-enable no-console */
 });

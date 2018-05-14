@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  Button,
   Text,
   View,
   ScrollView
@@ -32,7 +31,7 @@ export default class PatientTable extends Component<{}> {
       <View style={tableStyles.rowContainer} key={keyFn(cols.length)}>
         {cols}
       </View>
-    )
+    );
   }
 
   render() {
@@ -41,14 +40,14 @@ export default class PatientTable extends Component<{}> {
         <View>
           <Text>Loading...</Text>
         </View>
-      )
+      );
     }
 
     // Render row for header, then render all the rows
     return (
       <ScrollView contentContainerStyle={tableStyles.scroller}>
         {this.renderHeader(this.props.headers, (i) => `header${i}`)}
-        {this.props.rows.map( (row, i) => this.props.renderRow(row, (i) => `row${i}`) )}
+        {this.props.rows.map( row => this.props.renderRow(row, (i) => `row${i}`) )}
       </ScrollView>
     );
   }
@@ -63,18 +62,6 @@ export const tableStyles = StyleSheet.create({
     flex: 0,
     minWidth: '80%',
     backgroundColor: '#F5FCFF',
-  },
-  container: {
-    flex: 1,
-    minWidth: '80%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  title: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
   },
   rowContainer: {
     flex: 1,

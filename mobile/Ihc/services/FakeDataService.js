@@ -1,3 +1,4 @@
+/* eslint-disable */
 // This file should hold skeletons for the function calls from RealDataService.
 // Implementation is not required because they should be stubbed out during
 // tests
@@ -76,13 +77,13 @@ function newFakeMedicationUpdate(name) {
     frequency: 'bid',
     duration: '1 month',
     notes: 'yes'
-  }
+  };
 }
 
 const numFakePatients = 0;
 // Currently ignore triage/doctor/pharmacy params
 function newFakePatientSelectRow(name, triage = false, doctor = false,
-    pharm = false, notes = "") {
+  pharm = false, notes = '') {
   numFakePatients++;
   return {
     name: name,
@@ -92,9 +93,10 @@ function newFakePatientSelectRow(name, triage = false, doctor = false,
     doctor_completed: numFakePatients % 4 === 0 ? new Date().getTime() : null,
     pharmacy_completed: numFakePatients % 8 === 0 ? new Date().getTime() : null,
     notes: notes
-  }
+  };
 }
 
 function createMatrix(data, columnOrder) {
   return data.map((obj) => columnOrder.map( (key) => obj[key] ));
 }
+/* eslint-enable */

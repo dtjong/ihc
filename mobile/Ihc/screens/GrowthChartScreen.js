@@ -1,14 +1,12 @@
 import data from '../services/DataService';
 import React, { Component } from 'react';
 import {
-  Platform,
   StyleSheet,
-  Button,
   Text,
   ScrollView,
   View
 } from 'react-native';
-import ScatterPlot from '../components/ScatterPlot'
+import ScatterPlot from '../components/ScatterPlot';
 const boysWeightData = require('../growthchartdata/boys_weights.json');
 const girlsWeightData = require('../growthchartdata/girls_weights.json');
 const boysHeightData = require('../growthchartdata/boys_heights.json');
@@ -33,14 +31,14 @@ export default class GrowthChartScreen extends Component<{}> {
 
   extractData(data) {
     const arr = [];
-    arr.push({ color: 'red', unit: '%', values: data["P3"]})
-    arr.push({ color: 'orange', unit: '%', values: data["P5"]})
-    arr.push({ color: 'purple', unit: '%', values: data["P10"]})
-    arr.push({ color: 'green', unit: '%', values: data["P25"]})
-    arr.push({ color: 'blue', unit: '%', values: data["P50"]})
-    arr.push({ color: 'purple', unit: '%', values: data["P75"]})
-    arr.push({ color: 'orange', unit: '%', values: data["P90"]})
-    arr.push({ color: 'red', unit: '%', values: data["P95"]})
+    arr.push({ color: 'red', unit: '%', values: data['P3']});
+    arr.push({ color: 'orange', unit: '%', values: data['P5']});
+    arr.push({ color: 'purple', unit: '%', values: data['P10']});
+    arr.push({ color: 'green', unit: '%', values: data['P25']});
+    arr.push({ color: 'blue', unit: '%', values: data['P50']});
+    arr.push({ color: 'purple', unit: '%', values: data['P75']});
+    arr.push({ color: 'orange', unit: '%', values: data['P90']});
+    arr.push({ color: 'red', unit: '%', values: data['P95']});
     return arr;
   }
 
@@ -80,7 +78,7 @@ export default class GrowthChartScreen extends Component<{}> {
           <Text>No patient exists</Text>
           <Text style={styles.error}>{this.state.error}</Text>
         </ScrollView>
-      )
+      );
     }
 
     // Mark every 2 yrs
@@ -108,7 +106,7 @@ export default class GrowthChartScreen extends Component<{}> {
               maxY={125}
               horizontalLinesAt={arrKg}
               verticalLinesAt={arrYears}
-              title="Weight Growth Chart"
+              title='Weight Growth Chart'
               unitX='Age'
               unitY='Weight' />
           </View>
@@ -124,14 +122,14 @@ export default class GrowthChartScreen extends Component<{}> {
               maxY={200}
               horizontalLinesAt={arrCm}
               verticalLinesAt={arrYears}
-              title="Height Growth Chart"
+              title='Height Growth Chart'
               unitX='Age'
               unitY='Height' />
           </View>
 
         </View>
       </ScrollView>
-    )
+    );
   }
 }
 
@@ -160,11 +158,6 @@ const styles = StyleSheet.create({
     margin: 10,
     position: 'absolute',
     top: 4
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
   },
   error: {
     textAlign: 'center',

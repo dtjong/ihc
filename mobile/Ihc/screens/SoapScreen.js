@@ -10,7 +10,6 @@ var t = require('tcomb-form-native');
 var Form = t.form.Form;
 
 import data from '../services/DataService';
-import Patient from '../models/Patient';
 import Soap from '../models/Soap';
 import {stringDate} from '../util/Date';
 
@@ -29,7 +28,7 @@ export default class SoapScreen extends Component<{}> {
       formValues: {date: todayDate},
       error: '',
       todayDate: todayDate,
-    }
+    };
   }
 
   // TODO: Make form fields larger, more like textarea
@@ -92,16 +91,16 @@ export default class SoapScreen extends Component<{}> {
 
   completed = () => {
     data.updateStatus(this.props.patientKey, this.state.todayDate,
-        'doctorCompleted', new Date().getTime())
-        .then( () => {
-          this.setState({
-            successMsg: 'Soap marked as completed, but not yet submitted',
-            error: null
-          });
-        })
-        .catch( (e) => {
-          this.setState({error: e.message, successMsg: null});
+      'doctorCompleted', new Date().getTime())
+      .then( () => {
+        this.setState({
+          successMsg: 'Soap marked as completed, but not yet submitted',
+          error: null
         });
+      })
+      .catch( (e) => {
+        this.setState({error: e.message, successMsg: null});
+      });
   }
 
   submit = () => {
@@ -113,15 +112,15 @@ export default class SoapScreen extends Component<{}> {
     const soap = Soap.extractFromForm(form, this.props.patientKey);
 
     data.updateSoap(soap)
-        .then( () => {
-          this.setState({
-            successMsg: 'SOAP updated successfully',
-            error: null
-          });
-        })
-        .catch( (e) => {
-          this.setState({error: e.message, successMsg: null});
+      .then( () => {
+        this.setState({
+          successMsg: 'SOAP updated successfully',
+          error: null
         });
+      })
+      .catch( (e) => {
+        this.setState({error: e.message, successMsg: null});
+      });
   }
 
   // Need this to update formValues so that after clicking completed button,

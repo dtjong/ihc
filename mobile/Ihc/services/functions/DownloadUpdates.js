@@ -3,8 +3,7 @@ export function downloadUpdatesHelper(realm, fetchUrl) {
 
   const lastSynced = settings ? settings.lastSynced : 0;
 
-  // TODO: Fetch call to server, passing in lastSynced value
-  return fetch(fetchUrl + '/route/' + lastSynced)
+  return fetch(fetchUrl + '/patients/' + lastSynced)
     .then(response => response.json())
     .then(json => {
       const patients = json.patients;
@@ -32,8 +31,8 @@ function handleDownloadedPatients(patients, settings, realm) {
         .filtered('key = "' + incomingPatient.key + '"')['0'];
 
       if(!existingPatient) {
-        throw new Error("Patient with key " + incomingPatient.key
-          + " doesnt exist. This shouldnt have happened...");
+        throw new Error('Patient with key ' + incomingPatient.key
+          + ' doesnt exist. This shouldnt have happened...');
       }
 
       if (incomingPatient.lastUpdated <= existingPatient.lastUpdated) {
@@ -55,7 +54,7 @@ function handleDownloadedPatients(patients, settings, realm) {
       });
       incomingPatient.medications.forEach(incomingDrugUpdate => {
         promises.push(updateObject(existingPatient, 'medications',
-            incomingDrugUpdate, realm));
+          incomingDrugUpdate, realm));
       });
       incomingPatient.statuses.forEach(incomingStatus => {
         promises.push(updateObject(existingPatient, 'statuses', incomingStatus, realm));
@@ -69,7 +68,7 @@ function handleDownloadedPatients(patients, settings, realm) {
 
     realm.write(() => {
       if(!settings) {
-        realm.create('Settings', {lastSynced: new Date().getTime()})
+        realm.create('Settings', {lastSynced: new Date().getTime()});
         return;
       }
       settings.lastSynced = new Date().getTime();

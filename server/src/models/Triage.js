@@ -8,7 +8,6 @@ const TriageSchema = Schema({
   hasInsurance: Boolean,
   location: String, // Girasoles or TJP or somewhere else
   arrivalTime: Number, // should match checkin time from Status
-      //make optional so don't have to deal with it for now
   timeIn: String,
   timeOut: String,
   triager: String, // Name of triager

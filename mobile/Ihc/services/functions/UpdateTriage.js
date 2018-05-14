@@ -1,10 +1,12 @@
+import Triage from '../../models/Triage';
+
 export function updateTriageHelper(update, realm, fetchUrl) {
   try {
     const patientObjs = realm.objects('Patient').filtered('key = "' + update.patientKey + '"');
     const patient = patientObjs['0'];
 
     if(!patient) {
-      throw new Error("Patient doesn't exist");
+      throw new Error('Patient doesn\'t exist');
     }
 
     const triage = realm.objects('Triage').filtered('date = "' +

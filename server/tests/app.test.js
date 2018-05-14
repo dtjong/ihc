@@ -48,6 +48,25 @@ describe('Test GetStatus routes', () => {
   });
 });
 
+describe('Test GetStatuses route', () => {
+  let mock = null;
+  afterEach(() => {
+    if(mock) {
+      mock.restore();
+    }
+  });
+
+  test('should return statuses for the given date', () => {
+    const status1 = { patientKey: 'patientKey', date: 'datetahtexists' };
+    mock = sinon.mock(StatusModel) 
+      .expects('find').withArgs({date: 'datethatexists'})
+      .yields(null, [status1]);
+
+    return request(app).get('/patients/statuses/datethatexists')
+      .expect({status: true, patientStatuses: [status1]})
+  });
+});
+
 describe('Test GetPatient routes', () => {
   let mock = null;
   afterEach(() => {
@@ -98,29 +117,29 @@ describe('Test GetPatients routes', ()=>{
     }
   });
 
-  test('should return success if get Patient List is successful', ()=>{
+  test('should return success if GetPatients is successful', ()=>{
     //create fake patient
     const patient1 = {key: "THISISAFAKEKEY1", firstName: "Test1", lastName: "Test1", birthday: "20050621"};
     const patient2 = {key: "THISISAFAKEKEY2", firstName: "Test2", lastName: "Test2", birthday: "20050622"};
     const patient3 = {key: "THISISAFAKEKEY3", firstName: "Test3", lastName: "Test3", birthday: "20050623"};
     var patientList = [patient1, patient2, patient3];
     const mock1 = sinon.mock(PatientModel)
-      .expects('find').withArgs({})
+      .expects('find').withArgs({lastUpdated: { $gt: 12345 } })
       .yields(null, patientList);
     mocks.push(mock1);
 
-    return request(app).get('/patients')
+    return request(app).get('/patients/12345')
       .expect({status: true, patients: patientList});
   });
 
-  test('should return error message if Patient List does not exist', () => {
+  test('should return error message if error occurs', () => {
     const mock1 = sinon.mock(PatientModel)
-      .expects('find').withArgs({})
-      .yields(new Error("No Patients Exist"), null);
+      .expects('find').withArgs({lastUpdated: { $gt: 0 } })
+      .yields(new Error("Error occurred"), null);
     mocks.push(mock1);
 
-    return request(app).get('/patients')
-      .expect({status: false, error: "No Patients Exist"});
+    return request(app).get('/patients/0')
+      .expect({status: false, error: "Error occurred"});
   });
 
 });
@@ -199,17 +218,14 @@ describe('Test UpdatePatient routes', () => {
       firstName: "Test",
       lastName: "Last",
       birthday: "20110101",
+      gender: 1,
       set: () => {},
       save: () => {},
       lastUpdated: new Date().getTime()
     };
-    const newPatient = {
-      key: "Test&Last&20110101",
-      firstName: "Test",
-      lastName: "Last",
-      birthday: "20110102",
-      lastUpdated: oldPatient.lastUpdated + 1
-    };
+    const newPatient = Object.assign({}, oldPatient);
+    newPatient.gender = 2;
+    newPatient.lastUpdated = oldPatient.lastUpdated + 1;
 
     const mock1 = sinon.mock(PatientModel)
       .expects('findOne').withArgs({key: oldPatient.key})
@@ -225,9 +241,14 @@ describe('Test UpdatePatient routes', () => {
       .yields(null, newPatient);
     mocks.push(mock3);
 
-    return request(app).patch('/patient/' + oldPatient.key)
+    return request(app)
+      .put('/patient/' + oldPatient.key)
       .send({patient: newPatient})
-      .expect({status: true});
+      .then(response => {
+        expect(JSON.parse(response.text)).toEqual({status: true});
+        expect(oldPatient.gender).toEqual(newPatient.gender);
+        expect(oldPatient.lastUpdated).toEqual(newPatient.lastUpdated);
+      });
   });
 
   test('should return error if update is unsuccessful', () => {
@@ -262,7 +283,7 @@ describe('Test UpdatePatient routes', () => {
       .yields(new Error("Problems saving"), null);
     mocks.push(mock3);
 
-    return request(app).patch('/patient/' + oldPatient.key)
+    return request(app).put('/patient/' + oldPatient.key)
       .send({patient: newPatient})
       .expect({status: false, error: "Problems saving"});
   });
@@ -290,9 +311,66 @@ describe('Test UpdatePatient routes', () => {
       .yields(null, oldPatient);
     mocks.push(mock1);
 
-    return request(app).patch('/patient/' + oldPatient.key)
+    return request(app).put('/patient/' + oldPatient.key)
       .send({patient: newPatient})
       .expect({status: false, error: "Patient sent is not up-to-date. Sync required."});
+  });
+});
+
+// TODO: Could use more comprehensive tests
+describe('Test UpdatePatients routes', () => {
+  let mocks = [];
+  afterEach(() => {
+    for(let i in mocks) {
+      mocks[i].restore();
+    }
+  });
+
+  test('should return correct values if all updates are successful', () => {
+    const oldPatient1 = {
+      key: "Test&Last&20110101",
+      firstName: "Test",
+      lastName: "Last",
+      birthday: "20110101",
+      set: () => {},
+      save: () => {},
+      lastUpdated: 100
+    };
+    const soap = {patientKey: oldPatient1.key};
+
+    const newPatient1 = Object.assign({}, oldPatient1);
+    newPatient1.soaps= [soap];
+    newPatient1.lastUpdated = oldPatient1.lastUpdated + 1;
+
+    const newPatient2 = Object.assign({}, oldPatient1);
+    newPatient2.key = 'NoPriorPatientExists';
+    newPatient2.soaps= [soap];
+
+    const oldPatient3 = Object.assign({}, oldPatient1);
+    const newPatient3 = Object.assign({}, oldPatient1);
+    newPatient3.key = 'ShouldCauseAnError';
+    newPatient3.lastUpdated = oldPatient1.lastUpdated - 10;
+
+    const mock1 = sinon.stub(PatientModel, 'findOne')
+      .onCall(0).yields(null, oldPatient1)
+      .onCall(1).yields(null, null)
+      .onCall(2).yields(null, oldPatient3);
+    mocks.push(mock1);
+
+    const mock2 = sinon.stub(oldPatient1, 'set');
+    mocks.push(mock2);
+
+    const mock3 = sinon.mock(oldPatient1)
+      .expects('save')
+      .yields(null, newPatient1);
+    mocks.push(mock3);
+
+    const mock4 = sinon.stub(PatientModel, 'create').yields(null);
+    mocks.push(mock4);
+
+    return request(app).put('/patients')
+      .send({patients: [newPatient1, newPatient2, newPatient3]})
+      .expect({errors: ['Patient sent is not up-to-date. Sync required.'], updatedCount: 1, addedCount: 1});
   });
 });
 
@@ -342,7 +420,7 @@ describe('Test UpdateSoap routes', () => {
     mocks.push(mock3);
 
     return request(app)
-      .patch('/patient/' + oldPatient.key + '/soap/' + newSoap.date)
+      .put('/patient/' + oldPatient.key + '/soap/' + newSoap.date)
       .send({soap: newSoap})
       .then(response => {
         expect(JSON.parse(response.text)).toEqual({status: true});
@@ -385,7 +463,7 @@ describe('Test UpdateSoap routes', () => {
     mocks.push(mock3);
 
     return request(app)
-      .patch('/patient/' + oldPatient.key + '/soap/' + newSoap.date)
+      .put('/patient/' + oldPatient.key + '/soap/' + newSoap.date)
       .send({soap: newSoap})
       .then(response => {
         expect(JSON.parse(response.text)).toEqual({status: true});
@@ -427,8 +505,148 @@ describe('Test UpdateSoap routes', () => {
     mocks.push(mock1);
 
     return request(app)
-      .patch('/patient/' + oldPatient.key + '/soap/' + oldSoap.date)
+      .put('/patient/' + oldPatient.key + '/soap/' + oldSoap.date)
       .send({soap: newSoap})
       .expect({status: false, error: "Soap sent is not up-to-date. Sync required."});
+  });
+});
+
+describe('Test UpdateStatus routes', () => {
+  let mocks = [];
+  afterEach(() => {
+    for(let i in mocks) {
+      mocks[i].restore();
+    }
+  });
+
+  test('should return success if successfully updates existing status', () => {
+    const oldStatus = {
+      patientKey: "First&Last&20110101",
+      name: "First Last",
+      birthday: "20110101",
+      date: "20180507",
+      active: true,
+      checkinTime: 12,
+      triageCompleted: 0,
+      doctorCompleted: 0,
+      pharmacyCompleted: 0,
+      notes: 'old',
+      lastUpdated: 100
+    };
+
+    const newStatus = Object.assign({}, oldStatus);
+    newStatus.lastUpdated = oldStatus.lastUpdated + 1;
+    newStatus.notes = 'new';
+
+    const oldPatient = {
+      key: "First&Last&20110101",
+      firstName: "First",
+      lastName: "Last",
+      birthday: "20110101",
+      statuses: [oldStatus],
+      save: () => {},
+      lastUpdated: new Date().getTime()
+    };
+
+    const mock1 = sinon.mock(PatientModel)
+      .expects('findOne').withArgs({key: oldPatient.key})
+      .yields(null, oldPatient);
+    mocks.push(mock1);
+
+    const mock2 = sinon.mock(oldPatient)
+      .expects('save')
+      .yields(null);
+    mocks.push(mock2);
+
+    return request(app)
+      .put('/patient/' + oldPatient.key + '/status/' + newStatus.date)
+      .send({status: newStatus})
+      .then(response => {
+        expect(JSON.parse(response.text)).toEqual({status: true});
+        expect(oldPatient.statuses).toEqual([newStatus]);
+      });
+  });
+
+  test('should return success if successfully adds new status', () => {
+    const newStatus = {
+      patientKey: "First&Last&20110101",
+      name: "First Last",
+      birthday: "20110101",
+      date: "20180507",
+      active: true,
+      checkinTime: 12,
+      triageCompleted: 0,
+      doctorCompleted: 0,
+      pharmacyCompleted: 0,
+      notes: 'new',
+      lastUpdated: 100
+    };
+
+    const oldPatient = {
+      key: "First&Last&20110101",
+      firstName: "First",
+      lastName: "Last",
+      birthday: "20110101",
+      statuses: [],
+      save: () => {},
+      lastUpdated: new Date().getTime()
+    };
+
+    const mock1 = sinon.mock(PatientModel)
+      .expects('findOne').withArgs({key: oldPatient.key})
+      .yields(null, oldPatient);
+    mocks.push(mock1);
+
+    const mock2 = sinon.mock(oldPatient)
+      .expects('save')
+      .yields(null);
+    mocks.push(mock2);
+
+    return request(app)
+      .put('/patient/' + oldPatient.key + '/status/' + newStatus.date)
+      .send({status: newStatus})
+      .then(response => {
+        expect(JSON.parse(response.text)).toEqual({status: true});
+        expect(oldPatient.statuses).toEqual([newStatus]);
+      });
+  });
+  test('should return error if new status is not up to date', () => {
+    const oldStatus = {
+      patientKey: "First&Last&20110101",
+      name: "First Last",
+      birthday: "20110101",
+      date: "20180507",
+      active: true,
+      checkinTime: 0,
+      triageCompleted: 0,
+      doctorCompleted: 0,
+      pharmacyCompleted: 0,
+      notes: 'old',
+      lastUpdated: 100
+    };
+
+    const newStatus = Object.assign({}, oldStatus);
+    newStatus.lastUpdated = oldStatus.lastUpdated - 1;
+    oldStatus.notes = 'new'; 
+
+    const oldPatient = {
+      key: "First&Last&20110101",
+      firstName: "First",
+      lastName: "Last",
+      birthday: "20110101",
+      statuses: [oldStatus],
+      save: () => {},
+      lastUpdated: new Date().getTime()
+    };
+
+    const mock1 = sinon.mock(PatientModel)
+      .expects('findOne').withArgs({key: oldPatient.key})
+      .yields(null, oldPatient);
+    mocks.push(mock1);
+
+    return request(app)
+      .put('/patient/' + oldPatient.key + '/status/' + newStatus.date)
+      .send({status: newStatus})
+      .expect({status: false, error: "Status sent is not up-to-date. Sync required."});
   });
 });

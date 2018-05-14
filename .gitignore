@@ -4,3 +4,4 @@ node_modules/
 *.log
 mongo_docs/
 server/build/
+*.DS_Store

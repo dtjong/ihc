@@ -1,5 +1,3 @@
-import {stringDate} from '../util/Date';
-
 export default class Soap {
   // Insert any class methods here
 
@@ -11,9 +9,9 @@ export default class Soap {
 
   // Can pass in parameters to override defaults, mostly useful for tests
   static getInstance(patientKey = 'firstname&father&mother&20000101',
-      date = '20180101', subjective = "subjective", objective = "objective",
-      assessment = "assessment", plan = "plan", wishlist = "wishlist", provider = "doc",
-      lastUpdated = new Date().getTime()) {
+    date = '20180101', subjective = 'subjective', objective = 'objective',
+    assessment = 'assessment', plan = 'plan', wishlist = 'wishlist', provider = 'doc',
+    lastUpdated = new Date().getTime()) {
     return {
       patientKey, date, subjective, objective, assessment, plan, wishlist, provider, lastUpdated
     };

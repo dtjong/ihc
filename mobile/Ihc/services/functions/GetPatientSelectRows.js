@@ -1,3 +1,5 @@
+import {stringDate} from '../../util/Date';
+
 export function getPatientSelectRowsHelper(realm, fetchUrl) {
   const statuses = Object.values(realm.objects('Status').filtered('date = "' +
       stringDate(new Date) + '" AND active = true').sorted('checkinTime'));

@@ -72,6 +72,64 @@ describe('Create patient', () => {
   });
 });
 
+describe('Signin patient', () => {
+  beforeEach(() => {
+    fetch.resetMocks();
+    Realm.mockClear();
+    mockObjects.mockClear();
+    mockCreate.mockClear();
+  });
+
+  it('successfully adds a Status object to the patient', done => {
+    const patient = Patient.getInstance();
+    // Mock the fetch() server call
+    fetch.mockResponse(JSON.stringify({status: true}));
+
+    mockObjects.mockImplementation(() => {
+      return { filtered: () => { return { 0: patient } }};
+    });
+
+    const now = new Date().getTime();
+    sinon.useFakeTimers(now);
+
+    const statusObj = Status.newStatus(patient);
+
+    // SigninPatient takes in the PatientForm info, aka their name and birthday,
+    // so it will also work if we pass in the entire patient object
+    data.signinPatient(patient)
+        .then( result => {
+          expect(patient.statuses[0]).toEqual(statusObj);
+          expect(result).toEqual(true);
+          done();
+        })
+        .catch( err => {
+          done.fail(err);
+        });
+  });
+
+  it('returns error if fetch returns unsuccessful', done => {
+    const patient = Patient.getInstance();
+    fetch.mockResponse(JSON.stringify({status: false, error: "Error message"}));
+    mockObjects.mockImplementation(() => {
+      return { filtered: () => { return { 0: patient } }};
+    });
+
+    const now = new Date().getTime();
+    sinon.useFakeTimers(now);
+
+    const statusObj = Status.newStatus(patient);
+
+    data.signinPatient(patient)
+        .then( result => {
+          done.fail(new Error("Error should be thrown"));
+        })
+        .catch( err => {
+          expect(patient.needToUpload).toEqual(true);
+          done();
+        });
+  });
+});
+
 describe('Download updates', () => {
   beforeEach(() => {
     fetch.resetMocks();
