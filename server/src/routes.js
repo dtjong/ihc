@@ -10,47 +10,58 @@ import PatientController from './controllers/Patient';
 
 const router = express.Router();
 
-router.get('/patient/:key', PatientController.GetPatient);
-
-//Alex
-//returns an array of patients
-router.get('/patients', PatientController.GetPatients);
-
+//COMPLETE
+//Create New Patient
 router.post('/patient', PatientController.CreatePatient);
 // router.delete('/patient/:key', PatientController.DeletePatient);
 
-//updates patient's personal info
-//everything except doctors assessment, ie: name, phone number, age
+//COMPLETE
+//Gets Singular Patient
+router.get('/patient/:key', PatientController.GetPatient);
+
+//COMPLETE
+//returns an array of patients
+router.get('/patients', PatientController.GetPatients);
+
+//COMPLETE
+//updates patient's personal info, everything except doctors assessment, ie: name, phone number, age
 router.patch('/patient/:key', PatientController.UpdatePatient);
 
+//COMPLETE
 // Return the updates that occurred since a given timestamp
-//ASK MATTHEW
 router.get('/updates/:timestamp', PatientController.GetUpdates);
 
-//Kenny
+//COMPLETE
 //get soap info
 router.get('/patient/:key/soap/:date', PatientController.GetSoap);
 
+//COMPLETE
 //get status info
-//KENNY
 router.get('/patient/:key/status/:date', PatientController.GetStatus);
 
-//Brent
+//COMPLETE
 //get triage info
 router.get('/patient/:key/triage/:date', PatientController.GetTriage);
 
-//ayush
+//COMPLETE
 //get drug info
 router.get('/patient/:key/drugUpdates', PatientController.GetDrugUpdates);
 
+//Update Functions also add the object if it does not exist**
+
+//COMPLETE
 //updates the soap of the patient
 router.patch('/patient/:key/soap/:date', PatientController.UpdateSoap);
-//whats status
+
+//TO DO
+//Update status of the visit
 router.patch('/patient/:key/status/:date', PatientController.UpdateStatus);
 
+//TO DO
 //updates the triage of the patient
 router.patch('/patient/:key/triage/:date', PatientController.UpdateTriage);
 
+//TO DO
 //updates the Medicine of the patient
 router.patch('/patient/:key/drugUpdates', PatientController.UpdateDrugUpdates);
 
