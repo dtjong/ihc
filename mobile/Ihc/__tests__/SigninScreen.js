@@ -1,4 +1,4 @@
-require('react-native-mock/mock'); // Must be first line for tests that include enzyme
+//require('react-native-mock/mock'); // Must be first line for tests that include enzyme
 import 'react-native';
 import React from 'react';
 import SigninScreen from '../screens/SigninScreen';
@@ -10,6 +10,7 @@ import sinon from 'sinon';
 // import data from '../services/DataService';
 
 it('renders correctly for default (existing patient)', () => {
+  sinon.useFakeTimers(100);
   const json = renderer.create(
     <SigninScreen />
   ).toJSON();
@@ -17,6 +18,7 @@ it('renders correctly for default (existing patient)', () => {
 });
 
 it('renders correctly for new patient', () => {
+  sinon.useFakeTimers(100);
   // TODO: Once the "cannot read property number of undefined" problem is gone,
   // this should work??
 //  sinon.stub(data, "createPatient");

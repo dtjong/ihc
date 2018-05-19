@@ -5,11 +5,11 @@ import PatientHistoryScreen from '../screens/PatientHistoryScreen';
 // Note: test renderer must be required after react-native.
 import renderer from 'react-test-renderer';
 import sinon from 'sinon';
-import data from '../services/DataService';
+import {localData} from '../services/DataService';
 import Patient from '../models/Patient';
 
 it('renders correctly', () => {
-  sinon.stub(data, 'getPatient').returns(Promise.resolve(Patient.getInstance()));
+  sinon.stub(localData, 'getPatient').returns(Patient.getInstance());
 
   const json = renderer.create(
     <PatientHistoryScreen todayDate = '20180101' />

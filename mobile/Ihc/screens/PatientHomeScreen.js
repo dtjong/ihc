@@ -6,6 +6,7 @@ import {
   View,
 } from 'react-native';
 import { Col, Grid } from 'react-native-easy-grid';
+import Container from '../components/Container';
 
 export default class PatientHomeScreen extends Component<{}> {
   /*
@@ -66,7 +67,7 @@ export default class PatientHomeScreen extends Component<{}> {
     //const dateString = `${date.getMonth()} ${date.getDate()}, ${date.getYear()}`;
     const dateString = this.props.todayDateString || date.toDateString();
     return (
-      <View style={styles.container}>
+      <Container >
         <Text style={styles.title}>
           {this.props.name}
         </Text>
@@ -102,7 +103,7 @@ export default class PatientHomeScreen extends Component<{}> {
             </Col>
           </Grid>
         </View>
-      </View>
+      </Container>
     );
   }
 }
@@ -115,11 +116,6 @@ const styles = StyleSheet.create({
   },
   col: {
     alignItems: 'center',
-  },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   title: {
     fontSize: 20,

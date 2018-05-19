@@ -1,4 +1,7 @@
 /* eslint-disable */
+// WARNING: This file was just copied from FakeLocalDataService.js. If we end up
+// using this file, then it should probably be changed
+
 // This file should hold skeletons for the function calls from RealDataService.
 // Implementation is not required because they should be stubbed out during
 // tests

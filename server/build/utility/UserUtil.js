@@ -14,7 +14,7 @@ exports.extractUpdateToSave = extractUpdateToSave;
  *  Takes in an object with birthday, firstname, lastname fields
  */
 function userHash(obj) {
-  return obj.birthday + obj.firstname + "&" + obj.lastname;
+  return obj.birthday + obj.firstname + '&' + obj.lastname;
 }
 
 /**
