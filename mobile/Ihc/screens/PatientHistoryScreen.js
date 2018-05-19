@@ -6,9 +6,10 @@ import {
   View,
 } from 'react-native';
 import { Col, Grid } from 'react-native-easy-grid';
-import data from '../services/DataService';
+import {localData} from '../services/DataService';
 import {formatDate} from '../util/Date';
 import {shortDate} from '../util/Date';
+import Container from '../components/Container';
 
 /* TODO: 
  * Make changes in behavior for the cases that a soap form is submitted, 
@@ -28,19 +29,18 @@ export default class PatientHistoryScreen extends Component<{}> {
     this.state = {
       patient: null,
       loading: false,
-      error: null
+      errorMsg: null
     };
   }
 
   loadPatient = () => {
     this.setState({ loading: true });
-    data.getPatient(this.props.patientKey)
-      .then( data => {
-        this.setState({ patient: data, loading: false });
-      })
-      .catch( err => {
-        this.setState({ error: err.message, loading: false });
-      });
+    try {
+      const patient = localData.getPatient(this.props.patientKey);
+      this.setState({ patient: patient, loading: false });
+    } catch(err) {
+      this.setState({ errorMsg: err.message, loading: false });
+    }
   }
 
   componentDidMount() {
@@ -65,28 +65,23 @@ export default class PatientHistoryScreen extends Component<{}> {
   }
 
   render() {
-    if (this.state.loading) {
-      return (
-        <View style={styles.container}>
-          <Text style={styles.title}>
-            Previous Visits
-          </Text>
-          <Text>Loading...</Text>
-        </View>
-      );
-    }
     if (this.state.patient == null) {
       return (
-        <View style={styles.container}>
+        <Container loading={this.state.loading}
+          errorMsg={this.state.errorMsg} >
+          
           <Text style={styles.title}>
             Previous Visits
           </Text>
           <Text>Patient doesnt exist...</Text>
-        </View>
+        </Container>
       );
     }
+
     return (
-      <View style={styles.container}>
+      <Container loading={this.state.loading}
+        errorMsg={this.state.errorMsg} >
+
         <Text style={styles.title}>
           Previous Visits
         </Text>
@@ -115,7 +110,7 @@ export default class PatientHistoryScreen extends Component<{}> {
             </Col>
           </Grid>
         </View>
-      </View>
+      </Container>
     );
   }
 }
@@ -127,11 +122,6 @@ const styles = StyleSheet.create({
   },
   col: {
     alignItems: 'center',
-  },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   title: {
     fontSize: 20,

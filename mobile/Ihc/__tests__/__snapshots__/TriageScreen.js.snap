@@ -269,26 +269,56 @@ ShallowWrapper {
             type={[Function]}
             value={
               Object {
+                "LMP": "string?",
+                "a1c": "string?",
+                "abortions": "string?",
+                "age": 18,
+                "allergies": "string",
+                "bgl": "string?",
+                "bilirubin": "string?",
+                "blood": "string?",
+                "bp": "string",
+                "chiefComplaint": "string",
                 "date": "20180101",
-                "labsDone": false,
-                "urineTestDone": false,
+                "fasting": "bool?",
+                "glucose": "string?",
+                "hasInsurance": true,
+                "height": 100,
+                "history": "string",
+                "hr": 10,
+                "immunizations": "string",
+                "ketone": "string?",
+                "labsDone": "bool",
+                "lastUpdated": 100,
+                "leukocytes": "string?",
+                "liveBirths": "string?",
+                "location": "TJP",
+                "medications": "string",
+                "miscarriages": "string?",
+                "nitrites": "string?",
+                "o2": 10,
+                "patientKey": "firstname&father&mother&20000101",
+                "ph": "string?",
+                "pharmacySection": "string",
+                "pregnancies": "string?",
+                "pregnancyTest": "bool?",
+                "protein": "string?",
+                "regular": "bool?",
+                "rr": 10,
+                "specificGravity": "string?",
+                "status": "other",
+                "statusClarification": "doc",
+                "surgeries": "string",
+                "temp": 98,
+                "timeIn": "12:00",
+                "timeOut": "3:00 pm",
+                "triager": "person",
+                "urineTestDone": "bool",
+                "urobilirubin": "string?",
+                "weight": 75,
               }
             }
           />
-          <Text
-            accessible={true}
-            allowFontScaling={true}
-            ellipsizeMode="tail"
-            style={
-              Object {
-                "color": "red",
-                "margin": 10,
-                "textAlign": "center",
-              }
-            }
-          >
-            
-          </Text>
           <Button
             onPress={[Function]}
             styles={
@@ -307,27 +337,11 @@ ShallowWrapper {
             }
             title="Update"
           />
-          <Text
-            accessible={true}
-            allowFontScaling={true}
-            ellipsizeMode="tail"
-            style={
-              Object {
-                "color": "green",
-                "margin": 10,
-                "textAlign": "center",
-              }
-            }
-          />
         </View>,
       ],
-      "contentContainerStyle": Object {
-        "alignItems": "center",
-        "backgroundColor": "#F5FCFF",
-        "flex": 0,
-        "justifyContent": "center",
-        "padding": 20,
-      },
+      "errorMsg": null,
+      "loading": false,
+      "successMsg": null,
     },
     "ref": null,
     "rendered": Array [
@@ -584,26 +598,56 @@ ShallowWrapper {
               type={[Function]}
               value={
                 Object {
+                  "LMP": "string?",
+                  "a1c": "string?",
+                  "abortions": "string?",
+                  "age": 18,
+                  "allergies": "string",
+                  "bgl": "string?",
+                  "bilirubin": "string?",
+                  "blood": "string?",
+                  "bp": "string",
+                  "chiefComplaint": "string",
                   "date": "20180101",
-                  "labsDone": false,
-                  "urineTestDone": false,
+                  "fasting": "bool?",
+                  "glucose": "string?",
+                  "hasInsurance": true,
+                  "height": 100,
+                  "history": "string",
+                  "hr": 10,
+                  "immunizations": "string",
+                  "ketone": "string?",
+                  "labsDone": "bool",
+                  "lastUpdated": 100,
+                  "leukocytes": "string?",
+                  "liveBirths": "string?",
+                  "location": "TJP",
+                  "medications": "string",
+                  "miscarriages": "string?",
+                  "nitrites": "string?",
+                  "o2": 10,
+                  "patientKey": "firstname&father&mother&20000101",
+                  "ph": "string?",
+                  "pharmacySection": "string",
+                  "pregnancies": "string?",
+                  "pregnancyTest": "bool?",
+                  "protein": "string?",
+                  "regular": "bool?",
+                  "rr": 10,
+                  "specificGravity": "string?",
+                  "status": "other",
+                  "statusClarification": "doc",
+                  "surgeries": "string",
+                  "temp": 98,
+                  "timeIn": "12:00",
+                  "timeOut": "3:00 pm",
+                  "triager": "person",
+                  "urineTestDone": "bool",
+                  "urobilirubin": "string?",
+                  "weight": 75,
                 }
               }
             />,
-            <Text
-              accessible={true}
-              allowFontScaling={true}
-              ellipsizeMode="tail"
-              style={
-                Object {
-                  "color": "red",
-                  "margin": 10,
-                  "textAlign": "center",
-                }
-              }
-            >
-              
-            </Text>,
             <Button
               onPress={[Function]}
               styles={
@@ -621,18 +665,6 @@ ShallowWrapper {
                 }
               }
               title="Update"
-            />,
-            <Text
-              accessible={true}
-              allowFontScaling={true}
-              ellipsizeMode="tail"
-              style={
-                Object {
-                  "color": "green",
-                  "margin": 10,
-                  "textAlign": "center",
-                }
-              }
             />,
           ],
           "style": Object {
@@ -864,32 +896,57 @@ ShallowWrapper {
               },
               "type": [Function],
               "value": Object {
+                "LMP": "string?",
+                "a1c": "string?",
+                "abortions": "string?",
+                "age": 18,
+                "allergies": "string",
+                "bgl": "string?",
+                "bilirubin": "string?",
+                "blood": "string?",
+                "bp": "string",
+                "chiefComplaint": "string",
                 "date": "20180101",
-                "labsDone": false,
-                "urineTestDone": false,
+                "fasting": "bool?",
+                "glucose": "string?",
+                "hasInsurance": true,
+                "height": 100,
+                "history": "string",
+                "hr": 10,
+                "immunizations": "string",
+                "ketone": "string?",
+                "labsDone": "bool",
+                "lastUpdated": 100,
+                "leukocytes": "string?",
+                "liveBirths": "string?",
+                "location": "TJP",
+                "medications": "string",
+                "miscarriages": "string?",
+                "nitrites": "string?",
+                "o2": 10,
+                "patientKey": "firstname&father&mother&20000101",
+                "ph": "string?",
+                "pharmacySection": "string",
+                "pregnancies": "string?",
+                "pregnancyTest": "bool?",
+                "protein": "string?",
+                "regular": "bool?",
+                "rr": 10,
+                "specificGravity": "string?",
+                "status": "other",
+                "statusClarification": "doc",
+                "surgeries": "string",
+                "temp": 98,
+                "timeIn": "12:00",
+                "timeOut": "3:00 pm",
+                "triager": "person",
+                "urineTestDone": "bool",
+                "urobilirubin": "string?",
+                "weight": 75,
               },
             },
             "ref": "form",
             "rendered": null,
-            "type": [Function],
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "class",
-            "props": Object {
-              "accessible": true,
-              "allowFontScaling": true,
-              "children": "",
-              "ellipsizeMode": "tail",
-              "style": Object {
-                "color": "red",
-                "margin": 10,
-                "textAlign": "center",
-              },
-            },
-            "ref": null,
-            "rendered": "",
             "type": [Function],
           },
           Object {
@@ -917,25 +974,6 @@ ShallowWrapper {
                 "margin": 4,
               },
               "title": "Update",
-            },
-            "ref": null,
-            "rendered": null,
-            "type": [Function],
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "class",
-            "props": Object {
-              "accessible": true,
-              "allowFontScaling": true,
-              "children": undefined,
-              "ellipsizeMode": "tail",
-              "style": Object {
-                "color": "green",
-                "margin": 10,
-                "textAlign": "center",
-              },
             },
             "ref": null,
             "rendered": null,
@@ -1203,26 +1241,56 @@ ShallowWrapper {
               type={[Function]}
               value={
                 Object {
+                  "LMP": "string?",
+                  "a1c": "string?",
+                  "abortions": "string?",
+                  "age": 18,
+                  "allergies": "string",
+                  "bgl": "string?",
+                  "bilirubin": "string?",
+                  "blood": "string?",
+                  "bp": "string",
+                  "chiefComplaint": "string",
                   "date": "20180101",
-                  "labsDone": false,
-                  "urineTestDone": false,
+                  "fasting": "bool?",
+                  "glucose": "string?",
+                  "hasInsurance": true,
+                  "height": 100,
+                  "history": "string",
+                  "hr": 10,
+                  "immunizations": "string",
+                  "ketone": "string?",
+                  "labsDone": "bool",
+                  "lastUpdated": 100,
+                  "leukocytes": "string?",
+                  "liveBirths": "string?",
+                  "location": "TJP",
+                  "medications": "string",
+                  "miscarriages": "string?",
+                  "nitrites": "string?",
+                  "o2": 10,
+                  "patientKey": "firstname&father&mother&20000101",
+                  "ph": "string?",
+                  "pharmacySection": "string",
+                  "pregnancies": "string?",
+                  "pregnancyTest": "bool?",
+                  "protein": "string?",
+                  "regular": "bool?",
+                  "rr": 10,
+                  "specificGravity": "string?",
+                  "status": "other",
+                  "statusClarification": "doc",
+                  "surgeries": "string",
+                  "temp": 98,
+                  "timeIn": "12:00",
+                  "timeOut": "3:00 pm",
+                  "triager": "person",
+                  "urineTestDone": "bool",
+                  "urobilirubin": "string?",
+                  "weight": 75,
                 }
               }
             />
-            <Text
-              accessible={true}
-              allowFontScaling={true}
-              ellipsizeMode="tail"
-              style={
-                Object {
-                  "color": "red",
-                  "margin": 10,
-                  "textAlign": "center",
-                }
-              }
-            >
-              
-            </Text>
             <Button
               onPress={[Function]}
               styles={
@@ -1241,27 +1309,11 @@ ShallowWrapper {
               }
               title="Update"
             />
-            <Text
-              accessible={true}
-              allowFontScaling={true}
-              ellipsizeMode="tail"
-              style={
-                Object {
-                  "color": "green",
-                  "margin": 10,
-                  "textAlign": "center",
-                }
-              }
-            />
           </View>,
         ],
-        "contentContainerStyle": Object {
-          "alignItems": "center",
-          "backgroundColor": "#F5FCFF",
-          "flex": 0,
-          "justifyContent": "center",
-          "padding": 20,
-        },
+        "errorMsg": null,
+        "loading": false,
+        "successMsg": null,
       },
       "ref": null,
       "rendered": Array [
@@ -1518,26 +1570,56 @@ ShallowWrapper {
                 type={[Function]}
                 value={
                   Object {
+                    "LMP": "string?",
+                    "a1c": "string?",
+                    "abortions": "string?",
+                    "age": 18,
+                    "allergies": "string",
+                    "bgl": "string?",
+                    "bilirubin": "string?",
+                    "blood": "string?",
+                    "bp": "string",
+                    "chiefComplaint": "string",
                     "date": "20180101",
-                    "labsDone": false,
-                    "urineTestDone": false,
+                    "fasting": "bool?",
+                    "glucose": "string?",
+                    "hasInsurance": true,
+                    "height": 100,
+                    "history": "string",
+                    "hr": 10,
+                    "immunizations": "string",
+                    "ketone": "string?",
+                    "labsDone": "bool",
+                    "lastUpdated": 100,
+                    "leukocytes": "string?",
+                    "liveBirths": "string?",
+                    "location": "TJP",
+                    "medications": "string",
+                    "miscarriages": "string?",
+                    "nitrites": "string?",
+                    "o2": 10,
+                    "patientKey": "firstname&father&mother&20000101",
+                    "ph": "string?",
+                    "pharmacySection": "string",
+                    "pregnancies": "string?",
+                    "pregnancyTest": "bool?",
+                    "protein": "string?",
+                    "regular": "bool?",
+                    "rr": 10,
+                    "specificGravity": "string?",
+                    "status": "other",
+                    "statusClarification": "doc",
+                    "surgeries": "string",
+                    "temp": 98,
+                    "timeIn": "12:00",
+                    "timeOut": "3:00 pm",
+                    "triager": "person",
+                    "urineTestDone": "bool",
+                    "urobilirubin": "string?",
+                    "weight": 75,
                   }
                 }
               />,
-              <Text
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-                style={
-                  Object {
-                    "color": "red",
-                    "margin": 10,
-                    "textAlign": "center",
-                  }
-                }
-              >
-                
-              </Text>,
               <Button
                 onPress={[Function]}
                 styles={
@@ -1555,18 +1637,6 @@ ShallowWrapper {
                   }
                 }
                 title="Update"
-              />,
-              <Text
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-                style={
-                  Object {
-                    "color": "green",
-                    "margin": 10,
-                    "textAlign": "center",
-                  }
-                }
               />,
             ],
             "style": Object {
@@ -1798,32 +1868,57 @@ ShallowWrapper {
                 },
                 "type": [Function],
                 "value": Object {
+                  "LMP": "string?",
+                  "a1c": "string?",
+                  "abortions": "string?",
+                  "age": 18,
+                  "allergies": "string",
+                  "bgl": "string?",
+                  "bilirubin": "string?",
+                  "blood": "string?",
+                  "bp": "string",
+                  "chiefComplaint": "string",
                   "date": "20180101",
-                  "labsDone": false,
-                  "urineTestDone": false,
+                  "fasting": "bool?",
+                  "glucose": "string?",
+                  "hasInsurance": true,
+                  "height": 100,
+                  "history": "string",
+                  "hr": 10,
+                  "immunizations": "string",
+                  "ketone": "string?",
+                  "labsDone": "bool",
+                  "lastUpdated": 100,
+                  "leukocytes": "string?",
+                  "liveBirths": "string?",
+                  "location": "TJP",
+                  "medications": "string",
+                  "miscarriages": "string?",
+                  "nitrites": "string?",
+                  "o2": 10,
+                  "patientKey": "firstname&father&mother&20000101",
+                  "ph": "string?",
+                  "pharmacySection": "string",
+                  "pregnancies": "string?",
+                  "pregnancyTest": "bool?",
+                  "protein": "string?",
+                  "regular": "bool?",
+                  "rr": 10,
+                  "specificGravity": "string?",
+                  "status": "other",
+                  "statusClarification": "doc",
+                  "surgeries": "string",
+                  "temp": 98,
+                  "timeIn": "12:00",
+                  "timeOut": "3:00 pm",
+                  "triager": "person",
+                  "urineTestDone": "bool",
+                  "urobilirubin": "string?",
+                  "weight": 75,
                 },
               },
               "ref": "form",
               "rendered": null,
-              "type": [Function],
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "class",
-              "props": Object {
-                "accessible": true,
-                "allowFontScaling": true,
-                "children": "",
-                "ellipsizeMode": "tail",
-                "style": Object {
-                  "color": "red",
-                  "margin": 10,
-                  "textAlign": "center",
-                },
-              },
-              "ref": null,
-              "rendered": "",
               "type": [Function],
             },
             Object {
@@ -1851,25 +1946,6 @@ ShallowWrapper {
                   "margin": 4,
                 },
                 "title": "Update",
-              },
-              "ref": null,
-              "rendered": null,
-              "type": [Function],
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "class",
-              "props": Object {
-                "accessible": true,
-                "allowFontScaling": true,
-                "children": undefined,
-                "ellipsizeMode": "tail",
-                "style": Object {
-                  "color": "green",
-                  "margin": 10,
-                  "textAlign": "center",
-                },
               },
               "ref": null,
               "rendered": null,

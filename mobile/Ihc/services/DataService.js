@@ -1,14 +1,21 @@
-/* global global */
-// Returns either FakeData or RealData depending on config file
+/* global */
+// Returns either fakeLocalData or RealData depending on config file
 // Config file:
-//   "dataService" : "FakeDataService" | "RealDataService"
-import * as fakeData from '../services/FakeDataService';
-import * as realData from '../services/RealDataService';
+// "FakeDataServices": "true" or "false"
+import * as fakeLocalData from '../services/FakeLocalDataService';
+import * as localDataService from '../services/LocalDataService';
+
+import * as fakeServerData from '../services/FakeServerDataService';
+import * as serverDataService from '../services/ServerDataService';
+
 import config from '../config.json';
 
-// Tests should use the FakeDataService to avoid complexity with Realm in the
-// tests. Probably better to stub out FakeDataService method calls instead of
-// rely on the FakeDataService though.
-// console.log("Global test variable should be true: " + global.__TEST__);
-let dataService = (config.dataService === 'FakeDataService' || global.__TEST__) ? fakeData : realData;
-export default dataService;
+// Dont use the Fakes in tests, so that we can test the LocalDataService itself,
+// but should stub out its methods for the other tests
+let localData = (config.fakeDataServices === 'true') ? fakeLocalData : localDataService;
+let serverData = (config.fakeDataServices === 'true') ? fakeServerData : serverDataService;
+/*
+let localData = (config.fakeDataServices === 'true' || global.__TEST__) ? fakeLocalData : localDataService;
+let serverData = (config.fakeDataServices === 'true' || global.__TEST__) ? fakeServerData : serverDataService;
+*/
+export {localData, serverData};

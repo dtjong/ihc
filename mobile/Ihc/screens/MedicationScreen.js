@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import {
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
-import data from '../services/DataService';
+import {localData} from '../services/DataService';
 import MedicationTable  from '../components/MedicationTable';
+import Container from '../components/Container';
 import {stringDate} from '../util/Date';
 
 export default class MedicationScreen extends Component<{}> {
@@ -23,7 +25,7 @@ export default class MedicationScreen extends Component<{}> {
       updates: [],
       dateToUpdates: {},
       drugNames: new Set(),
-      error: null
+      errorMsg: null
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -40,14 +42,13 @@ export default class MedicationScreen extends Component<{}> {
     const newUpdate = Object.assign({}, prevDrugUpdate);
     newUpdate.date = date;
 
-    data.createDrugUpdate(newUpdate)
-      .then( () => {
-        this.loadMedications();
-        this.setState({error: null});
-      })
-      .catch( (e) => {
-        this.setState({error: e.message});
-      });
+    try {
+      localData.createDrugUpdate(newUpdate);
+      this.loadMedications();
+      this.setState({errorMsg: null});
+    } catch(e) {
+      this.setState({errorMsg: e.message});
+    }
   }
 
   changeMedication = (prevDrugUpdate) => {
@@ -61,10 +62,6 @@ export default class MedicationScreen extends Component<{}> {
         name: this.props.name
       }
     });
-  }
-
-  // TODO
-  discontinueMedication = () => {
   }
 
   createNewMedication = () => {
@@ -81,27 +78,22 @@ export default class MedicationScreen extends Component<{}> {
 
   loadMedications = () => {
     this.setState({ loading: true });
-    data.getMedicationUpdates(this.props.patientKey)
-      .then( updates => {
-        const dateToUpdates = {};
-        const drugNames = new Set();
+    const updates = localData.getMedicationUpdates(this.props.patientKey);
+    const dateToUpdates = {};
+    const drugNames = new Set();
 
-        updates.forEach( (update) => {
-          if(update.date in dateToUpdates) {
-            dateToUpdates[update.date].push(update);
-          } else{
-            dateToUpdates[update.date] = [update];
-          }
+    updates.forEach( (update) => {
+      if(update.date in dateToUpdates) {
+        dateToUpdates[update.date].push(update);
+      } else{
+        dateToUpdates[update.date] = [update];
+      }
 
-          drugNames.add(update.name);
-        });
+      drugNames.add(update.name);
+    });
 
-        this.setState({updates: updates, dateToUpdates: dateToUpdates,
-          drugNames: drugNames, loading: false});
-      })
-      .catch(err => {
-        this.setState({ error: err.message, loading: false });
-      });
+    this.setState({updates: updates, dateToUpdates: dateToUpdates,
+      drugNames: drugNames, loading: false});
   }
 
   componentDidMount() {
@@ -109,52 +101,33 @@ export default class MedicationScreen extends Component<{}> {
   }
 
   completed = () => {
-    data.updateStatus(this.props.patientKey, stringDate(new Date()),
-      'pharmacyCompleted', new Date().getTime())
-      .then( () => {
-        this.setState({
-          successMsg: 'Pharmacy marked as completed',
-          error: null
-        });
-      })
-      .catch( () => {
-        this.setState({error: 'No status exists for today. Should not need to' +
-          'mark as completed.', successMsg: null});
+    try {
+      localData.updateStatus(this.props.patientKey, stringDate(new Date()),
+        'pharmacyCompleted', new Date().getTime());
+      this.setState({
+        successMsg: 'Pharmacy marked as completed',
+        errorMsg: null
       });
+    } catch(e) {
+      this.setState({errorMsg: e.message, successMsg: null});
+    }
   }
 
   render() {
-    if(this.props.loading) {
-      return (
-        <View style={styles.container}>
-          <Text style={styles.title}>
-            {this.props.name}'s Medications
-          </Text>
-
-          <Text>Loading</Text>
-
-          <View style={styles.footer}>
-            <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={this.createNewMedication}>
-              <Text style={styles.button}>New Medication</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      );
-    }
-
     return (
-      <View style={styles.container}>
+      <Container loading={this.state.loading}
+        errorMsg={this.state.errorMsg}
+        successMsg={this.state.successMsg} >
+
         <View style={styles.headerContainer}>
           <Text style={styles.title}>
             {this.props.name}'s Medications
           </Text>
 
-          <Text>R: Refill, C: Change, D: Discontinue</Text>
+          <Text>R: Refill, C: Change</Text>
         </View>
 
-        <View style={styles.tableContainer}>
+        <ScrollView contentContainerStyle={styles.tableContainer} horizontal>
           <MedicationTable style={styles.table}
             refill={this.refillMedication}
             change={this.changeMedication}
@@ -163,56 +136,37 @@ export default class MedicationScreen extends Component<{}> {
             dateToUpdates={this.state.dateToUpdates}
             drugNames={this.state.drugNames}
           />
-        </View>
+        </ScrollView>
 
         <View style={styles.footerContainer}>
-          <View style={styles.footer}>
-            <Text style={styles.success}>
-              {this.state.successMsg}
-            </Text>
-            <Text style={styles.error}>
-              {this.state.error}
-            </Text>
-            <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={this.createNewMedication}>
-              <Text style={styles.button}>New Medication</Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={this.createNewMedication}>
+            <Text style={styles.button}>New Medication</Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={this.completed}>
-              <Text style={styles.button}>Completed</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={this.completed}>
+            <Text style={styles.button}>Completed</Text>
+          </TouchableOpacity>
         </View>
-      </View>
+      </Container>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
   headerContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
     fontSize: 20,
     textAlign: 'center',
-    margin: 4,
-    top: 10, // I don't like this but otherwise title doesn't show
   },
   tableContainer: {
-    maxHeight: '70%',
-    maxWidth: '95%',
-    padding: 0,
+    flex: 0,
   },
   buttonContainer: {
     width: 120,
@@ -228,23 +182,10 @@ const styles = StyleSheet.create({
     color: '#fefefe',
     textAlign: 'center',
   },
-  footer: {
+  footerContainer: {
     flex: 1,
     flexDirection: 'row',
-    margin: 0
-  },
-  footerContainer: {
-    margin: 0,
-    height: 60,
-  },
-  success: {
-    textAlign: 'center',
-    color: 'green',
-    margin: 0,
-  },
-  error: {
-    textAlign: 'center',
-    color: 'red',
-    margin: 0,
+    height: 40,
+    margin: 4,
   },
 });

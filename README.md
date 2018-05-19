@@ -416,6 +416,23 @@ router.get('/patient/:key/soap/:date', PatientController.GetSoap);
 
 Use Realm as the mobile database
 
+When Updating/Creating objects, we need to add changes to both the mobile and
+server sides.
+
+
+Possible situations:
+1. Mobile update fails:
+  Display error
+  Don't send to server so that we can fix error locally first
+
+2. Mobile update succeeds, Server update fails:
+  Mark patient as needToUpload (to the server)
+  Display error telling user to UploadUpdates
+
+3. Mobile update succeeds, Server update succeeds:
+  Display success message
+
+
 Handling LOCAL STORAGE as backup:
 If router goes out...
 

@@ -66,6 +66,8 @@ export default class Patient {
     patient.birthday = stringDate(form.birthday);
     patient.key = Patient.makeKey(patient);
     patient.needToUpload = false;
+    patient.lastUpdated = new Date().getTime();
+
     if(form.newPatient) {
       // 1 is male, 2 is female
       patient.gender = form.gender === 'Male' ? 1 : 2;
@@ -104,6 +106,6 @@ Patient.schema = {
     triages: 'Triage[]',
     statuses: 'Status[]',
     lastUpdated: 'int', // timestamp
-    needToUpload: 'bool'
+    needToUpload: 'bool?'
   }
 };

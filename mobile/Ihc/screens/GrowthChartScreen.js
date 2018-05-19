@@ -1,12 +1,12 @@
-import data from '../services/DataService';
+import {localData} from '../services/DataService';
 import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
-  ScrollView,
   View
 } from 'react-native';
 import ScatterPlot from '../components/ScatterPlot';
+import Container from '../components/Container';
 const boysWeightData = require('../growthchartdata/boys_weights.json');
 const girlsWeightData = require('../growthchartdata/girls_weights.json');
 const boysHeightData = require('../growthchartdata/boys_heights.json');
@@ -14,7 +14,6 @@ const girlsHeightData = require('../growthchartdata/girls_heights.json');
 
 const PLOT_HEIGHT = 400;
 const PLOT_WIDTH = 400;
-const PLOTS_HEIGHT = PLOT_HEIGHT * 2 + 150;
 
 export default class GrowthChartScreen extends Component<{}> {
   /*
@@ -44,26 +43,28 @@ export default class GrowthChartScreen extends Component<{}> {
 
   loadPatient = () => {
     this.setState({ loading: true });
-    data.getPatient(this.props.patientKey)
-      .then( patient => {
-        let weightData, heightData;
-        if (patient.isMale) {
-          weightData = this.extractData(boysWeightData);
-          heightData = this.extractData(boysHeightData);
-        } else {
-          weightData = this.extractData(girlsWeightData);
-          heightData = this.extractData(girlsHeightData);
-        }
-        
-        const growthChartData = patient.growthChartData;
-        weightData.push({ color: 'black', unit: '%', values: growthChartData.weights});
-        heightData.push({ color: 'black', unit: '%', values: growthChartData.heights});
-        this.setState({patient: patient, weightData: weightData, heightData: heightData,
-          error: null, loading: false});
-      })
-      .catch(err => {
-        this.setState({ error: err.message, loading: false });
-      });
+    let patient = {};
+    try {
+      patient = localData.getPatient(this.props.patientKey);
+    } catch(err) {
+      this.setState({ error: err.message, loading: false });
+      return;
+    }
+
+    let weightData, heightData;
+    if (patient.isMale) {
+      weightData = this.extractData(boysWeightData);
+      heightData = this.extractData(boysHeightData);
+    } else {
+      weightData = this.extractData(girlsWeightData);
+      heightData = this.extractData(girlsHeightData);
+    }
+    
+    const growthChartData = patient.growthChartData;
+    weightData.push({ color: 'black', unit: '%', values: growthChartData.weights});
+    heightData.push({ color: 'black', unit: '%', values: growthChartData.heights});
+    this.setState({patient: patient, weightData: weightData, heightData: heightData,
+      error: null, loading: false});
   }
 
   componentDidMount() {
@@ -73,11 +74,10 @@ export default class GrowthChartScreen extends Component<{}> {
   render() {
     if (!this.state.patient) {
       return (
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Container errorMsg={this.state.error} >
           <Text style={styles.title}>Growth Chart</Text>
           <Text>No patient exists</Text>
-          <Text style={styles.error}>{this.state.error}</Text>
-        </ScrollView>
+        </Container>
       );
     }
 
@@ -90,9 +90,8 @@ export default class GrowthChartScreen extends Component<{}> {
 
     return (
       // TODO: Label the grid lines
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <Container errorMsg={this.state.error} >
         <Text style={styles.title}>Growth Chart</Text>
-        <Text style={styles.error}>{this.state.error}</Text>
 
         <View style={styles.plotsContainer}>
           <View style={styles.plotContainer}>
@@ -128,7 +127,7 @@ export default class GrowthChartScreen extends Component<{}> {
           </View>
 
         </View>
-      </ScrollView>
+      </Container>
     );
   }
 }
@@ -136,7 +135,6 @@ export default class GrowthChartScreen extends Component<{}> {
 const styles = StyleSheet.create({
   plotsContainer: {
     flex: 1,
-    top: 50,
     margin: 8,
   },
   plotContainer: {
@@ -145,23 +143,9 @@ const styles = StyleSheet.create({
     padding: 8,
     backgroundColor: '#ededed'
   },
-  scrollContainer: {
-    minHeight: PLOTS_HEIGHT,
-    flex: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
   title: {
     fontSize: 20,
     textAlign: 'center',
-    margin: 10,
-    position: 'absolute',
-    top: 4
-  },
-  error: {
-    textAlign: 'center',
-    color: 'red',
     margin: 10,
   },
 });
