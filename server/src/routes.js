@@ -21,6 +21,7 @@ router.get('/patients/:lastUpdated', PatientController.GetPatients);
 router.post('/patient', PatientController.CreatePatient);
 // router.delete('/patient/:key', PatientController.DeletePatient);
 
+//COMPLETE
 //updates patient's personal info
 //everything except doctors assessment, ie: name, phone number, age
 router.put('/patient/:key', PatientController.UpdatePatient);
