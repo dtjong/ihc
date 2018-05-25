@@ -3,13 +3,13 @@ import {
   StyleSheet,
   Button,
   Text,
-  ScrollView,
   View
 } from 'react-native';
 var t = require('tcomb-form-native');
 var Form = t.form.Form;
-import data from '../services/DataService';
+import {localData} from '../services/DataService';
 import DrugUpdate from '../models/DrugUpdate';
+import Container from '../components/Container';
 
 export default class MedicationUpdateScreen extends Component<{}> {
   /*
@@ -22,7 +22,7 @@ export default class MedicationUpdateScreen extends Component<{}> {
     super(props);
     this.state = {
       formValues: this.props.drugUpdate,
-      error: '',
+      errorMsg: null,
     };
   }
 
@@ -54,19 +54,17 @@ export default class MedicationUpdateScreen extends Component<{}> {
 
     const update = DrugUpdate.extractFromForm(form, this.props.patientKey);
 
-    data.createDrugUpdate(update)
-      .then( () => {
-        // Go back to previous page
-        this.props.navigator.pop();
-      })
-      .catch( (e) => {
-        this.setState({error: e.message});
-      });
+    try {
+      localData.createDrugUpdate(update);
+      this.props.navigator.pop();
+    } catch(e) {
+      this.setState({errorMsg: e.message});
+    }
   }
 
   render() {
     return (
-      <ScrollView contentContainerStyle={styles.container}>
+      <Container errorMsg={this.state.errorMsg} >
         <Text style={styles.title}>
           {this.props.action === 'new' ? 'New Medication' : 'Update Medication'}
         </Text>
@@ -77,14 +75,10 @@ export default class MedicationUpdateScreen extends Component<{}> {
             options={this.formOptions}
           />
 
-          <Text style={styles.error}>
-            {this.state.error}
-          </Text>
-
           <Button onPress={this.submit}
             title="Submit" />
         </View>
-      </ScrollView>
+      </Container>
     );
   }
 }
@@ -92,18 +86,6 @@ export default class MedicationUpdateScreen extends Component<{}> {
 const styles = StyleSheet.create({
   form: {
     width: 400,
-  },
-  container: {
-    flex: 0,
-    padding: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  error: {
-    textAlign: 'center',
-    color: 'red',
-    margin: 10,
   },
   title: {
     fontSize: 20,

@@ -2,24 +2,40 @@
 // This file should hold skeletons for the function calls from RealDataService.
 // Implementation is not required because they should be stubbed out during
 // tests
+export function createPatient(patient) {
+}
+
+export function signinPatient(patientForm) {
+}
+
+export function updateStatus(patientKey, strDate, field, value) {
+}
+
+export function createDrugUpdate(update) {
+}
+
+export function updateSoap(update) {
+}
+
+export function getSoap(patientKey, strDate) {
+}
+
+export function updateTriage(update) {
+}
+
+export function getTriage(patientKey, strDate) {
+}
+
 export function getPatient(patientKey) {
-  return {};
 }
 
-export function getTriage(patientKey, date) {
-  return {};
+export function getPatientsToUpload() {
 }
 
-export function getSoap(patientKey, date) {
-  return {};
+export function lastSynced() {
 }
 
-export function getPatients(param) {
-  return []; // Return whatever sample data you want
-}
-
-export function getUpdates(param) {
-  return []; // Return whatever sample data you want
+export function handleDownloadedPatients(patients) {
 }
 
 /*

@@ -3,15 +3,15 @@ import {
   StyleSheet,
   Button,
   Text,
-  ScrollView,
   View
 } from 'react-native';
 var t = require('tcomb-form-native');
 var Form = t.form.Form;
 
-import data from '../services/DataService';
+import {localData} from '../services/DataService';
 import Soap from '../models/Soap';
 import {stringDate} from '../util/Date';
+import Container from '../components/Container';
 
 export default class SoapScreen extends Component<{}> {
   /*
@@ -26,8 +26,10 @@ export default class SoapScreen extends Component<{}> {
     const todayDate = this.props.todayDate || stringDate(new Date());
     this.state = {
       formValues: {date: todayDate},
-      error: '',
+      errorMsg: null,
       todayDate: todayDate,
+      successMsg: null,
+      loading: false
     };
   }
 
@@ -68,63 +70,46 @@ export default class SoapScreen extends Component<{}> {
   // Load existing SOAP info if it exists
   loadFormValues = () => {
     this.setState({ loading: true });
-    data.getSoap(this.props.patientKey, this.state.todayDate)
-      .then( soap => {
-        if (!soap) {
-          this.setState({loading: false});
-          return;
-        }
+    const soap = localData.getSoap(this.props.patientKey, this.state.todayDate);
+    if (!soap) {
+      this.setState({loading: false});
+      return;
+    }
 
-        this.setState({
-          formValues: soap,
-          loading: false
-        });
-      })
-      .catch(err => {
-        this.setState({ error: err.message, loading: false });
-      });
+    this.setState({
+      formValues: soap,
+      loading: false
+    });
   }
 
   componentDidMount() {
     this.loadFormValues();
   }
 
-  completed = () => {
-    data.updateStatus(this.props.patientKey, this.state.todayDate,
-      'doctorCompleted', new Date().getTime())
-      .then( () => {
-        this.setState({
-          successMsg: 'Soap marked as completed, but not yet submitted',
-          error: null
-        });
-      })
-      .catch( (e) => {
-        this.setState({error: e.message, successMsg: null});
-      });
-  }
-
   submit = () => {
     if(!this.refs.form.validate().isValid()) {
       return;
     }
-    this.setState({successMsg: 'Loading...'});
+    this.setState({loading: true});
     const form = this.refs.form.getValue();
     const soap = Soap.extractFromForm(form, this.props.patientKey);
 
-    data.updateSoap(soap)
-      .then( () => {
-        this.setState({
-          successMsg: 'SOAP updated successfully',
-          error: null
-        });
-      })
-      .catch( (e) => {
-        this.setState({error: e.message, successMsg: null});
-      });
+    try {
+      localData.updateSoap(soap);
+    } catch(e) {
+      this.setState({errorMsg: e.message, successMsg: null});
+      return;
+    }
+
+    // TODO: Submit on server too
+
+    this.setState({
+      successMsg: 'SOAP updated successfully',
+      errorMsg: null,
+      loading: false
+    });
   }
 
-  // Need this to update formValues so that after clicking completed button,
-  // form doesn't reset... IDK why :(
   onFormChange = (value) => {
     this.setState({
       formValues: value,
@@ -133,7 +118,9 @@ export default class SoapScreen extends Component<{}> {
 
   render() {
     return (
-      <ScrollView contentContainerStyle={styles.container}>
+      <Container loading={this.state.loading} errorMsg={this.state.errorMsg} 
+        successMsg={this.state.successMsg}>
+
         <Text style={styles.title}>
           Soap
         </Text>
@@ -146,23 +133,11 @@ export default class SoapScreen extends Component<{}> {
             onChange={this.onFormChange}
           />
 
-          <Text style={styles.error}>
-            {this.state.error}
-          </Text>
-
-          <Button onPress={this.completed}
-            styles={styles.button}
-            title="Soap completed" />
-
           <Button onPress={this.submit}
             styles={styles.button}
             title="Update" />
-
-          <Text style={styles.success}>
-            {this.state.successMsg}
-          </Text>
         </View>
-      </ScrollView>
+      </Container>
     );
   }
 }
@@ -170,23 +145,6 @@ export default class SoapScreen extends Component<{}> {
 const styles = StyleSheet.create({
   form: {
     width: '80%',
-  },
-  container: {
-    flex: 0,
-    padding: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  success: {
-    textAlign: 'center',
-    color: 'green',
-    margin: 10,
-  },
-  error: {
-    textAlign: 'center',
-    color: 'red',
-    margin: 10,
   },
   title: {
     fontSize: 20,

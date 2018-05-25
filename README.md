@@ -62,6 +62,9 @@ https://app.moqups.com/mattchinn/ix0mjskH6z/view
 
 2. Run ```react-native run-android``` inside IHC/mobile/Ihc directory
 
+3. To connect to the Express server, must change the fetchUrl field within
+   mobile/ihc/config.json to your computer's IP address
+
 ##### Run react native tests:
 1. Run ```npm test``` inside IHC/mobile/Ihc
 
@@ -415,6 +418,23 @@ router.get('/patient/:key/soap/:date', PatientController.GetSoap);
 ### Local Storage:
 
 Use Realm as the mobile database
+
+When Updating/Creating objects, we need to add changes to both the mobile and
+server sides.
+
+
+Possible situations:
+1. Mobile update fails:
+  Display error
+  Don't send to server so that we can fix error locally first
+
+2. Mobile update succeeds, Server update fails:
+  Mark patient as needToUpload (to the server)
+  Display error telling user to UploadUpdates
+
+3. Mobile update succeeds, Server update succeeds:
+  Display success message
+
 
 Handling LOCAL STORAGE as backup:
 If router goes out...

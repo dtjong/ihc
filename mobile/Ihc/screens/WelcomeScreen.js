@@ -3,14 +3,14 @@ import {
   StyleSheet,
   Button,
   Text,
-  View
 } from 'react-native';
-import data from '../services/DataService';
+import {localData, serverData} from '../services/DataService';
+import Container from '../components/Container';
 
 export default class WelcomeScreen extends Component<{}> {
   constructor(props) {
     super(props);
-    this.state = {loading: false, error: null};
+    this.state = {loading: false, errorMsg: null, successMsg: null};
   }
 
   goToSignin = () => {
@@ -29,37 +29,36 @@ export default class WelcomeScreen extends Component<{}> {
 
   upload = () => {
     this.setState({loading: true});
-    data.uploadUpdates()
+    const patients = localData.getPatientsToUpload();
+    serverData.updatePatients(patients)
       .then(() => {
-        this.setState({loading: false});
+        localData.markPatientsUploaded();
+        this.setState({successMsg: 'Uploaded successfully', errorMsg: null, loading: false});
       })
       .catch(err => {
-        this.setState({error: err.message, loading: false});
+        this.setState({errorMsg: err.message, successMsg: null, loading: false});
       });
   }
 
   download = () => {
     this.setState({loading: true});
-    data.downloadUpdates()
-      .then(() => {
-        this.setState({loading: false});
+    const lastSynced = localData.lastSynced();
+
+    serverData.getUpdatedPatients(lastSynced)
+      .then((patients) => {
+        localData.handleDownloadedPatients(patients);
+        this.setState({successMsg: 'Downloaded successfully', errorMsg: null, loading: false});
       })
       .catch(err => {
-        this.setState({error: err.message, loading: false});
+        this.setState({errorMsg: err.message, successMsg: null, loading: false});
       });
   }
 
   render() {
-    if(this.state.loading) {
-      return (
-        <View style={styles.container}>
-          <Text>Loading...</Text>
-        </View>
-      );
-    }
-
     return (
-      <View style={styles.container}>
+      <Container loading={this.state.loading} 
+        successMsg={this.state.successMsg}
+        errorMsg={this.state.errorMsg} >
         <Text style={styles.welcome}>
           Welcome to clinic!
         </Text>
@@ -75,21 +74,15 @@ export default class WelcomeScreen extends Component<{}> {
         <Button onPress={this.download}
           title="Download updates"
         />
-      </View>
+      </Container>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
   welcome: {
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
-  }
+  },
 });
