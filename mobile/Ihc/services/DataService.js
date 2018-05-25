@@ -12,8 +12,8 @@ import config from '../config.json';
 
 // Dont use the Fakes in tests, so that we can test the LocalDataService itself,
 // but should stub out its methods for the other tests
-let localData = (config.fakeDataServices === 'true') ? fakeLocalData : localDataService;
-let serverData = (config.fakeDataServices === 'true') ? fakeServerData : serverDataService;
+let localData = (config.fakeLocalDataService === 'true') ? fakeLocalData : localDataService;
+let serverData = (config.fakeServerDataService === 'true') ? fakeServerData : serverDataService;
 /*
 let localData = (config.fakeDataServices === 'true' || global.__TEST__) ? fakeLocalData : localDataService;
 let serverData = (config.fakeDataServices === 'true' || global.__TEST__) ? fakeServerData : serverDataService;

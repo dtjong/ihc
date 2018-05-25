@@ -98,6 +98,7 @@ export function updateStatus(patientKey, strDate, field, value) {
     statusObj.lastUpdated = timestamp;
     patient.lastUpdated = timestamp;
   });
+  return statusObj;
 }
 
 export function createDrugUpdate(update) {
@@ -235,7 +236,13 @@ export function getPatientSelectRows() {
   return toReturn;
 }
 
-export function getPatientsToUpload() {
+// Parameter 'all' should be true if want to upload all patients
+// i.e. if the server has been cleared somehow, and want to upload this tablet's
+// patients
+export function getPatientsToUpload(all = false) {
+  if(all) {
+    return Object.values(realm.objects('Patient'));
+  }
   return Object.values(realm.objects('Patient').filtered('needToUpload = true'));
 }
 
@@ -247,7 +254,7 @@ export function lastSynced() {
 // When updates or creates fail to propogate to the server-side, then mark the
 // patient so they can be uploaded in the future
 export function markPatientNeedToUpload(patientKey) {
-  const patient = realm.objects('Patient').filtered(`key=${patientKey}`);
+  const patient = realm.objects('Patient').filtered(`key="${patientKey}"`);
   if(!patient) {
     throw new Error('Patient does not exist with key ' + patientKey);
   }

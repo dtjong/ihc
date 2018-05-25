@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import {localData} from '../services/DataService';
+import {localData, serverData} from '../services/DataService';
 import MedicationTable  from '../components/MedicationTable';
 import Container from '../components/Container';
 import {stringDate} from '../util/Date';
@@ -100,17 +100,48 @@ export default class MedicationScreen extends Component<{}> {
     this.loadMedications();
   }
 
-  completed = () => {
-    try {
-      localData.updateStatus(this.props.patientKey, stringDate(new Date()),
-        'pharmacyCompleted', new Date().getTime());
-      this.setState({
-        successMsg: 'Pharmacy marked as completed',
-        errorMsg: null
-      });
-    } catch(e) {
-      this.setState({errorMsg: e.message, successMsg: null});
+
+  // station: 'Doctor' or 'Pharmacy'
+  updateStatus(station) {
+    this.setState({loading: true});
+    let statusObj = {};
+    if(station != 'Doctor' && station != 'Pharmacy') {
+      throw new Error(`Received invalid station: ${station}`);
     }
+
+    const fieldName = station === 'Doctor' ? 'doctorCompleted' : 'pharmacyCompleted';
+    try {
+      statusObj = localData.updateStatus(this.props.patientKey, stringDate(new Date()),
+        fieldName, new Date().getTime());
+    } catch(e) {
+      this.setState({errorMsg: e.message, successMsg: null, loading: false});
+      return;
+    }
+
+    serverData.updateStatus(statusObj)
+      .then( () => {
+        this.setState({
+          successMsg: `${station} marked as completed`,
+          errorMsg: null,
+          loading: false
+        });
+      })
+      .catch( (e) => {
+        localData.markPatientNeedToUpload(this.props.patientKey);
+        this.setState({
+          successMsg: null,
+          errorMsg: `${e.message}. Try to UploadUpdates`,
+          loading: false
+        });
+      });
+  }
+
+  completed = () => {
+    this.updateStatus('Doctor');
+  }
+
+  filled = () => {
+    this.updateStatus('Pharmacy');
   }
 
   render() {
@@ -124,7 +155,7 @@ export default class MedicationScreen extends Component<{}> {
             {this.props.name}'s Medications
           </Text>
 
-          <Text>R: Refill, C: Change</Text>
+          <Text>R: Refill, D: Change Dose</Text>
         </View>
 
         <ScrollView contentContainerStyle={styles.tableContainer} horizontal>
@@ -148,7 +179,13 @@ export default class MedicationScreen extends Component<{}> {
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={this.completed}>
-            <Text style={styles.button}>Completed</Text>
+            <Text style={styles.button}>Completed Prescribing</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={this.filled}>
+            <Text style={styles.button}>Filled</Text>
           </TouchableOpacity>
         </View>
       </Container>

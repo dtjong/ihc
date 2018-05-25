@@ -39,7 +39,7 @@ describe('Test GetStatus routes', () => {
   test('should return status of patient if exists', () => {
     const patientStatus = { patientStatus: "status" };
 
-    mock = sinon.mock(StatusModel) 
+    mock = sinon.mock(StatusModel)
       .expects('findOne').withArgs({patientKey: 'keythatexists', date: 'datethatexists'})
       .yields(null, patientStatus);
 
@@ -58,7 +58,7 @@ describe('Test GetStatuses route', () => {
 
   test('should return statuses for the given date', () => {
     const status1 = { patientKey: 'patientKey', date: 'datetahtexists' };
-    mock = sinon.mock(StatusModel) 
+    mock = sinon.mock(StatusModel)
       .expects('find').withArgs({date: 'datethatexists'})
       .yields(null, [status1]);
 
@@ -104,6 +104,35 @@ describe('Test GetPatient routes', () => {
       .expect({status: false, error: 'Patient with key keythatdoesntexist doesn\'t exist'});
   });
 });
+
+describe('Test GetTriage Routes', () => {
+  let mock = null;
+  afterEach(()=>{
+    if(mock){
+      mock.restore();
+    }
+  });
+
+  test('Should return triage if exists', ()=>{
+    const triage = {name: 'Triage'};
+    mock = sinon.mock(TriageModel)
+      .expects('findOne').withArgs({patientKey: 'keythatexists', date: 'datethatexists'})
+      .yields(null, triage);
+
+    return request(app).get('/patient/keythatexists/triage/datethatexists')
+      .expect({status: true, triage: triage});
+  });
+
+  test('should return error if no triage exists', () => {
+    mock = sinon.mock(TriageModel)
+      .expects('findOne').withArgs({patientKey: 'keythatdoesntexist', date: 'datethatexists'})
+      .yields(new Error("Patient with key keythatdoesntexist doesn't exist or patient didn't come in on datethatexists"), null);
+
+    return request(app).get('/patient/keythatdoesntexist/triage/datethatexists')
+      .expect({status: false, error: "Patient with key keythatdoesntexist doesn't exist or patient didn't come in on datethatexists"});
+  });
+});
+
 
 //Alex
 //testing getPatients
@@ -627,7 +656,7 @@ describe('Test UpdateStatus routes', () => {
 
     const newStatus = Object.assign({}, oldStatus);
     newStatus.lastUpdated = oldStatus.lastUpdated - 1;
-    oldStatus.notes = 'new'; 
+    oldStatus.notes = 'new';
 
     const oldPatient = {
       key: "First&Last&20110101",
@@ -648,5 +677,280 @@ describe('Test UpdateStatus routes', () => {
       .put('/patient/' + oldPatient.key + '/status/' + newStatus.date)
       .send({status: newStatus})
       .expect({status: false, error: "Status sent is not up-to-date. Sync required."});
+  });
+});
+
+describe('Test UpdateTriage routes', () => {
+  let mocks = [];
+  afterEach(() => {
+    for(let i in mocks) {
+      mocks[i].restore();
+    }
+  });
+
+  test('should return success if successfully updates existing Triage', () => {
+    const oldTriage = {
+      patientKey: "Test&Last&20110101",
+      date: "OldDate",
+      age: 0,
+      hasInsurance: false,
+      location: 'old', // Girasoles or TJP or somewhere else
+      arrivalTime: 0, // should match checkin time from Status
+          //make optional so don't have to deal with it for now
+      timeIn: '0',
+      timeOut: '1',
+      triager: 'old', // Name of triager
+      status: 'old', // EMT, Student, Nurse, Other
+      statusClarification: 'old', // If Other status, explain
+      weight: 0,
+      height: 0,
+      temp: 0,
+      rr: 0,
+      o2: 0,
+      bp: 'old',
+      hr: 0,
+      history: 'old',
+      allergies: 'old',
+      medications: 'old',
+      surgeries: 'old',
+      immunizations: 'old',
+      chiefComplaint: 'old',
+      pharmacySection: 'old',
+      //---IF FEMALE---
+      LMP: 'old',
+      regular: false,
+      pregnancies: 'old',
+      liveBirths: 'old',
+      abortions: 'old',
+      miscarriages: 'old',
+      //---END IF---
+      //---IF LABS DONE---
+      labsDone: false,
+      bgl: 'old',
+      a1c: 'old',
+      fasting: false,
+      pregnancyTest: false,
+      //--END IF---
+      //---IF URINE TEST---
+      urineTestDone: false,
+      leukocytes: 'old',
+      blood: 'old',
+      nitrites: 'old',
+      specificGravity: 'old',
+      urobilirubin: 'old',
+      ketone: 'old',
+      protein: 'old',
+      bilirubin: 'old',
+      ph: 'old',
+      glucose: 'old',
+      //---END IF---
+      lastUpdated: 0 // timestamp
+    };
+
+    const newTriage = Object.assign({}, oldTriage);
+    newTriage.lastUpdated = oldTriage.lastUpdated + 1;
+    newTriage.allergies = 'new';
+
+    const oldPatient = {
+      key: "Test&Last&20110101",
+      firstName: "Test",
+      lastName: "Last",
+      birthday: "20110101",
+      triages: [oldTriage],
+      save: () => {},
+      lastUpdated: new Date().getTime()
+    };
+
+    const mock1 = sinon.mock(PatientModel)
+      .expects('findOne').withArgs({key: oldPatient.key})
+      .yields(null, oldPatient);
+    mocks.push(mock1);
+
+    const mock3 = sinon.mock(oldPatient)
+      .expects('save')
+      .yields(null);
+    mocks.push(mock3);
+
+    return request(app)
+      .put('/patient/' + oldPatient.key + '/triage/' + newTriage.date)
+      .send({triage: newTriage})
+      .then(response => {
+        expect(JSON.parse(response.text)).toEqual({status: true});
+        expect(oldPatient.triages).toEqual([newTriage]);
+        expect(oldPatient.lastUpdated).toEqual(newTriage.lastUpdated);
+      });
+  });
+
+  test('should return success if successfully adds new Triage', () => {
+    const newTriage = {
+      patientKey: "Test&Last&20110101",
+      date: "NewDate",
+      age: 0,
+      hasInsurance: false,
+      location: 'new', // Girasoles or TJP or somewhere else
+      arrivalTime: 0, // should match checkin time from Status
+          //make optional so don't have to deal with it for now
+      timeIn: '0',
+      timeOut: '1',
+      triager: 'new', // Name of triager
+      status: 'new', // EMT, Student, Nurse, Other
+      statusClarification: 'new', // If Other status, explain
+      weight: 0,
+      height: 0,
+      temp: 0,
+      rr: 0,
+      o2: 0,
+      bp: 'new',
+      hr: 0,
+      history: 'new',
+      allergies: 'new',
+      medications: 'new',
+      surgeries: 'new',
+      immunizations: 'new',
+      chiefComplaint: 'new',
+      pharmacySection: 'new',
+      //---IF FEMALE---
+      LMP: 'new',
+      regular: false,
+      pregnancies: 'new',
+      liveBirths: 'new',
+      abortions: 'new',
+      miscarriages: 'new',
+      //---END IF---
+      //---IF LABS DONE---
+      labsDone: false,
+      bgl: 'new',
+      a1c: 'new',
+      fasting: false,
+      pregnancyTest: false,
+      //--END IF---
+      //---IF URINE TEST---
+      urineTestDone: false,
+      leukocytes: 'new',
+      blood: 'new',
+      nitrites: 'new',
+      specificGravity: 'new',
+      urobilirubin: 'new',
+      ketone: 'new',
+      protein: 'new',
+      bilirubin: 'new',
+      ph: 'new',
+      glucose: 'new',
+      //---END IF---
+      lastUpdated: 100 // timestamp
+    };
+
+    const oldPatient = {
+      key: "Test&Last&20110101",
+      firstName: "Test",
+      lastName: "Last",
+      birthday: "20110101",
+      triages: [],
+      save: () => {},
+      lastUpdated: new Date().getTime()
+    };
+
+    const mock1 = sinon.mock(PatientModel)
+      .expects('findOne').withArgs({key: oldPatient.key})
+      .yields(null, oldPatient);
+    mocks.push(mock1);
+
+    const mock3 = sinon.mock(oldPatient)
+      .expects('save')
+      .yields(null);
+    mocks.push(mock3);
+
+    return request(app)
+      .put('/patient/' + oldPatient.key + '/triage/' + newTriage.date)
+      .send({triage: newTriage})
+      .then(response => {
+        expect(JSON.parse(response.text)).toEqual({status: true});
+        expect(oldPatient.triages).toEqual([newTriage]);
+        expect(oldPatient.lastUpdated).toEqual(newTriage.lastUpdated);
+      });
+  });
+
+  test('should return error if new triage is not up to date', () => {
+    const oldTriage = {
+      patientKey: "Test&Last&20110101",
+      date: "NewDate",
+      age: 0,
+      hasInsurance: false,
+      location: 'new', // Girasoles or TJP or somewhere else
+      arrivalTime: 0, // should match checkin time from Status
+          //make optional so don't have to deal with it for now
+      timeIn: '0',
+      timeOut: '1',
+      triager: 'new', // Name of triager
+      status: 'new', // EMT, Student, Nurse, Other
+      statusClarification: 'new', // If Other status, explain
+      weight: 0,
+      height: 0,
+      temp: 0,
+      rr: 0,
+      o2: 0,
+      bp: 'new',
+      hr: 0,
+      history: 'new',
+      allergies: 'new',
+      medications: 'new',
+      surgeries: 'new',
+      immunizations: 'new',
+      chiefComplaint: 'new',
+      pharmacySection: 'new',
+      //---IF FEMALE---
+      LMP: 'new',
+      regular: false,
+      pregnancies: 'new',
+      liveBirths: 'new',
+      abortions: 'new',
+      miscarriages: 'new',
+      //---END IF---
+      //---IF LABS DONE---
+      labsDone: false,
+      bgl: 'new',
+      a1c: 'new',
+      fasting: false,
+      pregnancyTest: false,
+      //--END IF---
+      //---IF URINE TEST---
+      urineTestDone: false,
+      leukocytes: 'new',
+      blood: 'new',
+      nitrites: 'new',
+      specificGravity: 'new',
+      urobilirubin: 'new',
+      ketone: 'new',
+      protein: 'new',
+      bilirubin: 'new',
+      ph: 'new',
+      glucose: 'new',
+      //---END IF---
+      lastUpdated: 100 // timestamp
+    };
+
+    const newTriage = Object.assign({}, oldTriage);
+    newTriage.lastUpdated = oldTriage.lastUpdated - 1;
+    newTriage.date = 'NewDate';
+
+    const oldPatient = {
+      key: "Test&Last&20110101",
+      firstName: "Test",
+      lastName: "Last",
+      birthday: "20110101",
+      triages: [oldTriage],
+      save: () => {},
+      lastUpdated: new Date().getTime()
+    };
+
+    const mock1 = sinon.mock(PatientModel)
+      .expects('findOne').withArgs({key: oldPatient.key})
+      .yields(null, oldPatient);
+    mocks.push(mock1);
+
+    return request(app)
+      .put('/patient/' + oldPatient.key + '/triage/' + oldTriage.date)
+      .send({triage: newTriage})
+      .expect({status: false, error: "Triage sent is not up-to-date. Sync required."});
   });
 });

@@ -42,6 +42,7 @@
     "db": "mongod --dbpath=/data",
     "test": "jest",
     "lint": "eslint src/*.js src/models/* src/utility/*.js src/controllers/* -c ./.eslintrc.json",
+    "lintFix": "eslint --fix src/*.js src/models/* src/utility/*.js src/controllers/* -c ./.eslintrc.json",
     "check": "npm run test && npm run lint"
   },
   "jest": {
