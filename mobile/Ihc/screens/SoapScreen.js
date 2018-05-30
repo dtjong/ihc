@@ -28,6 +28,8 @@ export default class SoapScreen extends Component<{}> {
       formValues: {date: todayDate},
       errorMsg: null,
       todayDate: todayDate,
+      successMsg: null,
+      loading: false
     };
   }
 
@@ -84,26 +86,11 @@ export default class SoapScreen extends Component<{}> {
     this.loadFormValues();
   }
 
-  completed = () => {
-    try {
-      localData.updateStatus(this.props.patientKey, this.state.todayDate,
-        'doctorCompleted', new Date().getTime());
-    } catch(e) {
-      this.setState({errorMsg: e.message, successMsg: null});
-      return;
-    }
-
-    this.setState({
-      successMsg: 'Soap marked as completed, but not yet submitted',
-      errorMsg: null
-    });
-  }
-
   submit = () => {
     if(!this.refs.form.validate().isValid()) {
       return;
     }
-    this.setState({successMsg: 'Loading...'});
+    this.setState({loading: true});
     const form = this.refs.form.getValue();
     const soap = Soap.extractFromForm(form, this.props.patientKey);
 
@@ -114,14 +101,15 @@ export default class SoapScreen extends Component<{}> {
       return;
     }
 
+    // TODO: Submit on server too
+
     this.setState({
       successMsg: 'SOAP updated successfully',
-      errorMsg: null
+      errorMsg: null,
+      loading: false
     });
   }
 
-  // Need this to update formValues so that after clicking completed button,
-  // form doesn't reset... IDK why :(
   onFormChange = (value) => {
     this.setState({
       formValues: value,
@@ -144,10 +132,6 @@ export default class SoapScreen extends Component<{}> {
             options={this.formOptions}
             onChange={this.onFormChange}
           />
-
-          <Button onPress={this.completed}
-            styles={styles.button}
-            title="Soap completed" />
 
           <Button onPress={this.submit}
             styles={styles.button}

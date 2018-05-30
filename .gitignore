@@ -6,3 +6,4 @@ mongo_docs/
 server/build/
 *.DS_Store
 TODO
+*.idea

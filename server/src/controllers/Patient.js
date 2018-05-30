@@ -180,7 +180,7 @@ const PatientController = {
   GetTriage: function(req, res){
     TriageModel.findOne({patientKey: req.params.key, date: req.params.date}, function(err, triage) {
       if(!triage) {
-        err = new Error("Patient with key " + req.params.key + " doesn't exist or patient didn't come in on " + req.params.date);
+        err = new Error('Patient with key ' + req.params.key + ' doesn\'t exist or patient didn\'t come in on ' + req.params.date);
       }
       if(err) {
         res.json({status: false, error: err.message});
@@ -281,7 +281,7 @@ const PatientController = {
   UpdateTriage: function(req, res){
     PatientModel.findOne({key: req.params.key}, function(err, patient) {
       if(!patient) {
-        err = new Error("Patient with key " + req.params.key + " doesn't exist");
+        err = new Error('Patient with key ' + req.params.key + ' doesn\'t exist');
       }
 
       for(let [i,triage] of patient.triages.entries()) {
@@ -290,7 +290,7 @@ const PatientController = {
           if(triage.lastUpdated > req.body.triage.lastUpdated) {
             res.json({
               status: false,
-              error: "Triage sent is not up-to-date. Sync required."
+              error: 'Triage sent is not up-to-date. Sync required.'
             });
             return;
           }

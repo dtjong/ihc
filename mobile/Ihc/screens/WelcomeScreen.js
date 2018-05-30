@@ -10,7 +10,7 @@ import Container from '../components/Container';
 export default class WelcomeScreen extends Component<{}> {
   constructor(props) {
     super(props);
-    this.state = {loading: false, errorMsg: null};
+    this.state = {loading: false, errorMsg: null, successMsg: null};
   }
 
   goToSignin = () => {
@@ -33,10 +33,10 @@ export default class WelcomeScreen extends Component<{}> {
     serverData.updatePatients(patients)
       .then(() => {
         localData.markPatientsUploaded();
-        this.setState({loading: false});
+        this.setState({successMsg: 'Uploaded successfully', errorMsg: null, loading: false});
       })
       .catch(err => {
-        this.setState({errorMsg: err.message, loading: false});
+        this.setState({errorMsg: err.message, successMsg: null, loading: false});
       });
   }
 
@@ -47,16 +47,17 @@ export default class WelcomeScreen extends Component<{}> {
     serverData.getUpdatedPatients(lastSynced)
       .then((patients) => {
         localData.handleDownloadedPatients(patients);
-        this.setState({loading: false});
+        this.setState({successMsg: 'Downloaded successfully', errorMsg: null, loading: false});
       })
       .catch(err => {
-        this.setState({errorMsg: err.message, loading: false});
+        this.setState({errorMsg: err.message, successMsg: null, loading: false});
       });
   }
 
   render() {
     return (
       <Container loading={this.state.loading} 
+        successMsg={this.state.successMsg}
         errorMsg={this.state.errorMsg} >
         <Text style={styles.welcome}>
           Welcome to clinic!
