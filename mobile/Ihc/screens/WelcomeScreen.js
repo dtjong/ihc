@@ -27,30 +27,46 @@ export default class WelcomeScreen extends Component<{}> {
     });
   }
 
+  // Don't need to show a retry button because they could just click
+  // UploadUpdates again
+  /* eslint-disable no-unused-vars */
+  setLoading = (val, canceled = false) => {
+    this.setState({loading: val});
+  }
+  /* eslint-enable no-unused-vars */
+
   upload = () => {
-    this.setState({loading: true});
+    this.setState({loading: true, errorMsg: null, successMsg: null});
     const patients = localData.getPatientsToUpload();
     serverData.updatePatients(patients)
       .then(() => {
-        localData.markPatientsUploaded();
-        this.setState({successMsg: 'Uploaded successfully', errorMsg: null, loading: false});
+        if(this.state.loading) {
+          localData.markPatientsUploaded();
+          this.setState({successMsg: 'Uploaded successfully', errorMsg: null, loading: false});
+        }
       })
       .catch(err => {
-        this.setState({errorMsg: err.message, successMsg: null, loading: false});
+        if(this.state.loading) {
+          this.setState({errorMsg: err.message, successMsg: null, loading: false});
+        }
       });
   }
 
   download = () => {
-    this.setState({loading: true});
+    this.setState({loading: true, errorMsg: null, successMsg: null});
     const lastSynced = localData.lastSynced();
 
     serverData.getUpdatedPatients(lastSynced)
       .then((patients) => {
-        localData.handleDownloadedPatients(patients);
-        this.setState({successMsg: 'Downloaded successfully', errorMsg: null, loading: false});
+        if(this.state.loading) {
+          localData.handleDownloadedPatients(patients);
+          this.setState({successMsg: 'Downloaded successfully', errorMsg: null, loading: false});
+        }
       })
       .catch(err => {
-        this.setState({errorMsg: err.message, successMsg: null, loading: false});
+        if(this.state.loading) {
+          this.setState({errorMsg: err.message, successMsg: null, loading: false});
+        }
       });
   }
 
@@ -58,7 +74,9 @@ export default class WelcomeScreen extends Component<{}> {
     return (
       <Container loading={this.state.loading} 
         successMsg={this.state.successMsg}
-        errorMsg={this.state.errorMsg} >
+        errorMsg={this.state.errorMsg}
+        cancelLoading={this.cancelLoading}
+      >
         <Text style={styles.welcome}>
           Welcome to clinic!
         </Text>

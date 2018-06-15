@@ -3,6 +3,7 @@ package com.ihc;
 import io.realm.react.RealmReactPackage;
 import com.facebook.react.ReactPackage;
 import com.reactnativenavigation.NavigationApplication;
+import com.zyu.ReactNativeWheelPickerPackage;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class MainApplication extends NavigationApplication {
      // No need to add RnnPackage and MainReactPackage
      return Arrays.<ReactPackage>asList(
         // eg. new VectorIconsPackage()
-        new RealmReactPackage()
+        new RealmReactPackage(), new ReactNativeWheelPickerPackage()
      );
   }
 

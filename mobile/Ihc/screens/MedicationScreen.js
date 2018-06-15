@@ -10,6 +10,7 @@ import {localData, serverData} from '../services/DataService';
 import MedicationTable  from '../components/MedicationTable';
 import Container from '../components/Container';
 import {stringDate} from '../util/Date';
+import DrugUpdate from '../models/DrugUpdate';
 
 export default class MedicationScreen extends Component<{}> {
   /*
@@ -23,9 +24,10 @@ export default class MedicationScreen extends Component<{}> {
     this.state = {
       loading: false,
       updates: [],
-      dateToUpdates: {},
-      drugNames: new Set(),
-      errorMsg: null
+      errorMsg: null,
+      successMsg: null,
+      medicationCheckmarks: [],
+      todayDate: stringDate(new Date())
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -38,9 +40,8 @@ export default class MedicationScreen extends Component<{}> {
   }
 
   refillMedication = (prevDrugUpdate) => {
-    const date = stringDate(new Date());
     const newUpdate = Object.assign({}, prevDrugUpdate);
-    newUpdate.date = date;
+    newUpdate.date = this.state.todayDate;
 
     try {
       localData.createDrugUpdate(newUpdate);
@@ -64,6 +65,14 @@ export default class MedicationScreen extends Component<{}> {
     });
   }
 
+  discontinueMedication = (prevDrugUpdate) => {
+    // Add a dummy drug update to updates prop
+    const newUpdate = DrugUpdate.getDiscontinueDummy(prevDrugUpdate);
+    this.setState({
+      updates: this.state.updates.concat([newUpdate])
+    });
+  }
+
   createNewMedication = () => {
     this.props.navigator.push({
       screen: 'Ihc.MedicationUpdateScreen',
@@ -78,32 +87,62 @@ export default class MedicationScreen extends Component<{}> {
 
   loadMedications = () => {
     this.setState({ loading: true });
-    const updates = localData.getMedicationUpdates(this.props.patientKey);
-    const dateToUpdates = {};
-    const drugNames = new Set();
-
-    updates.forEach( (update) => {
-      if(update.date in dateToUpdates) {
-        dateToUpdates[update.date].push(update);
-      } else{
-        dateToUpdates[update.date] = [update];
-      }
-
-      drugNames.add(update.name);
+    let updates = localData.getMedicationUpdates(this.props.patientKey);
+    let statusObj = localData.getStatus(this.props.patientKey, this.state.todayDate);
+    const checkmarks = statusObj.medicationCheckmarks;
+    this.setState({
+      updates: updates,
+      loading: false,
+      medicationCheckmarks: checkmarks,
     });
-
-    this.setState({updates: updates, dateToUpdates: dateToUpdates,
-      drugNames: drugNames, loading: false});
   }
 
   componentDidMount() {
     this.loadMedications();
   }
 
+  saveCheckmarks = () => {
+    // Local checkmark saves are handled in MedicationTable directly.
+    const statusObj = localData.getStatus(this.props.patientKey, this.state.todayDate);
+
+    this.setState({
+      loading: true,
+      errorMsg: null,
+      successMsg: null,
+    });
+
+    serverData.updateStatus(statusObj)
+      .then( () => {
+        if(this.state.loading) {
+          this.setState({
+            successMsg: 'Saved',
+            errorMsg: null,
+            loading: false,
+            showRetryButton: false
+          });
+        }
+      })
+      .catch( (e) => {
+        if(this.state.loading) {
+          localData.markPatientNeedToUpload(this.props.patientKey);
+          this.setState({
+            successMsg: null,
+            errorMsg: e.message,
+            loading: false,
+            showRetryButton: true
+          });
+        }
+      });
+  }
 
   // station: 'Doctor' or 'Pharmacy'
   updateStatus(station) {
-    this.setState({loading: true});
+    this.setState({
+      loading: true,
+      errorMsg: null,
+      successMsg: null,
+    });
+
     let statusObj = {};
     if(station != 'Doctor' && station != 'Pharmacy') {
       throw new Error(`Received invalid station: ${station}`);
@@ -111,7 +150,7 @@ export default class MedicationScreen extends Component<{}> {
 
     const fieldName = station === 'Doctor' ? 'doctorCompleted' : 'pharmacyCompleted';
     try {
-      statusObj = localData.updateStatus(this.props.patientKey, stringDate(new Date()),
+      statusObj = localData.updateStatus(this.props.patientKey, this.state.todayDate,
         fieldName, new Date().getTime());
     } catch(e) {
       this.setState({errorMsg: e.message, successMsg: null, loading: false});
@@ -120,19 +159,25 @@ export default class MedicationScreen extends Component<{}> {
 
     serverData.updateStatus(statusObj)
       .then( () => {
-        this.setState({
-          successMsg: `${station} marked as completed`,
-          errorMsg: null,
-          loading: false
-        });
+        if(this.state.loading) {
+          this.setState({
+            successMsg: `${station} marked as completed`,
+            errorMsg: null,
+            loading: false,
+            showRetryButton: false
+          });
+        }
       })
       .catch( (e) => {
-        localData.markPatientNeedToUpload(this.props.patientKey);
-        this.setState({
-          successMsg: null,
-          errorMsg: `${e.message}. Try to UploadUpdates`,
-          loading: false
-        });
+        if(this.state.loading) {
+          localData.markPatientNeedToUpload(this.props.patientKey);
+          this.setState({
+            successMsg: null,
+            errorMsg: e.message,
+            loading: false,
+            showRetryButton: true
+          });
+        }
       });
   }
 
@@ -144,18 +189,37 @@ export default class MedicationScreen extends Component<{}> {
     this.updateStatus('Pharmacy');
   }
 
+  // If Loading was canceled, we want to show a retry button
+  setLoading = (val, canceled) => {
+    this.setState({loading: val, showRetryButton: canceled});
+  }
+
+  setMsg = (type, msg) => {
+    const obj = {};
+    obj[type] = msg;
+    const other = type === 'successMsg' ? 'errorMsg' : 'successMsg';
+    obj[other] = null;
+    this.setState(obj);
+  }
+
   render() {
     return (
       <Container loading={this.state.loading}
         errorMsg={this.state.errorMsg}
-        successMsg={this.state.successMsg} >
+        successMsg={this.state.successMsg}
+        setLoading={this.setLoading}
+        setMsg={this.setMsg}
+        patientKey={this.props.patientKey}
+        showRetryButton={this.state.showRetryButton}
+      >
 
         <View style={styles.headerContainer}>
           <Text style={styles.title}>
             {this.props.name}'s Medications
           </Text>
 
-          <Text>R: Refill, D: Change Dose</Text>
+          <Text>R: Refill, D: Change Dose, X: Cancel</Text>
+          <Text>T: Taking, N: Not Taking, I: Taking incorrectly</Text>
         </View>
 
         <ScrollView contentContainerStyle={styles.tableContainer} horizontal>
@@ -164,12 +228,18 @@ export default class MedicationScreen extends Component<{}> {
             change={this.changeMedication}
             discontinue={this.discontinueMedication}
             updates={this.state.updates}
-            dateToUpdates={this.state.dateToUpdates}
-            drugNames={this.state.drugNames}
+            medicationCheckmarks={this.state.medicationCheckmarks}
+            patientKey={this.props.patientKey}
           />
         </ScrollView>
 
         <View style={styles.footerContainer}>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={this.saveCheckmarks}>
+            <Text style={styles.button}>Save checkmarks</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={this.createNewMedication}>

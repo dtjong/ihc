@@ -11,6 +11,7 @@ import {localData, serverData} from '../services/DataService';
 import Triage from '../models/Triage';
 import {stringDate} from '../util/Date';
 import Container from '../components/Container';
+import TriageLabsWheel from '../components/TriageLabsWheel';
 
 export default class TriageScreen extends Component<{}> {
   /**
@@ -21,22 +22,28 @@ export default class TriageScreen extends Component<{}> {
    */
   constructor(props) {
     super(props);
-    const startingFormValues = {
+    this.startingFormValues = {
       labsDone: false,
       urineTestDone: false,
       date: this.props.todayDate || stringDate(new Date())
     };
 
+    // Hold objects including a test's name, options, and result
+    // TODO: replace with real tests and options once we get the template
+    const labTestObjects = {
+      blood: TriageLabsWheel.createLabTestObject('blood', ['Good', 'Bad']),
+      nitrite: TriageLabsWheel.createLabTestObject('nitrite', ['Good', 'Bad']),
+    };
+
     this.state = {
-      formValues: startingFormValues,
-      formType: Triage.getFormType(startingFormValues, 2),
+      formValues: this.startingFormValues,
+      formType: Triage.getFormType(this.startingFormValues, 2),
       gender: 2, // 1: male, 2: female
       loading: false,
       errorMsg: null,
       successMsg: null,
-      disableLabs: false,
-      disableUrine: false,
-      todayDate: startingFormValues.date,
+      todayDate: this.startingFormValues.date,
+      labTestObjects: labTestObjects
     };
   }
 
@@ -44,9 +51,6 @@ export default class TriageScreen extends Component<{}> {
   options = {
     fields: {
       statusClarification: {label: 'Status clarification (if picked Other)'},
-      pregnancyTest: {label: 'Pregnancy test positive?'},
-      fasting: {label: 'Did this patient fast?'},
-      urineTestDone: {label: 'Did they take a urine test?'},
       labsDone: {label: 'Did they get labs done?'},
       date: {
         editable: false,
@@ -63,23 +67,28 @@ export default class TriageScreen extends Component<{}> {
         gender: patient.gender,
         loading: false
       });
+      // Call loadFormValues here, or else gender state isn't propogated like
+      // expected
+      this.loadFormValues(patient.gender);
     } catch(err) {
       this.setState({ errorMsg: err.message, loading: false });
-      return;
     }
   }
 
   // Load existing Triage info if it exists
-  loadFormValues = () => {
+  loadFormValues = (gender) => {
     this.setState({ loading: true });
     const triage = localData.getTriage(this.props.patientKey, this.state.todayDate);
     if (!triage) {
-      this.setState({loading: false});
+      this.setState({
+        loading: false,
+        formType: Triage.getFormType(this.startingFormValues, gender)
+      });
       return;
     }
 
     this.setState({
-      formType: Triage.getFormType(triage, this.state.gender),
+      formType: Triage.getFormType(triage, gender),
       formValues: triage,
       loading: false,
     });
@@ -87,7 +96,6 @@ export default class TriageScreen extends Component<{}> {
 
   componentDidMount() {
     this.loadPatient();
-    this.loadFormValues();
   }
 
   onFormChange = (value) => {
@@ -110,19 +118,23 @@ export default class TriageScreen extends Component<{}> {
 
     serverData.updateStatus(statusObj)
       .then( () => {
-        this.setState({
-          successMsg: 'Triage marked as completed, but not yet submitted',
-          errorMsg: null,
-          loading: false
-        });
+        if(this.state.loading) {
+          this.setState({
+            successMsg: 'Triage marked as completed, but not yet submitted',
+            errorMsg: null,
+            loading: false
+          });
+        }
       })
       .catch( (e) => {
-        localData.markPatientNeedToUpload(this.props.patientKey);
-        this.setState({
-          successMsg: null,
-          errorMsg: `${e.message}. Try to UploadUpdates`,
-          loading: false
-        });
+        if(this.state.loading) {
+          localData.markPatientNeedToUpload(this.props.patientKey);
+          this.setState({
+            successMsg: null,
+            errorMsg: `${e.message}. Try to UploadUpdates`,
+            loading: false
+          });
+        }
       });
   }
 
@@ -130,7 +142,13 @@ export default class TriageScreen extends Component<{}> {
     if(!this.refs.form.validate().isValid()) {
       return;
     }
-    this.setState({successMsg: 'Loading...'});
+
+    this.setState({
+      loading: true,
+      errorMsg: null,
+      successMsg: null,
+    });
+
     const form = this.refs.form.getValue();
     const triage = Triage.extractFromForm(form, this.props.patientKey);
 
@@ -143,15 +161,41 @@ export default class TriageScreen extends Component<{}> {
 
     this.setState({
       successMsg: 'Triage updated successfully',
-      errorMsg: null
+      errorMsg: null,
+      loading: false
     });
+  }
+
+  gotoMedications = () => {
+    this.props.navigator.push({
+      screen: 'Ihc.MedicationScreen',
+      title: 'Back to triage',
+      passProps: { name: this.props.name, patientKey: this.props.patientKey }
+    });
+  }
+
+  // If Loading was canceled, we want to show a retry button
+  setLoading = (val, canceled) => {
+    this.setState({loading: val, showRetryButton: canceled});
+  }
+
+  setMsg = (type, msg) => {
+    const obj = {};
+    obj[type] = msg;
+    const other = type === 'successMsg' ? 'errorMsg' : 'successMsg';
+    obj[other] = null;
+    this.setState(obj);
   }
 
   render() {
     return (
       <Container loading={this.state.loading}
         errorMsg={this.state.errorMsg}
-        successMsg={this.state.successMsg} >
+        successMsg={this.state.successMsg}
+        setLoading={this.setLoading}
+        setMsg={this.setMsg}
+        patientKey={this.props.patientKey}
+      >
 
         <Text style={styles.title}>
           Triage
@@ -164,6 +208,20 @@ export default class TriageScreen extends Component<{}> {
             options={this.options}
             onChange={this.onFormChange}
           />
+
+          {
+            this.state.formValues.labsDone ?
+              (
+                <TriageLabsWheel
+                  updateLabResult={(name, option) => {console.log(name,option);}}
+                  tests = {Object.values(this.state.labTestObjects)}
+                />
+              ) : null
+          }
+
+          <Button onPress={this.gotoMedications}
+            styles={styles.button}
+            title='To Medications' />
 
           <Button onPress={this.completed}
             styles={styles.button}
