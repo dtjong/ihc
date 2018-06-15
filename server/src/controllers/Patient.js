@@ -133,10 +133,6 @@ const PatientController = {
 
       //saves it, callback function to handle error
       oldPatient.save(function(e) {
-<<<<<<< HEAD
-
-=======
->>>>>>> f24ca7fb6b72a89dd31fcc24aee25177de8e033a
         if(e) {
           res.json({status: false, error: e.message});
           return;
