@@ -37,340 +37,197 @@ exports[`renders correctly 1`] = `
       <RCTScrollView
         contentContainerStyle={
           Object {
-            "backgroundColor": "#F5FCFF",
-            "flex": 0,
-            "minWidth": "80%",
+            "width": "100%",
           }
         }
+        horizontal={true}
       >
         <View>
           <View
             style={
               Object {
-                "alignSelf": "stretch",
                 "flex": 1,
-                "flexDirection": "row",
-                "minHeight": 32,
               }
             }
           >
-            <View
-              style={
-                Object {
-                  "alignSelf": "stretch",
-                  "flex": 1,
-                  "minWidth": 64,
-                }
-              }
-            >
-              <Text
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-              >
-                Name
-              </Text>
-            </View>
-            <View
-              style={
-                Object {
-                  "alignSelf": "stretch",
-                  "flex": 1,
-                  "minWidth": 64,
-                }
-              }
-            >
-              <Text
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-              >
-                Birthday
-              </Text>
-            </View>
-            <View
-              style={
-                Object {
-                  "alignSelf": "stretch",
-                  "flex": 1,
-                  "minWidth": 64,
-                }
-              }
-            >
-              <Text
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-              >
-                Checkin
-              </Text>
-            </View>
-            <View
-              style={
-                Object {
-                  "alignSelf": "stretch",
-                  "flex": 1,
-                  "minWidth": 64,
-                }
-              }
-            >
-              <Text
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-              >
-                Triage
-              </Text>
-            </View>
-            <View
-              style={
-                Object {
-                  "alignSelf": "stretch",
-                  "flex": 1,
-                  "minWidth": 64,
-                }
-              }
-            >
-              <Text
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-              >
-                Doctor
-              </Text>
-            </View>
-            <View
-              style={
-                Object {
-                  "alignSelf": "stretch",
-                  "flex": 1,
-                  "minWidth": 64,
-                }
-              }
-            >
-              <Text
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-              >
-                Pharmacy
-              </Text>
-            </View>
-            <View
-              style={
-                Object {
-                  "alignSelf": "stretch",
-                  "flex": 1,
-                  "minWidth": 64,
-                }
-              }
-            >
-              <Text
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-              >
-                Notes
-              </Text>
-            </View>
-          </View>
-          <View
-            accessibilityComponentType={undefined}
-            accessibilityLabel={undefined}
-            accessibilityTraits={undefined}
-            accessible={true}
-            collapsable={undefined}
-            hasTVPreferredFocus={undefined}
-            hitSlop={undefined}
-            isTVSelectable={true}
-            nativeID={undefined}
-            onLayout={undefined}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              Object {
-                "alignSelf": "stretch",
-                "flex": 1,
-                "flexDirection": "row",
-                "minHeight": 32,
-                "opacity": 1,
-              }
-            }
-            testID={undefined}
-            tvParallaxProperties={undefined}
-          >
-            <View
-              style={
-                Object {
-                  "alignSelf": "stretch",
-                  "flex": 1,
-                  "flexDirection": "row",
-                  "minHeight": 32,
-                }
-              }
+            <Modal
+              animationType="fade"
+              hardwareAccelerated={false}
+              onRequestClose={[Function]}
+              transparent={true}
+              visible={false}
             >
               <View
                 style={
                   Object {
-                    "alignSelf": "stretch",
+                    "alignItems": "center",
                     "flex": 1,
-                    "minWidth": 64,
+                    "justifyContent": "center",
                   }
                 }
               >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
+                <View
+                  style={
+                    Object {
+                      "alignItems": "center",
+                      "backgroundColor": "#f6fdff",
+                      "borderRadius": 8,
+                      "borderWidth": 2,
+                      "height": "60%",
+                      "justifyContent": "center",
+                      "width": "80%",
+                    }
+                  }
                 >
-                  firstname father mother
-                </Text>
+                  <Text
+                    accessible={true}
+                    allowFontScaling={true}
+                    ellipsizeMode="tail"
+                    style={
+                      Object {
+                        "fontSize": 24,
+                        "textAlign": "center",
+                      }
+                    }
+                  />
+                  <Text
+                    accessible={true}
+                    allowFontScaling={true}
+                    ellipsizeMode="tail"
+                  >
+                    Notes:
+                  </Text>
+                  <TextInput
+                    allowFontScaling={true}
+                    multiline={true}
+                    numberOfLines={4}
+                    onChangeText={[Function]}
+                    style={
+                      Object {
+                        "backgroundColor": "white",
+                        "borderRadius": 8,
+                        "borderWidth": 1,
+                        "margin": 8,
+                        "width": "90%",
+                      }
+                    }
+                    value={null}
+                  />
+                  <View
+                    style={
+                      Object {
+                        "alignItems": "center",
+                        "flex": 1,
+                        "flexDirection": "row",
+                        "height": 60,
+                        "justifyContent": "center",
+                        "margin": 4,
+                      }
+                    }
+                  >
+                    <View
+                      accessibilityComponentType={undefined}
+                      accessibilityLabel={undefined}
+                      accessibilityTraits={undefined}
+                      accessible={true}
+                      collapsable={undefined}
+                      hasTVPreferredFocus={undefined}
+                      hitSlop={undefined}
+                      isTVSelectable={true}
+                      nativeID={undefined}
+                      onLayout={undefined}
+                      onResponderGrant={[Function]}
+                      onResponderMove={[Function]}
+                      onResponderRelease={[Function]}
+                      onResponderTerminate={[Function]}
+                      onResponderTerminationRequest={[Function]}
+                      onStartShouldSetResponder={[Function]}
+                      style={
+                        Object {
+                          "backgroundColor": "#2196F3",
+                          "borderRadius": 2,
+                          "elevation": 4,
+                          "height": 40,
+                          "margin": 10,
+                          "opacity": 1,
+                          "padding": 8,
+                          "width": 150,
+                        }
+                      }
+                      testID={undefined}
+                      tvParallaxProperties={undefined}
+                    >
+                      <Text
+                        accessible={true}
+                        allowFontScaling={true}
+                        ellipsizeMode="tail"
+                        style={
+                          Object {
+                            "color": "#fefefe",
+                            "fontWeight": "500",
+                            "textAlign": "center",
+                          }
+                        }
+                      >
+                        Cancel
+                      </Text>
+                    </View>
+                    <View
+                      accessibilityComponentType={undefined}
+                      accessibilityLabel={undefined}
+                      accessibilityTraits={undefined}
+                      accessible={true}
+                      collapsable={undefined}
+                      hasTVPreferredFocus={undefined}
+                      hitSlop={undefined}
+                      isTVSelectable={true}
+                      nativeID={undefined}
+                      onLayout={undefined}
+                      onResponderGrant={[Function]}
+                      onResponderMove={[Function]}
+                      onResponderRelease={[Function]}
+                      onResponderTerminate={[Function]}
+                      onResponderTerminationRequest={[Function]}
+                      onStartShouldSetResponder={[Function]}
+                      style={
+                        Object {
+                          "backgroundColor": "#2196F3",
+                          "borderRadius": 2,
+                          "elevation": 4,
+                          "height": 40,
+                          "margin": 10,
+                          "opacity": 1,
+                          "padding": 8,
+                          "width": 150,
+                        }
+                      }
+                      testID={undefined}
+                      tvParallaxProperties={undefined}
+                    >
+                      <Text
+                        accessible={true}
+                        allowFontScaling={true}
+                        ellipsizeMode="tail"
+                        style={
+                          Object {
+                            "color": "#fefefe",
+                            "fontWeight": "500",
+                            "textAlign": "center",
+                          }
+                        }
+                      >
+                        Save
+                      </Text>
+                    </View>
+                  </View>
+                </View>
               </View>
-              <View
-                style={
-                  Object {
-                    "alignSelf": "stretch",
-                    "flex": 1,
-                    "minWidth": 64,
-                  }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                >
-                  01/01/00
-                </Text>
-              </View>
-              <View
-                style={
-                  Object {
-                    "alignSelf": "stretch",
-                    "flex": 1,
-                    "minWidth": 64,
-                  }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                >
-                  16:0
-                </Text>
-              </View>
-              <View
-                style={
-                  Object {
-                    "alignSelf": "stretch",
-                    "flex": 1,
-                    "minWidth": 64,
-                  }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                />
-              </View>
-              <View
-                style={
-                  Object {
-                    "alignSelf": "stretch",
-                    "flex": 1,
-                    "minWidth": 64,
-                  }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                />
-              </View>
-              <View
-                style={
-                  Object {
-                    "alignSelf": "stretch",
-                    "flex": 1,
-                    "minWidth": 64,
-                  }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                />
-              </View>
-              <View
-                style={
-                  Object {
-                    "alignSelf": "stretch",
-                    "flex": 1,
-                    "minWidth": 64,
-                  }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                />
-              </View>
-              <View
-                style={
-                  Object {
-                    "alignSelf": "stretch",
-                    "flex": 1,
-                    "minWidth": 64,
-                  }
-                }
-              />
-            </View>
-          </View>
-          <View
-            accessibilityComponentType={undefined}
-            accessibilityLabel={undefined}
-            accessibilityTraits={undefined}
-            accessible={true}
-            collapsable={undefined}
-            hasTVPreferredFocus={undefined}
-            hitSlop={undefined}
-            isTVSelectable={true}
-            nativeID={undefined}
-            onLayout={undefined}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              Object {
-                "alignSelf": "stretch",
-                "flex": 1,
-                "flexDirection": "row",
-                "minHeight": 32,
-                "opacity": 1,
-              }
-            }
-            testID={undefined}
-            tvParallaxProperties={undefined}
-          >
+            </Modal>
             <View
               style={
                 Object {
-                  "alignSelf": "stretch",
                   "flex": 1,
-                  "flexDirection": "row",
-                  "minHeight": 32,
+                  "flexDirection": "column",
                 }
               }
             >
@@ -378,122 +235,577 @@ exports[`renders correctly 1`] = `
                 style={
                   Object {
                     "alignSelf": "stretch",
+                    "backgroundColor": "#dbdbdb",
+                    "borderWidth": 1,
                     "flex": 1,
-                    "minWidth": 64,
+                    "flexDirection": "row",
                   }
                 }
               >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
+                <View
+                  size={2}
+                  style={
+                    Object {
+                      "borderWidth": 1,
+                      "flex": 2,
+                      "flexDirection": "column",
+                    }
+                  }
                 >
-                  firstname father mother
-                </Text>
-              </View>
-              <View
-                style={
-                  Object {
-                    "alignSelf": "stretch",
-                    "flex": 1,
-                    "minWidth": 64,
+                  <Text
+                    accessible={true}
+                    allowFontScaling={true}
+                    ellipsizeMode="tail"
+                    style={
+                      Object {
+                        "textAlign": "center",
+                      }
+                    }
+                  >
+                    Name
+                  </Text>
+                </View>
+                <View
+                  size={1.5}
+                  style={
+                    Object {
+                      "borderWidth": 1,
+                      "flex": 1.5,
+                      "flexDirection": "column",
+                    }
                   }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
                 >
-                  01/01/00
-                </Text>
-              </View>
-              <View
-                style={
-                  Object {
-                    "alignSelf": "stretch",
-                    "flex": 1,
-                    "minWidth": 64,
+                  <Text
+                    accessible={true}
+                    allowFontScaling={true}
+                    ellipsizeMode="tail"
+                    style={
+                      Object {
+                        "textAlign": "center",
+                      }
+                    }
+                  >
+                    Birthday
+                  </Text>
+                </View>
+                <View
+                  size={1}
+                  style={
+                    Object {
+                      "borderWidth": 1,
+                      "flex": 1,
+                      "flexDirection": "column",
+                      "maxWidth": 60,
+                    }
                   }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
                 >
-                  16:0
-                </Text>
+                  <Text
+                    accessible={true}
+                    allowFontScaling={true}
+                    ellipsizeMode="tail"
+                    style={
+                      Object {
+                        "textAlign": "center",
+                      }
+                    }
+                  >
+                    Checkin
+                  </Text>
+                </View>
+                <View
+                  size={1}
+                  style={
+                    Object {
+                      "borderWidth": 1,
+                      "flex": 1,
+                      "flexDirection": "column",
+                      "maxWidth": 60,
+                    }
+                  }
+                >
+                  <Text
+                    accessible={true}
+                    allowFontScaling={true}
+                    ellipsizeMode="tail"
+                    style={
+                      Object {
+                        "textAlign": "center",
+                      }
+                    }
+                  >
+                    Triage
+                  </Text>
+                </View>
+                <View
+                  size={1}
+                  style={
+                    Object {
+                      "borderWidth": 1,
+                      "flex": 1,
+                      "flexDirection": "column",
+                      "maxWidth": 60,
+                    }
+                  }
+                >
+                  <Text
+                    accessible={true}
+                    allowFontScaling={true}
+                    ellipsizeMode="tail"
+                    style={
+                      Object {
+                        "textAlign": "center",
+                      }
+                    }
+                  >
+                    Doctor
+                  </Text>
+                </View>
+                <View
+                  size={1}
+                  style={
+                    Object {
+                      "borderWidth": 1,
+                      "flex": 1,
+                      "flexDirection": "column",
+                      "maxWidth": 60,
+                    }
+                  }
+                >
+                  <Text
+                    accessible={true}
+                    allowFontScaling={true}
+                    ellipsizeMode="tail"
+                    style={
+                      Object {
+                        "textAlign": "center",
+                      }
+                    }
+                  >
+                    Pharmacy
+                  </Text>
+                </View>
+                <View
+                  size={3}
+                  style={
+                    Object {
+                      "borderWidth": 1,
+                      "flex": 3,
+                      "flexDirection": "column",
+                    }
+                  }
+                >
+                  <Text
+                    accessible={true}
+                    allowFontScaling={true}
+                    ellipsizeMode="tail"
+                    style={
+                      Object {
+                        "textAlign": "center",
+                      }
+                    }
+                  >
+                    Notes
+                  </Text>
+                </View>
               </View>
               <View
+                accessibilityComponentType={undefined}
+                accessibilityLabel={undefined}
+                accessibilityTraits={undefined}
+                accessible={true}
+                collapsable={undefined}
+                hasTVPreferredFocus={undefined}
+                hitSlop={undefined}
+                isTVSelectable={true}
+                nativeID={undefined}
+                onLayout={undefined}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
                 style={
                   Object {
                     "alignSelf": "stretch",
                     "flex": 1,
-                    "minWidth": 64,
+                    "flexDirection": "row",
+                    "minHeight": 32,
+                    "opacity": 1,
                   }
                 }
+                testID={undefined}
+                tvParallaxProperties={undefined}
               >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                />
+                <View
+                  onPress={[Function]}
+                  style={
+                    Object {
+                      "alignSelf": "stretch",
+                      "flex": 1,
+                      "flexDirection": "row",
+                      "minHeight": 32,
+                    }
+                  }
+                >
+                  <View
+                    size={2}
+                    style={
+                      Object {
+                        "borderWidth": 1,
+                        "flex": 2,
+                        "flexDirection": "column",
+                      }
+                    }
+                  >
+                    <Text
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                    >
+                      firstname father mother
+                    </Text>
+                  </View>
+                  <View
+                    size={1.5}
+                    style={
+                      Object {
+                        "borderWidth": 1,
+                        "flex": 1.5,
+                        "flexDirection": "column",
+                      }
+                    }
+                  >
+                    <Text
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                    >
+                      01/01/00
+                    </Text>
+                  </View>
+                  <View
+                    size={1}
+                    style={
+                      Object {
+                        "borderWidth": 1,
+                        "flex": 1,
+                        "flexDirection": "column",
+                        "maxWidth": 60,
+                      }
+                    }
+                  >
+                    <Text
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                    >
+                      16:0
+                    </Text>
+                  </View>
+                  <View
+                    size={1}
+                    style={
+                      Object {
+                        "borderWidth": 1,
+                        "flex": 1,
+                        "flexDirection": "column",
+                        "maxWidth": 60,
+                      }
+                    }
+                  >
+                    <Text
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                    >
+                      
+                    </Text>
+                  </View>
+                  <View
+                    size={1}
+                    style={
+                      Object {
+                        "borderWidth": 1,
+                        "flex": 1,
+                        "flexDirection": "column",
+                        "maxWidth": 60,
+                      }
+                    }
+                  >
+                    <Text
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                    >
+                      
+                    </Text>
+                  </View>
+                  <View
+                    size={1}
+                    style={
+                      Object {
+                        "borderWidth": 1,
+                        "flex": 1,
+                        "flexDirection": "column",
+                        "maxWidth": 60,
+                      }
+                    }
+                  >
+                    <Text
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                    >
+                      
+                    </Text>
+                  </View>
+                  <View
+                    size={3}
+                    style={
+                      Object {
+                        "borderWidth": 1,
+                        "flex": 3,
+                        "flexDirection": "column",
+                      }
+                    }
+                  >
+                    <View
+                      accessibilityComponentType={undefined}
+                      accessibilityLabel={undefined}
+                      accessibilityTraits={undefined}
+                      accessible={true}
+                      collapsable={undefined}
+                      hasTVPreferredFocus={undefined}
+                      hitSlop={undefined}
+                      isTVSelectable={true}
+                      nativeID={undefined}
+                      onLayout={undefined}
+                      onResponderGrant={[Function]}
+                      onResponderMove={[Function]}
+                      onResponderRelease={[Function]}
+                      onResponderTerminate={[Function]}
+                      onResponderTerminationRequest={[Function]}
+                      onStartShouldSetResponder={[Function]}
+                      style={
+                        Object {
+                          "backgroundColor": "#bebebe",
+                          "height": "100%",
+                          "opacity": 1,
+                          "width": "100%",
+                        }
+                      }
+                      testID={undefined}
+                      tvParallaxProperties={undefined}
+                    >
+                      <Text
+                        accessible={true}
+                        allowFontScaling={true}
+                        ellipsizeMode="tail"
+                      />
+                    </View>
+                  </View>
+                </View>
               </View>
               <View
+                accessibilityComponentType={undefined}
+                accessibilityLabel={undefined}
+                accessibilityTraits={undefined}
+                accessible={true}
+                collapsable={undefined}
+                hasTVPreferredFocus={undefined}
+                hitSlop={undefined}
+                isTVSelectable={true}
+                nativeID={undefined}
+                onLayout={undefined}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
                 style={
                   Object {
                     "alignSelf": "stretch",
                     "flex": 1,
-                    "minWidth": 64,
+                    "flexDirection": "row",
+                    "minHeight": 32,
+                    "opacity": 1,
                   }
                 }
+                testID={undefined}
+                tvParallaxProperties={undefined}
               >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                />
-              </View>
-              <View
-                style={
-                  Object {
-                    "alignSelf": "stretch",
-                    "flex": 1,
-                    "minWidth": 64,
+                <View
+                  onPress={[Function]}
+                  style={
+                    Object {
+                      "alignSelf": "stretch",
+                      "flex": 1,
+                      "flexDirection": "row",
+                      "minHeight": 32,
+                    }
                   }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                />
+                >
+                  <View
+                    size={2}
+                    style={
+                      Object {
+                        "borderWidth": 1,
+                        "flex": 2,
+                        "flexDirection": "column",
+                      }
+                    }
+                  >
+                    <Text
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                    >
+                      firstname father mother
+                    </Text>
+                  </View>
+                  <View
+                    size={1.5}
+                    style={
+                      Object {
+                        "borderWidth": 1,
+                        "flex": 1.5,
+                        "flexDirection": "column",
+                      }
+                    }
+                  >
+                    <Text
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                    >
+                      01/01/00
+                    </Text>
+                  </View>
+                  <View
+                    size={1}
+                    style={
+                      Object {
+                        "borderWidth": 1,
+                        "flex": 1,
+                        "flexDirection": "column",
+                        "maxWidth": 60,
+                      }
+                    }
+                  >
+                    <Text
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                    >
+                      16:0
+                    </Text>
+                  </View>
+                  <View
+                    size={1}
+                    style={
+                      Object {
+                        "borderWidth": 1,
+                        "flex": 1,
+                        "flexDirection": "column",
+                        "maxWidth": 60,
+                      }
+                    }
+                  >
+                    <Text
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                    >
+                      
+                    </Text>
+                  </View>
+                  <View
+                    size={1}
+                    style={
+                      Object {
+                        "borderWidth": 1,
+                        "flex": 1,
+                        "flexDirection": "column",
+                        "maxWidth": 60,
+                      }
+                    }
+                  >
+                    <Text
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                    >
+                      
+                    </Text>
+                  </View>
+                  <View
+                    size={1}
+                    style={
+                      Object {
+                        "borderWidth": 1,
+                        "flex": 1,
+                        "flexDirection": "column",
+                        "maxWidth": 60,
+                      }
+                    }
+                  >
+                    <Text
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                    >
+                      
+                    </Text>
+                  </View>
+                  <View
+                    size={3}
+                    style={
+                      Object {
+                        "borderWidth": 1,
+                        "flex": 3,
+                        "flexDirection": "column",
+                      }
+                    }
+                  >
+                    <View
+                      accessibilityComponentType={undefined}
+                      accessibilityLabel={undefined}
+                      accessibilityTraits={undefined}
+                      accessible={true}
+                      collapsable={undefined}
+                      hasTVPreferredFocus={undefined}
+                      hitSlop={undefined}
+                      isTVSelectable={true}
+                      nativeID={undefined}
+                      onLayout={undefined}
+                      onResponderGrant={[Function]}
+                      onResponderMove={[Function]}
+                      onResponderRelease={[Function]}
+                      onResponderTerminate={[Function]}
+                      onResponderTerminationRequest={[Function]}
+                      onStartShouldSetResponder={[Function]}
+                      style={
+                        Object {
+                          "backgroundColor": "#bebebe",
+                          "height": "100%",
+                          "opacity": 1,
+                          "width": "100%",
+                        }
+                      }
+                      testID={undefined}
+                      tvParallaxProperties={undefined}
+                    >
+                      <Text
+                        accessible={true}
+                        allowFontScaling={true}
+                        ellipsizeMode="tail"
+                      />
+                    </View>
+                  </View>
+                </View>
               </View>
-              <View
-                style={
-                  Object {
-                    "alignSelf": "stretch",
-                    "flex": 1,
-                    "minWidth": 64,
-                  }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                />
-              </View>
-              <View
-                style={
-                  Object {
-                    "alignSelf": "stretch",
-                    "flex": 1,
-                    "minWidth": 64,
-                  }
-                }
-              />
             </View>
           </View>
         </View>

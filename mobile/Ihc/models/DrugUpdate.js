@@ -10,6 +10,18 @@ export default class DrugUpdate {
     return update;
   }
 
+  static getDiscontinueDummy(prevDrugUpdate) {
+    return {
+      patientKey: prevDrugUpdate.patientKey,
+      name: prevDrugUpdate.name,
+      date: stringDate(new Date()),
+      dose: 'X',
+      frequency: 'X',
+      duration: 'X',
+      lastUpdated: new Date().getTime()
+    };
+  }
+
   static getInstance() {
     return {
       patientKey: 'firstname&father&mother&20000101',

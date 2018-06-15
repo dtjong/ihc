@@ -11,13 +11,14 @@ import Soap from '../models/Soap';
 import Triage from '../models/Triage';
 import DrugUpdate from '../models/DrugUpdate';
 import Settings from '../models/Settings';
+import MedicationCheckmarks from '../models/MedicationCheckmarks';
 
 import {stringDate} from '../util/Date';
 
 import Realm from 'realm';
 
 const realm = new Realm({
-  schema: [Patient, Status, Soap, Triage, DrugUpdate, Settings],
+  schema: [Patient, Status, Soap, Triage, DrugUpdate, Settings, MedicationCheckmarks],
   deleteRealmIfMigrationNeeded: true, // TODO: delete when done with dev
 });
 
@@ -71,6 +72,14 @@ export function signinPatient(patientForm) {
     patient.statuses.push(statusObj);
   });
 
+  return statusObj;
+}
+
+export function getStatus(patientKey, strDate) {
+  const statusObj = realm.objects('Status').filtered(`patientKey="${patientKey}" AND date="${strDate}"`)[0];
+  if(!statusObj) {
+    throw new Error('Status doesn\'t exist');
+  }
   return statusObj;
 }
 
@@ -254,7 +263,7 @@ export function lastSynced() {
 // When updates or creates fail to propogate to the server-side, then mark the
 // patient so they can be uploaded in the future
 export function markPatientNeedToUpload(patientKey) {
-  const patient = realm.objects('Patient').filtered(`key="${patientKey}"`);
+  const patient = realm.objects('Patient').filtered(`key="${patientKey}"`)[0];
   if(!patient) {
     throw new Error('Patient does not exist with key ' + patientKey);
   }
@@ -267,7 +276,7 @@ export function markPatientNeedToUpload(patientKey) {
 // After uploading, then these patients don't have to be marked as needing to
 // upload
 export function markPatientsUploaded() {
-  const patients = realm.objects('Patient').filtered('needToUpload = true');
+  const patients = Object.values(realm.objects('Patient').filtered('needToUpload = true'));
   realm.write(() => {
     patients.forEach(patient => {
       patient.needToUpload = false;
@@ -351,6 +360,11 @@ export function handleDownloadedPatients(patients) {
     settings.lastSynced = new Date().getTime();
   });
   return [];
+}
+
+// Wrap realm's write
+export function write(fn) {
+  realm.write(fn);
 }
 
 /**

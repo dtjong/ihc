@@ -7,6 +7,7 @@ export function createPatient(patient) {
   return new Promise((res,rej) => {
     setTimeout(() => {
       res(true);
+      // rej(new Error("Fake error in FakeServerDataService"));
     }, 500);
   });
 }
