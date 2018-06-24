@@ -1,18 +1,6 @@
 import {stringDate} from '../util/Date';
 export default class Patient {
   // Insert any class methods here
-  get drugUpdates() {
-    const drugToUpdates = {};
-    for (var update of this.medications) {
-      if (update.name in drugToUpdates) {
-        drugToUpdates[update.name].push(update);
-      } else{
-        drugToUpdates[update.name] = [update];
-      }
-    }
-    return drugToUpdates;
-  }
-
   get age() {
     const strBirthday = this.birthday;
     const today = stringDate(new Date());
@@ -50,6 +38,10 @@ export default class Patient {
     return this.gender === 1;
   }
 
+  get isInfant() {
+    return this.age < 3;
+  }
+
   static fullName(patient) {
     return `${patient.firstName} ${patient.fatherName} ${patient.motherName}`;
   }
@@ -80,10 +72,10 @@ export default class Patient {
     key = 'firstname&father&mother&20000101', firstName = 'firstname',
     fatherName = 'father', motherName = 'mother', birthday = '20000101',
     gender = 1, phone = null, motherHeight = 100, fatherHeight = 100,
-    medications = [], soaps = [], triages = [], statuses = []) {
+    drugUpdates = [], soaps = [], triages = [], statuses = []) {
     return {
       key, firstName, fatherName, motherName, birthday, gender, phone, motherHeight,
-      fatherHeight, medications, soaps, triages, statuses, lastUpdated
+      fatherHeight, drugUpdates, soaps, triages, statuses, lastUpdated
     };
   }
 }
@@ -101,7 +93,7 @@ Patient.schema = {
     phone: 'string?',
     motherHeight: 'double?',
     fatherHeight: 'double?',
-    medications: 'DrugUpdate[]',
+    drugUpdates: 'DrugUpdate[]',
     soaps: 'Soap[]',
     triages: 'Triage[]',
     statuses: 'Status[]',

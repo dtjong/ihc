@@ -59,20 +59,11 @@ ShallowWrapper {
                   "date": Object {
                     "editable": false,
                   },
-                  "fasting": Object {
-                    "label": "Did this patient fast?",
-                  },
                   "labsDone": Object {
                     "label": "Did they get labs done?",
                   },
-                  "pregnancyTest": Object {
-                    "label": "Pregnancy test positive?",
-                  },
                   "statusClarification": Object {
                     "label": "Status clarification (if picked Other)",
-                  },
-                  "urineTestDone": Object {
-                    "label": "Did they take a urine test?",
                   },
                 },
               }
@@ -269,55 +260,20 @@ ShallowWrapper {
             type={[Function]}
             value={
               Object {
-                "LMP": "string?",
-                "a1c": "string?",
-                "abortions": "string?",
-                "age": 18,
-                "allergies": "string",
-                "bgl": "string?",
-                "bilirubin": "string?",
-                "blood": "string?",
-                "bp": "string",
-                "chiefComplaint": "string",
                 "date": "20180101",
-                "fasting": "bool?",
-                "glucose": "string?",
-                "hasInsurance": true,
-                "height": 100,
-                "history": "string",
-                "hr": 10,
-                "immunizations": "string",
-                "ketone": "string?",
-                "labsDone": "bool",
-                "lastUpdated": 100,
-                "leukocytes": "string?",
-                "liveBirths": "string?",
-                "location": "TJP",
-                "medications": "string",
-                "miscarriages": "string?",
-                "nitrites": "string?",
-                "o2": 10,
-                "patientKey": "firstname&father&mother&20000101",
-                "ph": "string?",
-                "pharmacySection": "string",
-                "pregnancies": "string?",
-                "pregnancyTest": "bool?",
-                "protein": "string?",
-                "regular": "bool?",
-                "rr": 10,
-                "specificGravity": "string?",
-                "status": "other",
-                "statusClarification": "doc",
-                "surgeries": "string",
-                "temp": 98,
-                "timeIn": "12:00",
-                "timeOut": "3:00 pm",
-                "triager": "person",
-                "urineTestDone": "bool",
-                "urobilirubin": "string?",
-                "weight": 75,
+                "labsDone": false,
+                "urineTestDone": false,
               }
             }
+          />
+          <Button
+            onPress={[Function]}
+            styles={
+              Object {
+                "margin": 4,
+              }
+            }
+            title="To Medications"
           />
           <Button
             onPress={[Function]}
@@ -339,8 +295,11 @@ ShallowWrapper {
           />
         </View>,
       ],
-      "errorMsg": null,
+      "errorMsg": "[object Object] does not contain string option string?",
       "loading": false,
+      "patientKey": undefined,
+      "setLoading": [Function],
+      "setMsg": [Function],
       "successMsg": null,
     },
     "ref": null,
@@ -388,20 +347,11 @@ ShallowWrapper {
                     "date": Object {
                       "editable": false,
                     },
-                    "fasting": Object {
-                      "label": "Did this patient fast?",
-                    },
                     "labsDone": Object {
                       "label": "Did they get labs done?",
                     },
-                    "pregnancyTest": Object {
-                      "label": "Pregnancy test positive?",
-                    },
                     "statusClarification": Object {
                       "label": "Status clarification (if picked Other)",
-                    },
-                    "urineTestDone": Object {
-                      "label": "Did they take a urine test?",
                     },
                   },
                 }
@@ -598,55 +548,21 @@ ShallowWrapper {
               type={[Function]}
               value={
                 Object {
-                  "LMP": "string?",
-                  "a1c": "string?",
-                  "abortions": "string?",
-                  "age": 18,
-                  "allergies": "string",
-                  "bgl": "string?",
-                  "bilirubin": "string?",
-                  "blood": "string?",
-                  "bp": "string",
-                  "chiefComplaint": "string",
                   "date": "20180101",
-                  "fasting": "bool?",
-                  "glucose": "string?",
-                  "hasInsurance": true,
-                  "height": 100,
-                  "history": "string",
-                  "hr": 10,
-                  "immunizations": "string",
-                  "ketone": "string?",
-                  "labsDone": "bool",
-                  "lastUpdated": 100,
-                  "leukocytes": "string?",
-                  "liveBirths": "string?",
-                  "location": "TJP",
-                  "medications": "string",
-                  "miscarriages": "string?",
-                  "nitrites": "string?",
-                  "o2": 10,
-                  "patientKey": "firstname&father&mother&20000101",
-                  "ph": "string?",
-                  "pharmacySection": "string",
-                  "pregnancies": "string?",
-                  "pregnancyTest": "bool?",
-                  "protein": "string?",
-                  "regular": "bool?",
-                  "rr": 10,
-                  "specificGravity": "string?",
-                  "status": "other",
-                  "statusClarification": "doc",
-                  "surgeries": "string",
-                  "temp": 98,
-                  "timeIn": "12:00",
-                  "timeOut": "3:00 pm",
-                  "triager": "person",
-                  "urineTestDone": "bool",
-                  "urobilirubin": "string?",
-                  "weight": 75,
+                  "labsDone": false,
+                  "urineTestDone": false,
                 }
               }
+            />,
+            null,
+            <Button
+              onPress={[Function]}
+              styles={
+                Object {
+                  "margin": 4,
+                }
+              }
+              title="To Medications"
             />,
             <Button
               onPress={[Function]}
@@ -692,20 +608,11 @@ ShallowWrapper {
                   "date": Object {
                     "editable": false,
                   },
-                  "fasting": Object {
-                    "label": "Did this patient fast?",
-                  },
                   "labsDone": Object {
                     "label": "Did they get labs done?",
                   },
-                  "pregnancyTest": Object {
-                    "label": "Pregnancy test positive?",
-                  },
                   "statusClarification": Object {
                     "label": "Status clarification (if picked Other)",
-                  },
-                  "urineTestDone": Object {
-                    "label": "Did they take a urine test?",
                   },
                 },
               },
@@ -896,56 +803,28 @@ ShallowWrapper {
               },
               "type": [Function],
               "value": Object {
-                "LMP": "string?",
-                "a1c": "string?",
-                "abortions": "string?",
-                "age": 18,
-                "allergies": "string",
-                "bgl": "string?",
-                "bilirubin": "string?",
-                "blood": "string?",
-                "bp": "string",
-                "chiefComplaint": "string",
                 "date": "20180101",
-                "fasting": "bool?",
-                "glucose": "string?",
-                "hasInsurance": true,
-                "height": 100,
-                "history": "string",
-                "hr": 10,
-                "immunizations": "string",
-                "ketone": "string?",
-                "labsDone": "bool",
-                "lastUpdated": 100,
-                "leukocytes": "string?",
-                "liveBirths": "string?",
-                "location": "TJP",
-                "medications": "string",
-                "miscarriages": "string?",
-                "nitrites": "string?",
-                "o2": 10,
-                "patientKey": "firstname&father&mother&20000101",
-                "ph": "string?",
-                "pharmacySection": "string",
-                "pregnancies": "string?",
-                "pregnancyTest": "bool?",
-                "protein": "string?",
-                "regular": "bool?",
-                "rr": 10,
-                "specificGravity": "string?",
-                "status": "other",
-                "statusClarification": "doc",
-                "surgeries": "string",
-                "temp": 98,
-                "timeIn": "12:00",
-                "timeOut": "3:00 pm",
-                "triager": "person",
-                "urineTestDone": "bool",
-                "urobilirubin": "string?",
-                "weight": 75,
+                "labsDone": false,
+                "urineTestDone": false,
               },
             },
             "ref": "form",
+            "rendered": null,
+            "type": [Function],
+          },
+          null,
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "onPress": [Function],
+              "styles": Object {
+                "margin": 4,
+              },
+              "title": "To Medications",
+            },
+            "ref": null,
             "rendered": null,
             "type": [Function],
           },
@@ -1031,20 +910,11 @@ ShallowWrapper {
                     "date": Object {
                       "editable": false,
                     },
-                    "fasting": Object {
-                      "label": "Did this patient fast?",
-                    },
                     "labsDone": Object {
                       "label": "Did they get labs done?",
                     },
-                    "pregnancyTest": Object {
-                      "label": "Pregnancy test positive?",
-                    },
                     "statusClarification": Object {
                       "label": "Status clarification (if picked Other)",
-                    },
-                    "urineTestDone": Object {
-                      "label": "Did they take a urine test?",
                     },
                   },
                 }
@@ -1241,55 +1111,20 @@ ShallowWrapper {
               type={[Function]}
               value={
                 Object {
-                  "LMP": "string?",
-                  "a1c": "string?",
-                  "abortions": "string?",
-                  "age": 18,
-                  "allergies": "string",
-                  "bgl": "string?",
-                  "bilirubin": "string?",
-                  "blood": "string?",
-                  "bp": "string",
-                  "chiefComplaint": "string",
                   "date": "20180101",
-                  "fasting": "bool?",
-                  "glucose": "string?",
-                  "hasInsurance": true,
-                  "height": 100,
-                  "history": "string",
-                  "hr": 10,
-                  "immunizations": "string",
-                  "ketone": "string?",
-                  "labsDone": "bool",
-                  "lastUpdated": 100,
-                  "leukocytes": "string?",
-                  "liveBirths": "string?",
-                  "location": "TJP",
-                  "medications": "string",
-                  "miscarriages": "string?",
-                  "nitrites": "string?",
-                  "o2": 10,
-                  "patientKey": "firstname&father&mother&20000101",
-                  "ph": "string?",
-                  "pharmacySection": "string",
-                  "pregnancies": "string?",
-                  "pregnancyTest": "bool?",
-                  "protein": "string?",
-                  "regular": "bool?",
-                  "rr": 10,
-                  "specificGravity": "string?",
-                  "status": "other",
-                  "statusClarification": "doc",
-                  "surgeries": "string",
-                  "temp": 98,
-                  "timeIn": "12:00",
-                  "timeOut": "3:00 pm",
-                  "triager": "person",
-                  "urineTestDone": "bool",
-                  "urobilirubin": "string?",
-                  "weight": 75,
+                  "labsDone": false,
+                  "urineTestDone": false,
                 }
               }
+            />
+            <Button
+              onPress={[Function]}
+              styles={
+                Object {
+                  "margin": 4,
+                }
+              }
+              title="To Medications"
             />
             <Button
               onPress={[Function]}
@@ -1311,8 +1146,11 @@ ShallowWrapper {
             />
           </View>,
         ],
-        "errorMsg": null,
+        "errorMsg": "[object Object] does not contain string option string?",
         "loading": false,
+        "patientKey": undefined,
+        "setLoading": [Function],
+        "setMsg": [Function],
         "successMsg": null,
       },
       "ref": null,
@@ -1360,20 +1198,11 @@ ShallowWrapper {
                       "date": Object {
                         "editable": false,
                       },
-                      "fasting": Object {
-                        "label": "Did this patient fast?",
-                      },
                       "labsDone": Object {
                         "label": "Did they get labs done?",
                       },
-                      "pregnancyTest": Object {
-                        "label": "Pregnancy test positive?",
-                      },
                       "statusClarification": Object {
                         "label": "Status clarification (if picked Other)",
-                      },
-                      "urineTestDone": Object {
-                        "label": "Did they take a urine test?",
                       },
                     },
                   }
@@ -1570,55 +1399,21 @@ ShallowWrapper {
                 type={[Function]}
                 value={
                   Object {
-                    "LMP": "string?",
-                    "a1c": "string?",
-                    "abortions": "string?",
-                    "age": 18,
-                    "allergies": "string",
-                    "bgl": "string?",
-                    "bilirubin": "string?",
-                    "blood": "string?",
-                    "bp": "string",
-                    "chiefComplaint": "string",
                     "date": "20180101",
-                    "fasting": "bool?",
-                    "glucose": "string?",
-                    "hasInsurance": true,
-                    "height": 100,
-                    "history": "string",
-                    "hr": 10,
-                    "immunizations": "string",
-                    "ketone": "string?",
-                    "labsDone": "bool",
-                    "lastUpdated": 100,
-                    "leukocytes": "string?",
-                    "liveBirths": "string?",
-                    "location": "TJP",
-                    "medications": "string",
-                    "miscarriages": "string?",
-                    "nitrites": "string?",
-                    "o2": 10,
-                    "patientKey": "firstname&father&mother&20000101",
-                    "ph": "string?",
-                    "pharmacySection": "string",
-                    "pregnancies": "string?",
-                    "pregnancyTest": "bool?",
-                    "protein": "string?",
-                    "regular": "bool?",
-                    "rr": 10,
-                    "specificGravity": "string?",
-                    "status": "other",
-                    "statusClarification": "doc",
-                    "surgeries": "string",
-                    "temp": 98,
-                    "timeIn": "12:00",
-                    "timeOut": "3:00 pm",
-                    "triager": "person",
-                    "urineTestDone": "bool",
-                    "urobilirubin": "string?",
-                    "weight": 75,
+                    "labsDone": false,
+                    "urineTestDone": false,
                   }
                 }
+              />,
+              null,
+              <Button
+                onPress={[Function]}
+                styles={
+                  Object {
+                    "margin": 4,
+                  }
+                }
+                title="To Medications"
               />,
               <Button
                 onPress={[Function]}
@@ -1664,20 +1459,11 @@ ShallowWrapper {
                     "date": Object {
                       "editable": false,
                     },
-                    "fasting": Object {
-                      "label": "Did this patient fast?",
-                    },
                     "labsDone": Object {
                       "label": "Did they get labs done?",
                     },
-                    "pregnancyTest": Object {
-                      "label": "Pregnancy test positive?",
-                    },
                     "statusClarification": Object {
                       "label": "Status clarification (if picked Other)",
-                    },
-                    "urineTestDone": Object {
-                      "label": "Did they take a urine test?",
                     },
                   },
                 },
@@ -1868,56 +1654,28 @@ ShallowWrapper {
                 },
                 "type": [Function],
                 "value": Object {
-                  "LMP": "string?",
-                  "a1c": "string?",
-                  "abortions": "string?",
-                  "age": 18,
-                  "allergies": "string",
-                  "bgl": "string?",
-                  "bilirubin": "string?",
-                  "blood": "string?",
-                  "bp": "string",
-                  "chiefComplaint": "string",
                   "date": "20180101",
-                  "fasting": "bool?",
-                  "glucose": "string?",
-                  "hasInsurance": true,
-                  "height": 100,
-                  "history": "string",
-                  "hr": 10,
-                  "immunizations": "string",
-                  "ketone": "string?",
-                  "labsDone": "bool",
-                  "lastUpdated": 100,
-                  "leukocytes": "string?",
-                  "liveBirths": "string?",
-                  "location": "TJP",
-                  "medications": "string",
-                  "miscarriages": "string?",
-                  "nitrites": "string?",
-                  "o2": 10,
-                  "patientKey": "firstname&father&mother&20000101",
-                  "ph": "string?",
-                  "pharmacySection": "string",
-                  "pregnancies": "string?",
-                  "pregnancyTest": "bool?",
-                  "protein": "string?",
-                  "regular": "bool?",
-                  "rr": 10,
-                  "specificGravity": "string?",
-                  "status": "other",
-                  "statusClarification": "doc",
-                  "surgeries": "string",
-                  "temp": 98,
-                  "timeIn": "12:00",
-                  "timeOut": "3:00 pm",
-                  "triager": "person",
-                  "urineTestDone": "bool",
-                  "urobilirubin": "string?",
-                  "weight": 75,
+                  "labsDone": false,
+                  "urineTestDone": false,
                 },
               },
               "ref": "form",
+              "rendered": null,
+              "type": [Function],
+            },
+            null,
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "onPress": [Function],
+                "styles": Object {
+                  "margin": 4,
+                },
+                "title": "To Medications",
+              },
+              "ref": null,
               "rendered": null,
               "type": [Function],
             },

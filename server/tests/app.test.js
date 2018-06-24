@@ -44,7 +44,7 @@ describe('Test GetStatus routes', () => {
       .yields(null, patientStatus);
 
     return request(app).get('/patient/keythatexists/status/datethatexists')
-      .expect({status: true, patientStatus: patientStatus})
+      .expect({status: true, patientStatus: patientStatus});
   });
 });
 
@@ -952,5 +952,193 @@ describe('Test UpdateTriage routes', () => {
       .put('/patient/' + oldPatient.key + '/triage/' + oldTriage.date)
       .send({triage: newTriage})
       .expect({status: false, error: "Triage sent is not up-to-date. Sync required."});
+  });
+});
+
+describe('Test UpdateDrugUpdate routes', () => {
+  let mocks = [];
+  afterEach(() => {
+    for(let i in mocks) {
+      mocks[i].restore();
+    }
+  });
+
+  test('should return success if successfully updates existing DrugUpdates', () => {
+    const oldTylenol = {
+      patientKey: "Test&Last&20110101",
+      name: "tylenol",
+      date: "20180101",
+      dose: "old",
+      frequency: "old",
+      duration: "old",
+      notes: "old",
+      lastUpdated: 100
+    };
+
+    const newTylenol = Object.assign({}, oldTylenol);
+    newTylenol.lastUpdated = oldTylenol.lastUpdated + 1;
+    newTylenol.dose = 'new';
+
+    const oldAspirin = Object.assign({}, oldTylenol);
+    oldAspirin.name = 'aspirin';
+
+    const patient = {
+      key: "Test&Last&20110101",
+      firstName: "Test",
+      lastName: "Last",
+      birthday: "20110101",
+      drugUpdates: [oldAspirin, oldTylenol],
+      save: () => {},
+      lastUpdated: new Date().getTime()
+    };
+
+    const mock1 = sinon.mock(PatientModel)
+      .expects('findOne').withArgs({key: patient.key})
+      .yields(null, patient);
+    mocks.push(mock1);
+
+    const mock3 = sinon.mock(patient)
+      .expects('save')
+      .yields(null);
+    mocks.push(mock3);
+
+    return request(app)
+      .put('/patient/' + patient.key + '/drugUpdate/' + newTylenol.date)
+      .send({drugUpdate: newTylenol})
+      .then(response => {
+        expect(JSON.parse(response.text)).toEqual({status: true});
+        expect(patient.drugUpdates).toEqual([oldAspirin, newTylenol]);
+        expect(patient.lastUpdated).toEqual(newTylenol.lastUpdated);
+      });
+  });
+
+  test('should return success if successfully adds new drugUpdate', () => {
+    const newTylenol = {
+      patientKey: "Test&Last&20110101",
+      name: "tylenol",
+      date: "20180101",
+      dose: "new",
+      frequency: "new",
+      duration: "new",
+      notes: "new",
+      lastUpdated: 100
+    };
+
+    const newAspirin = Object.assign({}, newTylenol);
+    newAspirin.name = 'aspirin';
+
+    // Patient starts with a tylenol, sending an aspirin update will create it
+    // to the patient
+    const patient = {
+      key: "Test&Last&20110101",
+      firstName: "Test",
+      lastName: "Last",
+      birthday: "20110101",
+      drugUpdates: [newTylenol],
+      save: () => {},
+      lastUpdated: new Date().getTime()
+    };
+
+    const mock1 = sinon.mock(PatientModel)
+      .expects('findOne').withArgs({key: patient.key})
+      .yields(null, patient);
+    mocks.push(mock1);
+
+    const mock3 = sinon.mock(patient)
+      .expects('save')
+      .yields(null);
+    mocks.push(mock3);
+
+    return request(app)
+      .put('/patient/' + patient.key + '/drugUpdate/' + newAspirin.date)
+      .send({drugUpdate: newAspirin})
+      .then(response => {
+        expect(JSON.parse(response.text)).toEqual({status: true});
+        expect(patient.drugUpdates).toEqual([newTylenol, newAspirin]);
+        expect(patient.lastUpdated).toEqual(newAspirin.lastUpdated);
+      });
+  });
+
+  test('should return error if new drugUpdate is not up to date', () => {
+    const oldTylenol = {
+      patientKey: "Test&Last&20110101",
+      name: "tylenol",
+      date: "20180101",
+      dose: "old",
+      frequency: "old",
+      duration: "old",
+      notes: "old",
+      lastUpdated: 100
+    };
+
+    // The lastUpdated of the newTylenol should be > than the oldTylenol, but it
+    // is not for this error case
+    const newTylenol = Object.assign({}, oldTylenol);
+    newTylenol.lastUpdated = oldTylenol.lastUpdated - 1;
+    newTylenol.dose = 'new';
+
+    const patient = {
+      key: "Test&Last&20110101",
+      firstName: "Test",
+      lastName: "Last",
+      birthday: "20110101",
+      drugUpdates: [oldTylenol],
+      save: () => {},
+      lastUpdated: new Date().getTime()
+    };
+
+    const mock1 = sinon.mock(PatientModel)
+      .expects('findOne').withArgs({key: patient.key})
+      .yields(null, patient);
+    mocks.push(mock1);
+
+    return request(app)
+      .put('/patient/' + patient.key + '/drugUpdate/' + newTylenol.date)
+      .send({drugUpdate: newTylenol})
+      .expect({status: false, error: "Medication sent is not up-to-date. Sync required."});
+  });
+});
+
+describe('Test GetDrugUpdates routes', () => {
+  let mocks = [];
+  afterEach(() => {
+    for(let i in mocks) {
+      mocks[i].restore();
+    }
+  });
+
+  test('should return DrugUpdates', () => {
+    const tylenol = {
+      patientKey: "Test&Last&20110101",
+      name: "tylenol",
+      date: "20180101",
+      dose: "old",
+      frequency: "old",
+      duration: "old",
+      notes: "old",
+      lastUpdated: 100
+    };
+
+    const aspirin = Object.assign({}, tylenol);
+    aspirin.name = 'aspirin';
+
+    const patient = {
+      key: "Test&Last&20110101",
+      firstName: "Test",
+      lastName: "Last",
+      birthday: "20110101",
+      drugUpdates: [aspirin, tylenol],
+      save: () => {},
+      lastUpdated: new Date().getTime()
+    };
+
+    const mock1 = sinon.mock(PatientModel)
+      .expects('findOne').withArgs({key: patient.key})
+      .yields(null, patient);
+    mocks.push(mock1);
+
+    return request(app)
+      .get('/patient/' + patient.key + '/drugUpdates')
+      .expect({status: true, drugUpdates: [aspirin, tylenol]});
   });
 });

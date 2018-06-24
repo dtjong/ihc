@@ -190,6 +190,18 @@ const PatientController = {
     });
   },
   GetDrugUpdates: function(req, res){
+    PatientModel.findOne({key: req.params.key}, function(err, patient) {
+      if(!patient) {
+        err = new Error('Patient with key ' + req.params.key + ' doesn\'t exist');
+      }
+
+      if(err) {
+        res.json({status: false, error: err.message});
+        return;
+      }
+
+      res.json({status: true, drugUpdates: patient.drugUpdates});
+    });
   },
   UpdateSoap: function(req, res){
     PatientModel.findOne({key: req.params.key}, function(err, patient) {
@@ -322,7 +334,49 @@ const PatientController = {
       });
     });
   },
-  UpdateDrugUpdates: function(req, res){
+  UpdateDrugUpdate: function(req, res) {
+    PatientModel.findOne({key: req.params.key}, function(err, patient) {
+      if(!patient) {
+        err = new Error('Patient with key ' + req.params.key + ' doesn\'t exist');
+      }
+
+      for (let [i,drugUpdate] of patient.drugUpdates.entries()) {
+        if (drugUpdate.date == req.params.date && drugUpdate.name == req.body.drugUpdate.name) {
+          if (drugUpdate.lastUpdated > req.body.drugUpdate.lastUpdated) {
+            res.json({
+              status: false,
+              error: 'Medication sent is not up-to-date. Sync required.'
+            });
+            return;
+          }
+
+          patient.drugUpdates[i] = req.body.drugUpdate;
+          patient.lastUpdated = req.body.drugUpdate.lastUpdated;
+
+          patient.save(function(err) {
+            if(err) {
+              res.json({status: false, error: err.message});
+              return;
+            }
+            res.json({status: true});
+            return;
+          });
+          return;
+        }
+      }
+
+      patient.drugUpdates.push(req.body.drugUpdate);
+      patient.lastUpdated = req.body.drugUpdate.lastUpdated;
+
+      patient.save(function(err) {
+        if(err) {
+          res.json({status: false, error: err.message});
+          return;
+        }
+        res.json({status: true});
+        return;
+      });
+    });
   }
 };
 

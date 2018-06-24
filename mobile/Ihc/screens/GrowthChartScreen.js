@@ -7,10 +7,16 @@ import {
 } from 'react-native';
 import ScatterPlot from '../components/ScatterPlot';
 import Container from '../components/Container';
+
 const boysWeightData = require('../growthchartdata/boys_weights.json');
 const girlsWeightData = require('../growthchartdata/girls_weights.json');
 const boysHeightData = require('../growthchartdata/boys_heights.json');
 const girlsHeightData = require('../growthchartdata/girls_heights.json');
+
+const infantBoysWeightData = require('../growthchartdata/infant_boys_weights.json');
+const infantGirlsWeightData = require('../growthchartdata/infant_girls_weights.json');
+const infantBoysHeightData = require('../growthchartdata/infant_boys_heights.json');
+const infantGirlsHeightData = require('../growthchartdata/infant_girls_heights.json');
 
 const PLOT_HEIGHT = 400;
 const PLOT_WIDTH = 400;
@@ -52,10 +58,19 @@ export default class GrowthChartScreen extends Component<{}> {
     }
 
     let weightData, heightData;
-    if (patient.isMale) {
+    if (patient.isMale && patient.isInfant) {
+      weightData = this.extractData(infantBoysWeightData);
+      heightData = this.extractData(infantBoysHeightData);
+    } 
+    else if (patient.isMale && !patient.isInfant) {
       weightData = this.extractData(boysWeightData);
       heightData = this.extractData(boysHeightData);
-    } else {
+    } 
+    else if (!patient.isMale && patient.isInfant) {
+      weightData = this.extractData(infantGirlsWeightData);
+      heightData = this.extractData(infantGirlsHeightData);
+    }
+    else if (!patient.isMale && !patient.isInfant) {
       weightData = this.extractData(girlsWeightData);
       heightData = this.extractData(girlsHeightData);
     }
@@ -100,9 +115,9 @@ export default class GrowthChartScreen extends Component<{}> {
               chartHeight={PLOT_HEIGHT}
               chartWidth={PLOT_WIDTH}
               minX={0}
-              maxX={240}
+              maxX={this.state.patient.isInfant ? 26 : 240}
               minY={0}
-              maxY={125}
+              maxY={this.state.patient.isInfant ? 20 : 125}
               horizontalLinesAt={arrKg}
               verticalLinesAt={arrYears}
               title='Weight Growth Chart'
@@ -116,9 +131,9 @@ export default class GrowthChartScreen extends Component<{}> {
               chartWidth={PLOT_WIDTH}
               data={this.state.heightData}
               minX={0}
-              maxX={240}
+              maxX={this.state.patient.isInfant ? 26 : 240}
               minY={0}
-              maxY={200}
+              maxY={this.state.patient.isInfant ? 105 : 200}
               horizontalLinesAt={arrCm}
               verticalLinesAt={arrYears}
               title='Height Growth Chart'

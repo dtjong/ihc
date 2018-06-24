@@ -11,13 +11,14 @@ import Soap from '../models/Soap';
 import Triage from '../models/Triage';
 import DrugUpdate from '../models/DrugUpdate';
 import Settings from '../models/Settings';
+import MedicationCheckmarks from '../models/MedicationCheckmarks';
 
 import {stringDate} from '../util/Date';
 
 import Realm from 'realm';
 
 const realm = new Realm({
-  schema: [Patient, Status, Soap, Triage, DrugUpdate, Settings],
+  schema: [Patient, Status, Soap, Triage, DrugUpdate, Settings, MedicationCheckmarks],
   deleteRealmIfMigrationNeeded: true, // TODO: delete when done with dev
 });
 
@@ -74,6 +75,14 @@ export function signinPatient(patientForm) {
   return statusObj;
 }
 
+export function getStatus(patientKey, strDate) {
+  const statusObj = realm.objects('Status').filtered(`patientKey="${patientKey}" AND date="${strDate}"`)[0];
+  if(!statusObj) {
+    throw new Error('Status doesn\'t exist');
+  }
+  return statusObj;
+}
+
 // Update a single field for a Status object, particularly the _Completed fields
 // with timestamps
 // field: Any of fields from Status.schema
@@ -114,8 +123,8 @@ export function createDrugUpdate(update) {
   realm.write(() => {
     patient.lastUpdated = timestamp;
     // If an object for that drug and date already exists, update it
-    for (var m in patient.medications) {
-      const old = patient.medications[m];
+    for (var m in patient.drugUpdates) {
+      const old = patient.drugUpdates[m];
       if(old.date === update.date && old.name === update.name) {
         old.dose = update.dose;
         old.frequency = update.frequency;
@@ -126,7 +135,7 @@ export function createDrugUpdate(update) {
     }
 
     // If doesn't exist, then add it
-    patient.medications.push(update);
+    patient.drugUpdates.push(update);
   });
 }
 
@@ -254,7 +263,7 @@ export function lastSynced() {
 // When updates or creates fail to propogate to the server-side, then mark the
 // patient so they can be uploaded in the future
 export function markPatientNeedToUpload(patientKey) {
-  const patient = realm.objects('Patient').filtered(`key="${patientKey}"`);
+  const patient = realm.objects('Patient').filtered(`key="${patientKey}"`)[0];
   if(!patient) {
     throw new Error('Patient does not exist with key ' + patientKey);
   }
@@ -267,7 +276,7 @@ export function markPatientNeedToUpload(patientKey) {
 // After uploading, then these patients don't have to be marked as needing to
 // upload
 export function markPatientsUploaded() {
-  const patients = realm.objects('Patient').filtered('needToUpload = true');
+  const patients = Object.values(realm.objects('Patient').filtered('needToUpload = true'));
   realm.write(() => {
     patients.forEach(patient => {
       patient.needToUpload = false;
@@ -318,8 +327,8 @@ export function handleDownloadedPatients(patients) {
       if(!updateObject(existingPatient, 'triages', incomingTriage))
         fails.add(existingPatient.key);
     });
-    incomingPatient.medications.forEach(incomingDrugUpdate => {
-      if(!updateObject(existingPatient, 'medications', incomingDrugUpdate))
+    incomingPatient.drugUpdates.forEach(incomingDrugUpdate => {
+      if(!updateObject(existingPatient, 'drugUpdates', incomingDrugUpdate))
         fails.add(existingPatient.key);
     });
     incomingPatient.statuses.forEach(incomingStatus => {
@@ -353,15 +362,20 @@ export function handleDownloadedPatients(patients) {
   return [];
 }
 
+// Wrap realm's write
+export function write(fn) {
+  realm.write(fn);
+}
+
 /**
- * Type: string of either 'soaps', 'triages', 'medications', or 'statuses'
+ * Type: string of either 'soaps', 'triages', 'drugUpdates', or 'statuses'
  * Returns true if updated successfully, false if wasn't updated
  */
 function updateObject(existingPatient, type, incomingObject) {
   // Find existing form/object that corresponds to the incoming one
   let existingObject = {};
-  if (type === 'medications') {
-    existingObject = existingPatient.medications.find( med => {
+  if (type === 'drugUpdates') {
+    existingObject = existingPatient.drugUpdates.find( med => {
       return incomingObject.date === med.date && incomingObject.name === med.name;
     });
   } else {

@@ -399,10 +399,10 @@ router.put('/patient/:key/triage/:date', PatientController.UpdateTriage);
   }
   ```
 
-router.put('/patient/:key/drugUpdates', PatientController.UpdateDrugUpdates);
+router.put('/patient/:key/drugUpdate/:date', PatientController.UpdateDrugUpdate);
   ```
   body: {
-    drugUpdates: [DrugUpdateModel] 
+    drugUpdate: [DrugUpdateModel] 
   }
   ```
 

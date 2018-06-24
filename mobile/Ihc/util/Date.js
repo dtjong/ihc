@@ -24,7 +24,9 @@ export function shortDate(date) {
 // Otherwise the normal date object equality check includes hours and minutes
 // etc. I think
 export function stringDate(dateObj) {
+  // Month appears to be 0 indexed, so add 1
+  // Date appears to be 1 indexed, so don't add 1
   const month = dateObj.getMonth()+1 < 10 ? '0' + (dateObj.getMonth()+1) : dateObj.getMonth()+1;
-  const date = dateObj.getDate()+1 < 10 ? '0' + (dateObj.getDate()+1) : dateObj.getDate()+1;
+  const date = dateObj.getDate() < 10 ? '0' + dateObj.getDate() : dateObj.getDate();
   return `${dateObj.getFullYear()}${month}${date}`;
 }

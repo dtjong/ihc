@@ -48,7 +48,7 @@ router.put('/patient/:key/status/:date', PatientController.UpdateStatus);
 router.put('/patient/:key/triage/:date', PatientController.UpdateTriage);
 
 //updates the Medicine of the patient
-router.put('/patient/:key/drugUpdates', PatientController.UpdateDrugUpdates);
+router.put('/patient/:key/drugUpdate/:date', PatientController.UpdateDrugUpdate);
 
 // return all the statuses for the given date
 router.get('/patients/statuses/:date', PatientController.GetStatuses);

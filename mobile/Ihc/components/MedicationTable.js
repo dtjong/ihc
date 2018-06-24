@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  CheckBox,
   StyleSheet,
   TouchableOpacity,
   Text,
@@ -7,6 +8,8 @@ import {
 } from 'react-native';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import {stringDate} from '../util/Date';
+import MedicationCheckmarks from '../models/MedicationCheckmarks';
+import {localData} from '../services/DataService';
 
 export default class MedicationTable extends Component<{}> {
   /*
@@ -14,6 +17,10 @@ export default class MedicationTable extends Component<{}> {
    *  {
    *    refill, change, discontinue functions
    *    updates: [DrugUpdate obj, ...]
+   *    medicationCheckmarks: MedicationCheckmarks as returned from realm
+   *      i.e. {'0': MedicationCheckmarks obj, '1': another }
+   *      so that we can edit checkmarks directly
+   *    patientKey
    *  }
    */
   constructor(props) {
@@ -162,13 +169,72 @@ export default class MedicationTable extends Component<{}> {
     });
 
     return (
-      <Col style={styles.nameColumn}>
+      <Col style={styles.actionColumn}>
         <Row style={styles.headerRow}><Text>Actions</Text></Row>
         {rows}
       </Col>
     );
   }
   /* eslint-enablereact-native/no-inline-styles */
+
+  // option 0: Taking, 1: Not taking, 2: Incorrectly
+  checked = (drugName, option) => {
+    let curr = this.props.medicationCheckmarks.find( instance => {
+      return instance.drugName === drugName;
+    });
+
+    let newObject = false; //true if created a new checkmarks obj
+    if(!curr) {
+      curr = MedicationCheckmarks.newMedicationCheckmarks(this.props.patientKey, drugName);
+      newObject = true;
+    }
+
+    // Write directly to realm
+    localData.write(() => {
+      switch(option) {
+        case 0:
+          curr.taking = !curr.taking;
+          break;
+        case 1:
+          curr.notTaking = !curr.notTaking;
+          break;
+        case 2:
+          curr.incorrectly = !curr.incorrectly;
+          break;
+        default:
+          throw new Error('Incorrect option passed to checked() in MedicationTable');
+      }
+
+      if(newObject){
+        this.props.medicationCheckmarks.push(curr);
+      }
+    });
+  }
+
+  renderCheckmarkColumn(drugNames) {
+    const medicationCheckmarks = Array.from(this.props.medicationCheckmarks);
+    const rows = drugNames.map( (drugName, i) => {
+      // Get the checkmarks for that drug
+      let checkmarks = medicationCheckmarks.find( instance => {
+        return instance.drugName === drugName;
+      });
+
+      // If doesn't exist, create blank check boxes
+      if(!checkmarks) {
+        checkmarks = {taking: false, notTaking: false, incorrectly: false};
+      }
+
+      return (
+        <Row style={styles.row} key={`checkmarkRow${i}`}>
+          <CheckBox value={checkmarks.taking} onValueChange={() => this.checked(drugName, 0)}/>
+          <CheckBox value={checkmarks.notTaking} onValueChange={() => this.checked(drugName, 1)}/>
+          <CheckBox value={checkmarks.incorrectly} onValueChange={() => this.checked(drugName, 2)}/>
+        </Row>
+      );
+    });
+
+    return rows;
+  }
 
   render() {
     if (!this.state.drugNames.size || !Object.keys(this.state.dateToUpdates).length) {
@@ -200,11 +266,16 @@ export default class MedicationTable extends Component<{}> {
     });
 
     const buttonColumn = this.renderButtonColumn(this.state.dateToUpdates, names, dates);
+    const checkmarkColumn = this.renderCheckmarkColumn(names);
 
     // Render row for header, then render all the rows
     return (
       <Grid>
-        <Col style={styles.nameColumn}>
+        <Col style={styles.actionColumn}>
+          <Row style={styles.headerRow}><Text>T/N/I</Text></Row>
+          {checkmarkColumn}
+        </Col>
+        <Col style={styles.actionColumn}>
           <Row style={styles.headerRow}><Text>Drug name</Text></Row>
           {nameColumn}
         </Col>
@@ -254,9 +325,8 @@ export const styles = StyleSheet.create({
     backgroundColor: '#adadad',
     borderWidth: 1
   },
-  nameColumn: {
-    minWidth: 100,
-    maxWidth: 100,
+  actionColumn: {
+    width: 100,
     backgroundColor: '#adada0',
     borderWidth: 1
   },
