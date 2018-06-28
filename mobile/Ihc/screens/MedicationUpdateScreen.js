@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  Button,
   Text,
   View
 } from 'react-native';
@@ -10,6 +9,7 @@ var Form = t.form.Form;
 import {localData} from '../services/DataService';
 import DrugUpdate from '../models/DrugUpdate';
 import Container from '../components/Container';
+import Button from '../components/Button';
 
 export default class MedicationUpdateScreen extends Component<{}> {
   /*
@@ -76,7 +76,8 @@ export default class MedicationUpdateScreen extends Component<{}> {
           />
 
           <Button onPress={this.submit}
-            title="Submit" />
+            style={styles.submitButton}
+            text="Submit" />
         </View>
       </Container>
     );
@@ -92,4 +93,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10,
   },
+  submitButton: {
+    width: '100%'
+  }
 });

@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  TouchableOpacity,
   Text,
   View
 } from 'react-native';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import {shortDate} from '../util/Date';
-import UpdateStatusNotesModal from '../components/UpdateStatusNotesModal';
+import UpdateStatusNotesModal from './UpdateStatusNotesModal';
+import Button from './Button';
 
 export default class PatientTable extends Component<{}> {
   /*
@@ -98,10 +98,10 @@ export default class PatientTable extends Component<{}> {
     if (index === 6) {
       return (
         <Col style={this.getStyle(index)} size={this.getSize(index)} key={keyFn(index)}>
-          <TouchableOpacity style={styles.notes}
-            onPress={() => this.openModal(name, patientKey, element)}>
-            <Text>{element}</Text>
-          </TouchableOpacity>
+          <Button style={styles.notes}
+            onPress={() => this.openModal(name, patientKey, element)}
+            textStyle={styles.notesText}
+            text={element} />
         </Col>
       );
     }
@@ -204,5 +204,11 @@ export const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     backgroundColor: '#bebebe',
+    borderRadius: 0,
+    margin: 0
+  },
+  notesText: {
+    fontWeight: 'normal',
+    color: '#111'
   },
 });

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  Button,
   StyleSheet,
   ScrollView,
   View
@@ -9,6 +8,7 @@ import {
 import SuccessErrorMessages from './SuccessErrorMessages';
 import Loading from './Loading';
 import {localData, serverData} from '../services/DataService';
+import Button from './Button';
 
 /*
  * Common wrapper around Screens. Includes code for the ScrollView,
@@ -85,7 +85,7 @@ export default class Container extends Component<{}> {
           </ ScrollView>
 
           <View style={styles.buttonContainer}>
-            <Button title="Retry" onPress={this.retry} />
+            <Button text="Retry" onPress={this.retry} />
           </View>
 
           <SuccessErrorMessages errorMsg={this.props.errorMsg}

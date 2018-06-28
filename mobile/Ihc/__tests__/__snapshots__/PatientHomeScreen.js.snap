@@ -91,13 +91,16 @@ exports[`renders correctly 1`] = `
               onStartShouldSetResponder={[Function]}
               style={
                 Object {
+                  "alignItems": "center",
                   "backgroundColor": "#2196F3",
                   "borderRadius": 2,
                   "elevation": 4,
-                  "margin": 10,
+                  "height": 40,
+                  "justifyContent": "center",
+                  "margin": 4,
                   "opacity": 1,
                   "padding": 8,
-                  "width": 150,
+                  "width": "80%",
                 }
               }
               testID={undefined}
@@ -108,11 +111,14 @@ exports[`renders correctly 1`] = `
                 allowFontScaling={true}
                 ellipsizeMode="tail"
                 style={
-                  Object {
-                    "color": "#fefefe",
-                    "fontWeight": "500",
-                    "textAlign": "center",
-                  }
+                  Array [
+                    Object {
+                      "color": "#fefefe",
+                      "fontWeight": "500",
+                      "textAlign": "center",
+                    },
+                    undefined,
+                  ]
                 }
               >
                 Triage
@@ -137,13 +143,16 @@ exports[`renders correctly 1`] = `
               onStartShouldSetResponder={[Function]}
               style={
                 Object {
+                  "alignItems": "center",
                   "backgroundColor": "#2196F3",
                   "borderRadius": 2,
                   "elevation": 4,
-                  "margin": 10,
+                  "height": 40,
+                  "justifyContent": "center",
+                  "margin": 4,
                   "opacity": 1,
                   "padding": 8,
-                  "width": 150,
+                  "width": "80%",
                 }
               }
               testID={undefined}
@@ -154,11 +163,14 @@ exports[`renders correctly 1`] = `
                 allowFontScaling={true}
                 ellipsizeMode="tail"
                 style={
-                  Object {
-                    "color": "#fefefe",
-                    "fontWeight": "500",
-                    "textAlign": "center",
-                  }
+                  Array [
+                    Object {
+                      "color": "#fefefe",
+                      "fontWeight": "500",
+                      "textAlign": "center",
+                    },
+                    undefined,
+                  ]
                 }
               >
                 SOAP
@@ -183,13 +195,16 @@ exports[`renders correctly 1`] = `
               onStartShouldSetResponder={[Function]}
               style={
                 Object {
+                  "alignItems": "center",
                   "backgroundColor": "#2196F3",
                   "borderRadius": 2,
                   "elevation": 4,
-                  "margin": 10,
+                  "height": 40,
+                  "justifyContent": "center",
+                  "margin": 4,
                   "opacity": 1,
                   "padding": 8,
-                  "width": 150,
+                  "width": "80%",
                 }
               }
               testID={undefined}
@@ -200,11 +215,14 @@ exports[`renders correctly 1`] = `
                 allowFontScaling={true}
                 ellipsizeMode="tail"
                 style={
-                  Object {
-                    "color": "#fefefe",
-                    "fontWeight": "500",
-                    "textAlign": "center",
-                  }
+                  Array [
+                    Object {
+                      "color": "#fefefe",
+                      "fontWeight": "500",
+                      "textAlign": "center",
+                    },
+                    undefined,
+                  ]
                 }
               >
                 Medications
@@ -239,13 +257,16 @@ exports[`renders correctly 1`] = `
               onStartShouldSetResponder={[Function]}
               style={
                 Object {
+                  "alignItems": "center",
                   "backgroundColor": "#2196F3",
                   "borderRadius": 2,
                   "elevation": 4,
-                  "margin": 10,
+                  "height": 40,
+                  "justifyContent": "center",
+                  "margin": 4,
                   "opacity": 1,
                   "padding": 8,
-                  "width": 150,
+                  "width": "80%",
                 }
               }
               testID={undefined}
@@ -256,11 +277,14 @@ exports[`renders correctly 1`] = `
                 allowFontScaling={true}
                 ellipsizeMode="tail"
                 style={
-                  Object {
-                    "color": "#fefefe",
-                    "fontWeight": "500",
-                    "textAlign": "center",
-                  }
+                  Array [
+                    Object {
+                      "color": "#fefefe",
+                      "fontWeight": "500",
+                      "textAlign": "center",
+                    },
+                    undefined,
+                  ]
                 }
               >
                 History
@@ -285,13 +309,16 @@ exports[`renders correctly 1`] = `
               onStartShouldSetResponder={[Function]}
               style={
                 Object {
+                  "alignItems": "center",
                   "backgroundColor": "#2196F3",
                   "borderRadius": 2,
                   "elevation": 4,
-                  "margin": 10,
+                  "height": 40,
+                  "justifyContent": "center",
+                  "margin": 4,
                   "opacity": 1,
                   "padding": 8,
-                  "width": 150,
+                  "width": "80%",
                 }
               }
               testID={undefined}
@@ -302,11 +329,14 @@ exports[`renders correctly 1`] = `
                 allowFontScaling={true}
                 ellipsizeMode="tail"
                 style={
-                  Object {
-                    "color": "#fefefe",
-                    "fontWeight": "500",
-                    "textAlign": "center",
-                  }
+                  Array [
+                    Object {
+                      "color": "#fefefe",
+                      "fontWeight": "500",
+                      "textAlign": "center",
+                    },
+                    undefined,
+                  ]
                 }
               >
                 Growth Chart

@@ -262,13 +262,17 @@ exports[`renders correctly 1`] = `
                   onStartShouldSetResponder={[Function]}
                   style={
                     Object {
+                      "alignItems": "center",
                       "backgroundColor": "#2196F3",
                       "borderRadius": 2,
                       "elevation": 4,
                       "flex": 1,
-                      "margin": 2,
+                      "height": 40,
+                      "justifyContent": "center",
+                      "margin": 4,
                       "opacity": 1,
-                      "padding": 4,
+                      "padding": 8,
+                      "width": "100%",
                     }
                   }
                   testID={undefined}
@@ -279,11 +283,14 @@ exports[`renders correctly 1`] = `
                     allowFontScaling={true}
                     ellipsizeMode="tail"
                     style={
-                      Object {
-                        "color": "#fefefe",
-                        "fontWeight": "500",
-                        "textAlign": "center",
-                      }
+                      Array [
+                        Object {
+                          "color": "#fefefe",
+                          "fontWeight": "500",
+                          "textAlign": "center",
+                        },
+                        undefined,
+                      ]
                     }
                   >
                     R
@@ -308,13 +315,17 @@ exports[`renders correctly 1`] = `
                   onStartShouldSetResponder={[Function]}
                   style={
                     Object {
+                      "alignItems": "center",
                       "backgroundColor": "#2196F3",
                       "borderRadius": 2,
                       "elevation": 4,
                       "flex": 1,
-                      "margin": 2,
+                      "height": 40,
+                      "justifyContent": "center",
+                      "margin": 4,
                       "opacity": 1,
-                      "padding": 4,
+                      "padding": 8,
+                      "width": "100%",
                     }
                   }
                   testID={undefined}
@@ -325,11 +336,14 @@ exports[`renders correctly 1`] = `
                     allowFontScaling={true}
                     ellipsizeMode="tail"
                     style={
-                      Object {
-                        "color": "#fefefe",
-                        "fontWeight": "500",
-                        "textAlign": "center",
-                      }
+                      Array [
+                        Object {
+                          "color": "#fefefe",
+                          "fontWeight": "500",
+                          "textAlign": "center",
+                        },
+                        undefined,
+                      ]
                     }
                   >
                     D
@@ -354,13 +368,17 @@ exports[`renders correctly 1`] = `
                   onStartShouldSetResponder={[Function]}
                   style={
                     Object {
+                      "alignItems": "center",
                       "backgroundColor": "#2196F3",
                       "borderRadius": 2,
                       "elevation": 4,
                       "flex": 1,
-                      "margin": 2,
+                      "height": 40,
+                      "justifyContent": "center",
+                      "margin": 4,
                       "opacity": 1,
-                      "padding": 4,
+                      "padding": 8,
+                      "width": "100%",
                     }
                   }
                   testID={undefined}
@@ -371,11 +389,14 @@ exports[`renders correctly 1`] = `
                     allowFontScaling={true}
                     ellipsizeMode="tail"
                     style={
-                      Object {
-                        "color": "#fefefe",
-                        "fontWeight": "500",
-                        "textAlign": "center",
-                      }
+                      Array [
+                        Object {
+                          "color": "#fefefe",
+                          "fontWeight": "500",
+                          "textAlign": "center",
+                        },
+                        undefined,
+                      ]
                     }
                   >
                     X
@@ -605,10 +626,12 @@ exports[`renders correctly 1`] = `
           onStartShouldSetResponder={[Function]}
           style={
             Object {
+              "alignItems": "center",
               "backgroundColor": "#2196F3",
               "borderRadius": 2,
               "elevation": 4,
-              "height": 40,
+              "height": 60,
+              "justifyContent": "center",
               "margin": 4,
               "opacity": 1,
               "padding": 8,
@@ -623,11 +646,14 @@ exports[`renders correctly 1`] = `
             allowFontScaling={true}
             ellipsizeMode="tail"
             style={
-              Object {
-                "color": "#fefefe",
-                "fontWeight": "500",
-                "textAlign": "center",
-              }
+              Array [
+                Object {
+                  "color": "#fefefe",
+                  "fontWeight": "500",
+                  "textAlign": "center",
+                },
+                undefined,
+              ]
             }
           >
             Save checkmarks
@@ -652,10 +678,12 @@ exports[`renders correctly 1`] = `
           onStartShouldSetResponder={[Function]}
           style={
             Object {
+              "alignItems": "center",
               "backgroundColor": "#2196F3",
               "borderRadius": 2,
               "elevation": 4,
-              "height": 40,
+              "height": 60,
+              "justifyContent": "center",
               "margin": 4,
               "opacity": 1,
               "padding": 8,
@@ -670,11 +698,14 @@ exports[`renders correctly 1`] = `
             allowFontScaling={true}
             ellipsizeMode="tail"
             style={
-              Object {
-                "color": "#fefefe",
-                "fontWeight": "500",
-                "textAlign": "center",
-              }
+              Array [
+                Object {
+                  "color": "#fefefe",
+                  "fontWeight": "500",
+                  "textAlign": "center",
+                },
+                undefined,
+              ]
             }
           >
             New Medication
@@ -699,10 +730,12 @@ exports[`renders correctly 1`] = `
           onStartShouldSetResponder={[Function]}
           style={
             Object {
+              "alignItems": "center",
               "backgroundColor": "#2196F3",
               "borderRadius": 2,
               "elevation": 4,
-              "height": 40,
+              "height": 60,
+              "justifyContent": "center",
               "margin": 4,
               "opacity": 1,
               "padding": 8,
@@ -717,11 +750,14 @@ exports[`renders correctly 1`] = `
             allowFontScaling={true}
             ellipsizeMode="tail"
             style={
-              Object {
-                "color": "#fefefe",
-                "fontWeight": "500",
-                "textAlign": "center",
-              }
+              Array [
+                Object {
+                  "color": "#fefefe",
+                  "fontWeight": "500",
+                  "textAlign": "center",
+                },
+                undefined,
+              ]
             }
           >
             Completed Prescribing
@@ -746,10 +782,12 @@ exports[`renders correctly 1`] = `
           onStartShouldSetResponder={[Function]}
           style={
             Object {
+              "alignItems": "center",
               "backgroundColor": "#2196F3",
               "borderRadius": 2,
               "elevation": 4,
-              "height": 40,
+              "height": 60,
+              "justifyContent": "center",
               "margin": 4,
               "opacity": 1,
               "padding": 8,
@@ -764,11 +802,14 @@ exports[`renders correctly 1`] = `
             allowFontScaling={true}
             ellipsizeMode="tail"
             style={
-              Object {
-                "color": "#fefefe",
-                "fontWeight": "500",
-                "textAlign": "center",
-              }
+              Array [
+                Object {
+                  "color": "#fefefe",
+                  "fontWeight": "500",
+                  "textAlign": "center",
+                },
+                undefined,
+              ]
             }
           >
             Filled

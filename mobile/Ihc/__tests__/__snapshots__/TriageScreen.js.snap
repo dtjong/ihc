@@ -268,30 +268,15 @@ ShallowWrapper {
           />
           <Button
             onPress={[Function]}
-            styles={
-              Object {
-                "margin": 4,
-              }
-            }
-            title="To Medications"
+            text="Mark Medications"
           />
           <Button
             onPress={[Function]}
-            styles={
-              Object {
-                "margin": 4,
-              }
-            }
-            title="Triage completed"
+            text="Triage completed"
           />
           <Button
             onPress={[Function]}
-            styles={
-              Object {
-                "margin": 4,
-              }
-            }
-            title="Update"
+            text="Update"
           />
         </View>,
       ],
@@ -557,30 +542,15 @@ ShallowWrapper {
             null,
             <Button
               onPress={[Function]}
-              styles={
-                Object {
-                  "margin": 4,
-                }
-              }
-              title="To Medications"
+              text="Mark Medications"
             />,
             <Button
               onPress={[Function]}
-              styles={
-                Object {
-                  "margin": 4,
-                }
-              }
-              title="Triage completed"
+              text="Triage completed"
             />,
             <Button
               onPress={[Function]}
-              styles={
-                Object {
-                  "margin": 4,
-                }
-              }
-              title="Update"
+              text="Update"
             />,
           ],
           "style": Object {
@@ -819,10 +789,7 @@ ShallowWrapper {
             "nodeType": "class",
             "props": Object {
               "onPress": [Function],
-              "styles": Object {
-                "margin": 4,
-              },
-              "title": "To Medications",
+              "text": "Mark Medications",
             },
             "ref": null,
             "rendered": null,
@@ -834,10 +801,7 @@ ShallowWrapper {
             "nodeType": "class",
             "props": Object {
               "onPress": [Function],
-              "styles": Object {
-                "margin": 4,
-              },
-              "title": "Triage completed",
+              "text": "Triage completed",
             },
             "ref": null,
             "rendered": null,
@@ -849,10 +813,7 @@ ShallowWrapper {
             "nodeType": "class",
             "props": Object {
               "onPress": [Function],
-              "styles": Object {
-                "margin": 4,
-              },
-              "title": "Update",
+              "text": "Update",
             },
             "ref": null,
             "rendered": null,
@@ -1119,30 +1080,15 @@ ShallowWrapper {
             />
             <Button
               onPress={[Function]}
-              styles={
-                Object {
-                  "margin": 4,
-                }
-              }
-              title="To Medications"
+              text="Mark Medications"
             />
             <Button
               onPress={[Function]}
-              styles={
-                Object {
-                  "margin": 4,
-                }
-              }
-              title="Triage completed"
+              text="Triage completed"
             />
             <Button
               onPress={[Function]}
-              styles={
-                Object {
-                  "margin": 4,
-                }
-              }
-              title="Update"
+              text="Update"
             />
           </View>,
         ],
@@ -1408,30 +1354,15 @@ ShallowWrapper {
               null,
               <Button
                 onPress={[Function]}
-                styles={
-                  Object {
-                    "margin": 4,
-                  }
-                }
-                title="To Medications"
+                text="Mark Medications"
               />,
               <Button
                 onPress={[Function]}
-                styles={
-                  Object {
-                    "margin": 4,
-                  }
-                }
-                title="Triage completed"
+                text="Triage completed"
               />,
               <Button
                 onPress={[Function]}
-                styles={
-                  Object {
-                    "margin": 4,
-                  }
-                }
-                title="Update"
+                text="Update"
               />,
             ],
             "style": Object {
@@ -1670,10 +1601,7 @@ ShallowWrapper {
               "nodeType": "class",
               "props": Object {
                 "onPress": [Function],
-                "styles": Object {
-                  "margin": 4,
-                },
-                "title": "To Medications",
+                "text": "Mark Medications",
               },
               "ref": null,
               "rendered": null,
@@ -1685,10 +1613,7 @@ ShallowWrapper {
               "nodeType": "class",
               "props": Object {
                 "onPress": [Function],
-                "styles": Object {
-                  "margin": 4,
-                },
-                "title": "Triage completed",
+                "text": "Triage completed",
               },
               "ref": null,
               "rendered": null,
@@ -1700,10 +1625,7 @@ ShallowWrapper {
               "nodeType": "class",
               "props": Object {
                 "onPress": [Function],
-                "styles": Object {
-                  "margin": 4,
-                },
-                "title": "Update",
+                "text": "Update",
               },
               "ref": null,
               "rendered": null,

@@ -17,11 +17,12 @@ describe('Test GetSoap routes', () => {
   });
 
   test('should return soap if exists', () => {
-    const soap = { name: "Soap" };
+    const soap = { name: 'Soap', date: 'datethatexists' };
+    const patient = {key: 'keythatexists', soaps: [soap]};
 
-    mock = sinon.mock(SoapModel)
-      .expects('findOne').withArgs({patientKey: 'keythatexists', date: 'datethatexists'})
-      .yields(null, soap);
+    mock = sinon.mock(PatientModel)
+      .expects('findOne')
+      .yields(null, patient);
 
     return request(app).get('/patient/keythatexists/soap/datethatexists')
       .expect({status: true, soap: soap});
@@ -37,14 +38,16 @@ describe('Test GetStatus routes', () => {
   });
 
   test('should return status of patient if exists', () => {
-    const patientStatus = { patientStatus: "status" };
+    const patientStatus1 = { date: 'datethatexists1' };
+    const patientStatus2 = { date: 'datethatexists2' };
+    const patient = {statuses: [patientStatus1, patientStatus2]};
 
-    mock = sinon.mock(StatusModel)
-      .expects('findOne').withArgs({patientKey: 'keythatexists', date: 'datethatexists'})
-      .yields(null, patientStatus);
+    mock = sinon.mock(PatientModel)
+      .expects('findOne').withArgs({key: 'keythatexists'})
+      .yields(null, patient);
 
-    return request(app).get('/patient/keythatexists/status/datethatexists')
-      .expect({status: true, patientStatus: patientStatus});
+    return request(app).get('/patient/keythatexists/status/datethatexists1')
+      .expect({status: true, patientStatus: patientStatus1});
   });
 });
 
@@ -57,13 +60,20 @@ describe('Test GetStatuses route', () => {
   });
 
   test('should return statuses for the given date', () => {
-    const status1 = { patientKey: 'patientKey', date: 'datetahtexists' };
-    mock = sinon.mock(StatusModel)
-      .expects('find').withArgs({date: 'datethatexists'})
-      .yields(null, [status1]);
+    const patientStatus1 = { key: '1', date: 'datethatexists1' };
+    const patientStatus2 = { key: '2', date: 'datethatexists2' };
+    const patient1 = {key: '1', statuses: [patientStatus1, patientStatus2]};
 
-    return request(app).get('/patients/statuses/datethatexists')
-      .expect({status: true, patientStatuses: [status1]})
+    const patientStatus3 = { key: '3', date: 'datethatexists1' };
+    const patientStatus4 = { key: '4', date: 'datethatexists2' };
+    const patient2 = {key: '2', statuses: [patientStatus3, patientStatus4]};
+
+    mock = sinon.mock(PatientModel)
+      .expects('find')
+      .yields(null, [patient1, patient2]);
+
+    return request(app).get('/patients/statuses/datethatexists1')
+      .expect({status: true, patientStatuses: [patientStatus1, patientStatus3]})
   });
 });
 

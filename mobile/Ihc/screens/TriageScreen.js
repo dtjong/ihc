@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  Button,
   Text,
   View
 } from 'react-native';
@@ -11,6 +10,7 @@ import {localData, serverData} from '../services/DataService';
 import Triage from '../models/Triage';
 import {stringDate} from '../util/Date';
 import Container from '../components/Container';
+import Button from '../components/Button';
 import TriageLabsWheel from '../components/TriageLabsWheel';
 
 export default class TriageScreen extends Component<{}> {
@@ -249,16 +249,13 @@ export default class TriageScreen extends Component<{}> {
           }
 
           <Button onPress={this.gotoMedications}
-            styles={styles.button}
-            title='To Medications' />
+            text='Mark Medications' />
 
           <Button onPress={this.completed}
-            styles={styles.button}
-            title='Triage completed' />
+            text='Triage completed' />
 
           <Button onPress={this.submit}
-            styles={styles.button}
-            title='Update' />
+            text='Update' />
 
         </View>
       </Container>
@@ -275,7 +272,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10,
   },
-  button: {
-    margin: 4,
-  }
 });

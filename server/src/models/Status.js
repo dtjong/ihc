@@ -8,7 +8,6 @@ const StatusSchema = Schema({
   name: String,
   birthday: String,
   date: String,
-  active: Boolean,
   checkinTime: Number, // timestamp, milliseconds
   triageCompleted: Number, // timestamps for when completed
   doctorCompleted: Number,

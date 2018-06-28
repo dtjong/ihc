@@ -8,9 +8,9 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
 } from 'react-native';
 import {localData} from '../services/DataService';
+import Button from './Button';
 
 export default class Loading extends Component<{}> {
   /*
@@ -42,7 +42,7 @@ export default class Loading extends Component<{}> {
       <View style={styles.container}>
         <Text style={styles.text}>Loading...</Text>
         <ActivityIndicator size="large" />
-        <Button title="Cancel" onPress={this.cancel} />
+        <Button text="Cancel" onPress={this.cancel} />
       </View>
     );
   }

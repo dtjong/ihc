@@ -3,7 +3,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View
 } from 'react-native';
 import {localData, serverData} from '../services/DataService';
@@ -11,6 +10,7 @@ import MedicationTable  from '../components/MedicationTable';
 import Container from '../components/Container';
 import {stringDate} from '../util/Date';
 import DrugUpdate from '../models/DrugUpdate';
+import Button from '../components/Button';
 
 export default class MedicationScreen extends Component<{}> {
   /*
@@ -234,29 +234,29 @@ export default class MedicationScreen extends Component<{}> {
         </ScrollView>
 
         <View style={styles.footerContainer}>
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={this.saveCheckmarks}>
-            <Text style={styles.button}>Save checkmarks</Text>
-          </TouchableOpacity>
+          <Button
+            onPress={this.saveCheckmarks}
+            style={styles.button}
+            text='Save checkmarks'>
+          </Button>
 
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={this.createNewMedication}>
-            <Text style={styles.button}>New Medication</Text>
-          </TouchableOpacity>
+          <Button
+            onPress={this.createNewMedication}
+            style={styles.button}
+            text='New Medication'>
+          </Button>
 
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={this.completed}>
-            <Text style={styles.button}>Completed Prescribing</Text>
-          </TouchableOpacity>
+          <Button
+            onPress={this.completed}
+            style={styles.button}
+            text='Completed Prescribing'>
+          </Button>
 
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={this.filled}>
-            <Text style={styles.button}>Filled</Text>
-          </TouchableOpacity>
+          <Button
+            onPress={this.filled}
+            style={styles.button}
+            text='Filled'>
+          </Button>
         </View>
       </Container>
     );
@@ -275,24 +275,14 @@ const styles = StyleSheet.create({
   tableContainer: {
     flex: 0,
   },
-  buttonContainer: {
-    width: 120,
-    margin: 4,
-    padding: 8,
-    elevation: 4,
-    borderRadius: 2,
-    backgroundColor: '#2196F3',
-    height: 40,
-  },
-  button: {
-    fontWeight: '500',
-    color: '#fefefe',
-    textAlign: 'center',
-  },
   footerContainer: {
     flex: 1,
     flexDirection: 'row',
     height: 40,
     margin: 4,
   },
+  button: {
+    width: 120,
+    height: 60 
+  }
 });

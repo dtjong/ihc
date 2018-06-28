@@ -26,8 +26,8 @@ router.put('/patients', PatientController.UpdatePatients);
 //get soap info
 router.get('/patient/:key/soap/:date', PatientController.GetSoap);
 
+//Kenny
 //get status info
-//KENNY
 router.get('/patient/:key/status/:date', PatientController.GetStatus);
 
 //Brent
@@ -38,9 +38,11 @@ router.get('/patient/:key/triage/:date', PatientController.GetTriage);
 //get drug info
 router.get('/patient/:key/drugUpdates', PatientController.GetDrugUpdates);
 
+//Kenny
 //updates the soap of the patient
 router.put('/patient/:key/soap/:date', PatientController.UpdateSoap);
 
+//Kenny
 //updates the status of the patient
 router.put('/patient/:key/status/:date', PatientController.UpdateStatus);
 

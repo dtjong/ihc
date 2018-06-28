@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  Button,
   Text,
 } from 'react-native';
 import {localData, serverData} from '../services/DataService';
 import Container from '../components/Container';
+import Button from '../components/Button';
 
 export default class WelcomeScreen extends Component<{}> {
   constructor(props) {
@@ -81,16 +81,20 @@ export default class WelcomeScreen extends Component<{}> {
           Welcome to clinic!
         </Text>
         <Button onPress={this.goToSignin}
-          title="Signin"
+          text="Signin"
+          style={styles.button}
         />
         <Button onPress={this.goToSelectPatient}
-          title="Select Patient"
+          text="Select Patient"
+          style={styles.button}
         />
         <Button onPress={this.upload}
-          title="Upload updates"
+          text="Upload updates"
+          style={styles.button}
         />
         <Button onPress={this.download}
-          title="Download updates"
+          text="Download updates"
+          style={styles.button}
         />
       </Container>
     );
@@ -103,4 +107,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10,
   },
+  button: {
+    width: 140
+  }
 });

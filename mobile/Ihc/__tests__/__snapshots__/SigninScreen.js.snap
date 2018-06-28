@@ -426,13 +426,9 @@ exports[`renders correctly for default (existing patient) 1`] = `
           </View>
         </View>
         <View
-          accessibilityComponentType="button"
+          accessibilityComponentType={undefined}
           accessibilityLabel={undefined}
-          accessibilityTraits={
-            Array [
-              "button",
-            ]
-          }
+          accessibilityTraits={undefined}
           accessible={true}
           collapsable={undefined}
           hasTVPreferredFocus={undefined}
@@ -448,38 +444,38 @@ exports[`renders correctly for default (existing patient) 1`] = `
           onStartShouldSetResponder={[Function]}
           style={
             Object {
+              "alignItems": "center",
+              "backgroundColor": "#2196F3",
+              "borderRadius": 2,
+              "elevation": 4,
+              "height": 40,
+              "justifyContent": "center",
+              "margin": 4,
               "opacity": 1,
+              "padding": 8,
+              "width": "100%",
             }
           }
           testID={undefined}
           tvParallaxProperties={undefined}
         >
-          <View
+          <Text
+            accessible={true}
+            allowFontScaling={true}
+            ellipsizeMode="tail"
             style={
               Array [
-                Object {},
+                Object {
+                  "color": "#fefefe",
+                  "fontWeight": "500",
+                  "textAlign": "center",
+                },
+                undefined,
               ]
             }
           >
-            <Text
-              accessible={true}
-              allowFontScaling={true}
-              disabled={undefined}
-              ellipsizeMode="tail"
-              style={
-                Array [
-                  Object {
-                    "color": "#007AFF",
-                    "fontSize": 18,
-                    "padding": 8,
-                    "textAlign": "center",
-                  },
-                ]
-              }
-            >
-              Submit
-            </Text>
-          </View>
+            Submit
+          </Text>
         </View>
       </View>
     </View>
@@ -791,7 +787,8 @@ ShallowWrapper {
           />
           <Button
             onPress={[Function]}
-            title="Submit"
+            style={undefined}
+            text="Submit"
           />
         </View>,
       ],
@@ -1063,7 +1060,8 @@ ShallowWrapper {
             />,
             <Button
               onPress={[Function]}
-              title="Submit"
+              style={undefined}
+              text="Submit"
             />,
           ],
           "style": Object {
@@ -1307,7 +1305,8 @@ ShallowWrapper {
             "nodeType": "class",
             "props": Object {
               "onPress": [Function],
-              "title": "Submit",
+              "style": undefined,
+              "text": "Submit",
             },
             "ref": null,
             "rendered": null,
@@ -1580,7 +1579,8 @@ ShallowWrapper {
             />
             <Button
               onPress={[Function]}
-              title="Submit"
+              style={undefined}
+              text="Submit"
             />
           </View>,
         ],
@@ -1852,7 +1852,8 @@ ShallowWrapper {
               />,
               <Button
                 onPress={[Function]}
-                title="Submit"
+                style={undefined}
+                text="Submit"
               />,
             ],
             "style": Object {
@@ -2096,7 +2097,8 @@ ShallowWrapper {
               "nodeType": "class",
               "props": Object {
                 "onPress": [Function],
-                "title": "Submit",
+                "style": undefined,
+                "text": "Submit",
               },
               "ref": null,
               "rendered": null,
@@ -2391,7 +2393,8 @@ ShallowWrapper {
           />
           <Button
             onPress={[Function]}
-            title="Submit"
+            style={undefined}
+            text="Submit"
           />
         </View>,
       ],
@@ -2663,7 +2666,8 @@ ShallowWrapper {
             />,
             <Button
               onPress={[Function]}
-              title="Submit"
+              style={undefined}
+              text="Submit"
             />,
           ],
           "style": Object {
@@ -2907,7 +2911,8 @@ ShallowWrapper {
             "nodeType": "class",
             "props": Object {
               "onPress": [Function],
-              "title": "Submit",
+              "style": undefined,
+              "text": "Submit",
             },
             "ref": null,
             "rendered": null,
@@ -3180,7 +3185,8 @@ ShallowWrapper {
             />
             <Button
               onPress={[Function]}
-              title="Submit"
+              style={undefined}
+              text="Submit"
             />
           </View>,
         ],
@@ -3452,7 +3458,8 @@ ShallowWrapper {
               />,
               <Button
                 onPress={[Function]}
-                title="Submit"
+                style={undefined}
+                text="Submit"
               />,
             ],
             "style": Object {
@@ -3696,7 +3703,8 @@ ShallowWrapper {
               "nodeType": "class",
               "props": Object {
                 "onPress": [Function],
-                "title": "Submit",
+                "style": undefined,
+                "text": "Submit",
               },
               "ref": null,
               "rendered": null,

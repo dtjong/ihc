@@ -1,9 +1,8 @@
 //treat these imports as 'containers'
 //to access/modify these containers, look up mongodb functions
 import PatientModel from '../models/Patient';
-import SoapModel from '../models/Soap';
-import StatusModel from '../models/Status';
 import TriageModel from '../models/Triage';
+
 //function params for all calls are generally the same function(req,res)
 const PatientController = {
   //GET API CALL
@@ -99,14 +98,15 @@ const PatientController = {
         res.json({status: false, error: err.message});
         return;
       }
-    });
 
-    PatientModel.create(req.body.patient, function (err) {
-      if(err) {
-        res.json({status: false, error: err.message});
+      PatientModel.create(req.body.patient, function (err) {
+        if(err) {
+          res.json({status: false, error: err.message});
+          return;
+        }
+        res.json({status: true});
         return;
-      }
-      res.json({status: true});
+      });
     });
   },
   UpdatePatient: function(req, res){
@@ -143,39 +143,77 @@ const PatientController = {
     });
   },
   GetSoap: function(req, res){
-    SoapModel.findOne({patientKey: req.params.key, date: req.params.date}, function(err, soap) {
-      if(!soap) {
-        err = new Error('Patient with key ' + req.params.key + ' does not have a soap for the date ' + req.params.date);
+    PatientModel.findOne({key: req.params.key}, function(err, patient) {
+      if(!patient) {
+        err = new Error('Patient with key ' + req.params.key + ' doesn\'t exist');
       }
 
-      if (err) {
-        res.json({status: false, error: err.message});
-        return;
+      for(let soap of patient.soaps) {
+        // If an existing soap for that date exists, then update it
+        if(soap.date == req.params.date) {
+          res.json({status: true, soap: soap});
+          return;
+        }
       }
-      res.json({status: true, soap: soap});
+
+      err = new Error('Patient with key ' + req.params.key + ' does not have a soap for the date ' + req.params.date);
+      res.json({status: false, error: err.message});
+      return;
     });
   },
   GetStatus: function(req, res){
-    StatusModel.findOne({patientKey: req.params.key, date: req.params.date}, function(err, patientStatus) {
-      if (!patientStatus) {
-        err = new Error('Status of patient with key ' + req.params.key + ' for the date ' + req.params.date + ' does not exist');
+    PatientModel.findOne({key: req.params.key}, function(err, patient) {
+      if (!patient) {
+        err = new Error('Patient with key ' + req.params.key + ' does not exist');
       }
 
       if (err) {
         res.json({status: false, error: err.message});
         return;
       }
-      res.json({status: true, patientStatus: patientStatus});
+
+      for(const statusObj of patient.statuses) {
+        if(statusObj.date === req.params.date) {
+          // Return objects as patientStatuses because status is taken to refer to
+          // the success
+          res.json({status: true, patientStatus: statusObj});
+          return;
+        }
+      }
+
+      res.json({
+        status: false,
+        error: `Status for patientKey ${req.params.key} and date ${req.params.date} does not exist`
+      });
     });
   },
   GetStatuses: function(req, res){
-    StatusModel.find({date: req.params.date}, function(err, statuses) {
-      if (err) {
-        res.json({status: false, error: err.message});
-        return;
-      }
-      res.json({status: true, patientStatuses: statuses});
-    });
+    // Because Mongo doesn't seem to support querying on embedded documents,
+    // first find all the Patients with a Status from the passed in date.
+    // Then iterate through all those patients' status objects, saving the
+    // statuses that match the date.
+    // If there is a better way to do this, then please update this nastiness
+    // :'(
+    PatientModel.find({ 'statuses.date': req.params.date }, { statuses: 1, _id: 0 },
+      (err, patients) => {
+        if (err) {
+          res.json({status: false, error: err.message});
+          return;
+        }
+
+        const statuses = [];
+        for(const patient of patients) {
+          for(const statusObj of patient.statuses) {
+            if(statusObj.date === req.params.date) {
+              statuses.push(statusObj);
+            }
+          }
+        }
+
+        // Return objects as patientStatuses because status is taken to refer to
+        // the success
+        res.json({status: true, patientStatuses: statuses});
+      });
   },
   GetTriage: function(req, res){
     TriageModel.findOne({patientKey: req.params.key, date: req.params.date}, function(err, triage) {
@@ -211,7 +249,7 @@ const PatientController = {
 
       for(let [i,soap] of patient.soaps.entries()) {
         // If an existing soap for that date exists, then update it
-        if(soap.date == req.body.soap.date) {
+        if(soap.date == req.params.date) {
           if(soap.lastUpdated > req.body.soap.lastUpdated) {
             res.json({
               status: false,
