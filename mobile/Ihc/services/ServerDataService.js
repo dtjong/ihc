@@ -2,6 +2,7 @@
 // Requires Promises because dealing with server requests
 
 import config from '../config.json';
+import {convertPatientForServer, convertStatusForServer} from '../util/Realm';
 // Must set the fetchUrl to the server's IP Address and Port
 const fetchUrl = config.fetchUrl;
 
@@ -32,6 +33,7 @@ export function createPatient(patient) {
 
 // Server endpoint: put /patient/:key/status/:date
 export function updateStatus(statusObj) {
+  const copy = convertStatusForServer(statusObj);
   return fetch(fetchUrl + `/patient/${statusObj.patientKey}/status/${statusObj.date}`, {
     method: 'PUT',
     headers: {
@@ -39,7 +41,7 @@ export function updateStatus(statusObj) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      status: statusObj
+      status: copy
     })
   }).then(response => response.json())
     .then(json => {
@@ -56,17 +58,84 @@ export function updateStatus(statusObj) {
     });
 }
 
-// Server endpoint: put /patient/:key/drugUpdate
-export function createDrugUpdate(update) {
+// Server endpoint: put /patient/:key/drugUpdate/:date
+export function updateDrugUpdate(update) {
+  return fetch(fetchUrl + `/patient/${update.patientKey}/drugUpdate/${update.date}`, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      drugUpdate: update
+    })
+  }).then(response => response.json())
+    .then(json => {
+      if (!json.status) {
+        throw new Error(json.error);
+      }
+
+      return Promise.resolve(true);
+    }).catch(err => {
+      return Promise.reject(err);
+    });
+}
+
+// Server endpoint: get /patient/:key/drugUpdates
+export function getDrugUpdates(patientKey) {
+  return fetch(fetchUrl + '/patient/' + patientKey + '/drugUpdates')
+    .then(response => response.json())
+    .then(json => {
+      if(json.error) {
+        throw new Error(json.error);
+      }
+      const drugUpdates = json.drugUpdates;
+      return Promise.resolve(drugUpdates);
+    }).catch(err => {
+      return Promise.reject(err);
+    });
 }
 
 // Server endpoint: put /patient/:key/soap/:date
 export function updateSoap(update) {
+  //update is the new soap object
+  return fetch(fetchUrl + `/patient/${update.patientKey}/soap/${update.date}`, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      soap: update
+    })
+  }).then(response => response.json())
+    .then(json => {
+      if (!json.status) {
+        throw new Error(json.error);
+      }
+
+      return Promise.resolve(true);
+    })
+    .catch(err => {
+      return Promise.reject(err);
+    });
 }
 
 // Server endpoint: get /patient/:key/soap/:date
 // Returns SOAP object if it exists, or undefined if not
 export function getSoap(patientKey, strDate) {
+  return fetch(fetchUrl + '/patient/' + patientKey +'/soap/' + strDate)
+    .then(response => response.json())
+    .then(json => {
+      if (!json.status) {
+        throw new Error(json.error);
+      }
+
+      return Promise.resolve(json.soap);
+    })
+    .catch(err => {
+      return Promise.reject(err);
+    });
 }
 
 // Server endpoint: put /patient/:key/triage/:date
@@ -80,19 +149,38 @@ export function getTriage(patientKey, strDate) {
 
 // Server endpoint: get /patient/:key
 export function getPatient(patientKey) {
-}
-
-// Server endpoint: get /patient/:key/drugUpdates
-export function getMedicationUpdates(patientKey) {
+  return fetch(fetchUrl + '/patient/' + patientKey)
+    .then(response => response.json())
+    .then(json => {
+      if(json.error) {
+        throw new Error(json.error);
+      }
+      const patient = json.patient;
+      return Promise.resolve(patient);
+    }).catch(err => {
+      return Promise.reject(err);
+    });
 }
 
 // Server endpoint: get /patients/statuses/:date
-// Return the statuses of the patients that are active and for this date
-export function getActiveStatuses() {
+// Return the statuses of the patients that are for this date
+export function getStatuses(strDate) {
+  return fetch(fetchUrl + '/patients/statuses/' + strDate)
+    .then(response => response.json())
+    .then(json => {
+      if(json.error) {
+        throw new Error(json.error);
+      }
+      const statuses = json.patientStatuses;
+      return Promise.resolve(statuses);
+    }).catch(err => {
+      return Promise.reject(err);
+    });
 }
 
 // Server endpoint: post /patients
 export function updatePatients(patients) {
+  const patientsCopy = patients.map( patient => convertPatientForServer(patient) );
   return fetch(fetchUrl + '/patients/', {
     method: 'PUT',
     headers: {
@@ -100,7 +188,7 @@ export function updatePatients(patients) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      patients: patients
+      patients: patientsCopy
     }),
   }).then(() => {
     return Promise.resolve(true);
@@ -114,6 +202,9 @@ export function getUpdatedPatients(lastSynced) {
   return fetch(fetchUrl + '/patients/' + lastSynced)
     .then(response => response.json())
     .then(json => {
+      if(json.error) {
+        throw new Error(json.error);
+      }
       const patients = json.patients;
       return Promise.resolve(patients);
     }).catch(err => {

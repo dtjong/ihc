@@ -16,7 +16,7 @@ const PatientSchema = Schema({
   phone: String,
   motherHeight: Number,
   fatherHeight: Number,
-  medications: [DrugUpdateModel.schema],
+  drugUpdates: [DrugUpdateModel.schema],
   soaps: [SoapModel.schema],
   triages: [TriageModel.schema],
   statuses: [StatusModel.schema],

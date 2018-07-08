@@ -7,39 +7,32 @@ export default class Triage {
    * Return the form type, given the value of certain buttons
    */
   static getFormType(form, gender) {
-    if(gender === 1 && form.labsDone && form.urineTestDone) { // male
-      return MaleTriageLabsUrine;
-    }
-    if(gender === 1 && form.labsDone && !form.urineTestDone) { // male
-      return MaleTriageLabs;
-    }
-    if(gender === 1 && !form.labsDone && form.urineTestDone) { // male
+    if(gender === 1 && form.urineTestDone) { // male
       return MaleTriageUrine;
     }
-    if(gender === 1 && !form.labsDone && !form.urineTestDone) { // male
+    if(gender === 1 && !form.urineTestDone) { // male
       return MaleTriage;
     }
 
-    if(gender === 2 && form.labsDone && form.urineTestDone) { // Female
-      return FemaleTriageLabsUrine;
-    }
-    if(gender === 2 && form.labsDone && !form.urineTestDone) { // Female
-      return FemaleTriageLabs;
-    }
-    if(gender === 2 && !form.labsDone && form.urineTestDone) { // Female
+    if(gender === 2 && form.urineTestDone) { // Female
       return FemaleTriageUrine;
     }
-    if(gender === 2 && !form.labsDone && !form.urineTestDone) { // Female
+    if(gender === 2 && !form.urineTestDone) { // Female
       return FemaleTriage;
     }
 
     throw new Error('No form type for these settings...');
   }
 
-  static extractFromForm(form, patientKey) {
+  static extractFromForm(form, patientKey, labTestObjects) {
     const triage = Object.assign({}, form);
     triage.patientKey = patientKey;
     triage.lastUpdated = new Date().getTime();
+
+    // Go through test objects, and add the result to the triage object
+    for(let obj of Object.values(labTestObjects)) {
+      triage[obj.name] = obj.options[obj.result];
+    }
     return triage;
   }
 
@@ -81,13 +74,7 @@ export default class Triage {
       abortions: 'string?',
       miscarriages: 'string?',
       //---END IF---
-      //---IF LABS DONE---
       labsDone: 'bool',
-      bgl: 'string?',
-      a1c: 'string?',
-      fasting: 'bool?',
-      pregnancyTest: 'bool?',
-      //--END IF---
       //---IF URINE TEST---
       urineTestDone: 'bool',
       leukocytes: 'string?',
@@ -141,13 +128,7 @@ Triage.schema = {
     abortions: 'string?',
     miscarriages: 'string?',
     //---END IF---
-    //---IF LABS DONE---
     labsDone: 'bool',
-    bgl: 'string?',
-    a1c: 'string?',
-    fasting: 'bool?',
-    pregnancyTest: 'bool?',
-    //--END IF---
     //---IF URINE TEST---
     urineTestDone: 'bool',
     leukocytes: 'string?',
@@ -203,15 +184,20 @@ MaleTriage = t.struct({
   immunizations: t.String,
   chiefComplaint: t.String,
   pharmacySection: t.String,
-  labsDone: t.Boolean,
-  urineTestDone: t.Boolean,
 });
 
-MaleTriageLabs = MaleTriage.extend({
-  bgl: t.maybe(t.String),
-  a1c: t.maybe(t.String),
-  fasting: t.maybe(t.Boolean),
+FemaleTriage = MaleTriage.extend({
+  LMP: t.maybe(t.String),
+  regular: t.maybe(t.Boolean),
+  pregnancies: t.maybe(t.String),
+  liveBirths: t.maybe(t.String),
+  abortions: t.maybe(t.String),
+  miscarriages: t.maybe(t.String),
 });
+
+// Render the urineTest button after other stuff
+MaleTriage = MaleTriage.extend({urineTestDone: t.Boolean});
+FemaleTriage = FemaleTriage.extend({urineTestDone: t.Boolean});
 
 urineTestObject = {
   leukocytes: t.maybe(t.String),
@@ -224,28 +210,14 @@ urineTestObject = {
   bilirubin: t.maybe(t.String),
   ph: t.maybe(t.String),
   glucose: t.maybe(t.String),
+  labsDone: t.Boolean,
 };
 
 MaleTriageUrine = MaleTriage.extend(urineTestObject);
-MaleTriageLabsUrine = MaleTriageLabs.extend(urineTestObject);
-
-FemaleTriage = MaleTriage.extend({
-  LMP: t.maybe(t.String),
-  regular: t.maybe(t.Boolean),
-  pregnancies: t.maybe(t.String),
-  liveBirths: t.maybe(t.String),
-  abortions: t.maybe(t.String),
-  miscarriages: t.maybe(t.String),
-});
-
-FemaleTriageLabs = FemaleTriage.extend({
-  bgl: t.maybe(t.String),
-  a1c: t.maybe(t.String),
-  fasting: t.maybe(t.Boolean),
-  pregnancyTest: t.maybe(t.Boolean),
-});
-
 FemaleTriageUrine = FemaleTriage.extend(urineTestObject);
-FemaleTriageLabsUrine = FemaleTriageLabs.extend(urineTestObject);
+
+// Render the labsDone button after any urine tests
+MaleTriage = MaleTriage.extend({labsDone: t.Boolean});
+FemaleTriage = FemaleTriage.extend({labsDone: t.Boolean});
 
 /* eslint-enable no-undef */

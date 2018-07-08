@@ -2,44 +2,73 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
-  TouchableOpacity,
-  View
+  ScrollView,
 } from 'react-native';
-import {localData} from '../services/DataService';
-import PatientTable, {tableStyles} from '../components/PatientTable';
+import {localData, serverData} from '../services/DataService';
+import {stringDate} from '../util/Date';
+import PatientTable from '../components/PatientTable';
 import Container from '../components/Container';
-import {shortDate} from '../util/Date';
+import {downstreamSyncWithServer} from '../util/Sync';
 
 export default class PatientSelectScreen extends Component<{}> {
   constructor(props) {
     super(props);
 
-    this.rowNum = 0;
-    this.tableHeaders = ['Name', 'Birthday', 'Checkin', 'Triage', 'Doctor',
-      'Pharmacy', 'Notes'];
     this.state = {
+      errorMsg: null,
+      successMsg: null,
       loading: false,
       rows: [],
+      showRetryButton: false,
+      upstreamSyncing: false // Should be set before server calls to declare what kind of syncing
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
-  loadPatients = () => {
-    this.setState({ loading: true });
-    const data = localData.getPatientSelectRows();
-    this.setState({ rows: data, loading: false });
+  convertStatusesToRows(statuses) {
+    const columnOrder = ['name', 'birthday', 'checkinTime', 'triageCompleted',
+      'doctorCompleted', 'pharmacyCompleted', 'notes', 'patientKey'];
+
+    // Sort statuses by checkin time for now
+    statuses.sort( (status1, status2) => status1.checkinTime - status2.checkinTime );
+
+    const toReturn = statuses.map((obj) => columnOrder.map( (key) => obj[key] ));
+    return toReturn;
+  }
+
+  // Sync up tablet first with server before grabbing statuses
+  syncAndLoadPatients = () => {
+    this.setState({ loading: true, upstreamSyncing: false, errorMsg: null, successMsg: null });
+
+    // Load local data in beginning to display even if sync doesn't work
+    const today = stringDate(new Date());
+    const oldStatuses = localData.getStatuses(today);
+    const oldRowData = this.convertStatusesToRows(oldStatuses);
+    this.setState({rows: oldRowData});
+
+    downstreamSyncWithServer()
+      .then((failedPatientKeys) => {
+        if(failedPatientKeys.length > 0) {
+          throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
+        }
+        const newStatuses = localData.getStatuses(today);
+        const newRowData = this.convertStatusesToRows(newStatuses);
+        this.setState({rows: newRowData, loading: false});
+      })
+      .catch(err => {
+        this.setState({loading: false, errorMsg: err.message});
+      });
   }
 
   // Reload table after moving back to table
+  // Replaces componentDidMount() because this will be called around the same
+  // time
   onNavigatorEvent(event) {
     if (event.id === 'willAppear') {
-      this.loadPatients();
+      this.syncAndLoadPatients();
     }
   }
 
-  componentDidMount() {
-    this.loadPatients();
-  }
 
   goToPatient = (patient) => {
     this.props.navigator.push({
@@ -49,56 +78,84 @@ export default class PatientSelectScreen extends Component<{}> {
     });
   }
 
-  renderRow = (data, keyFn) => {
-    // e is the current element
-    const cols = data.map( (e,i) => (
-      <View style={tableStyles.col} key={keyFn(i)}>
-        {( () => {
-          // TODO: format birthday, add ability to add notes
-          switch(i) {
-            case 1: // birthday
-              return <Text>{shortDate(e)}</Text>;
-            case 2: // checkin time
-            case 3: // triage time
-            case 4: // doctor time
-            case 5: // pharmacy time
-              // No time provided
-              if(!e)
-                return <Text></Text>;
-              const time = new Date(e);
-              // TODO: update checkintime format
-              return <Text>{`${time.getHours()}:${time.getMinutes()}`}</Text>;
-            case 7: // patient Key
-              return;
-            default:
-              return <Text>{e}</Text>;
-          }
-        })() }
-      </View>
-    ) );
-    return (
-      <TouchableOpacity style={tableStyles.rowContainer}
-        key={`row${this.rowNum++}`} onPress={() => this.goToPatient(data)}>
-        <View style={tableStyles.rowContainer} key={keyFn(cols.length)}>
-          {cols}
-        </View>
-      </TouchableOpacity>
-    );
+  // Update the statusObj with notes from the modal
+  saveModal = (patientKey, notes) => {
+    let statusObj = {};
+    try {
+      statusObj = localData.updateStatus(patientKey, stringDate(new Date()),
+        'notes', notes);
+    } catch(e) {
+      this.setState({errorMsg: e.message, successMsg: null});
+      return;
+    }
+
+    this.setState({loading: true, upstreamSyncing: true, patientKey: patientKey});
+    serverData.updateStatus(statusObj)
+      .then( () => {
+        // View README: Handle syncing the tablet, point 3 for explanation
+        if(this.state.loading) {
+          // if successful, then reload screen (which closes modal too)
+          this.syncAndLoadPatients();
+          this.setState({
+            loading: false,
+            showRetryButton: false,
+            successMsg: 'Saved successfully',
+            errorMsg: null
+          });
+        }
+      })
+      .catch( (e) => {
+        if(this.state.loading) {
+          localData.markPatientNeedToUpload(patientKey);
+          this.setState({
+            errorMsg: e.message,
+            successMsg: null,
+            loading: false,
+            showRetryButton: true
+          });
+        }
+      });
+  }
+
+  // If Loading was canceled, we want to show a retry button
+  setLoading = (val, canceled) => {
+    let errorMsg = null;
+    // View README: Handle syncing the tablet, point 5 for explanation
+    if(canceled && this.state.upstreamSyncing === false) {
+      errorMsg = 'Canceling may cause data to be out of sync.';
+    }
+    this.setState({loading: val, showRetryButton: canceled, errorMsg: errorMsg});
+  }
+
+  setMsg = (type, msg) => {
+    const obj = {};
+    obj[type] = msg;
+    const other = type === 'successMsg' ? 'errorMsg' : 'successMsg';
+    obj[other] = null;
+    this.setState(obj);
   }
 
   render() {
     return (
-      <Container loading={this.state.loading}>
+      <Container loading={this.state.loading}
+        errorMsg={this.state.errorMsg}
+        successMsg={this.state.successMsg}
+        setLoading={this.setLoading}
+        setMsg={this.setMsg}
+        patientKey={this.state.patientKey}
+        showRetryButton={this.state.showRetryButton}
+      >
         <Text style={styles.title}>
           Select a Patient
         </Text>
 
-        <PatientTable
-          headers={this.tableHeaders}
-          rows={this.state.rows}
-          loading={this.state.loading}
-          renderRow={this.renderRow}
-        />
+        <ScrollView contentContainerStyle={styles.tableContainer} horizontal>
+          <PatientTable
+            rows={this.state.rows}
+            goToPatient={this.goToPatient}
+            saveModal={this.saveModal}
+          />
+        </ScrollView>
       </Container>
     );
   }
@@ -109,5 +166,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
-  }
+  },
+  tableContainer: {
+    width: '100%'
+  },
 });

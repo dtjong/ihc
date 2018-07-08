@@ -46,7 +46,14 @@ exports[`renders correctly 1`] = `
           allowFontScaling={true}
           ellipsizeMode="tail"
         >
-          R: Refill, C: Change
+          R: Refill, D: Change Dose, X: Cancel
+        </Text>
+        <Text
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
+        >
+          T: Taking, N: Not Taking, I: Taking incorrectly
         </Text>
       </View>
       <RCTScrollView
@@ -61,388 +68,24 @@ exports[`renders correctly 1`] = `
           <View
             style={
               Object {
+                "alignItems": "center",
                 "flex": 1,
-                "flexDirection": "row",
+                "justifyContent": "center",
               }
             }
           >
-            <View
+            <Text
+              accessible={true}
+              allowFontScaling={true}
+              ellipsizeMode="tail"
               style={
                 Object {
-                  "backgroundColor": "#adada0",
-                  "borderWidth": 1,
-                  "flex": 1,
-                  "flexDirection": "column",
-                  "maxWidth": 100,
-                  "minWidth": 100,
+                  "textAlign": "center",
                 }
               }
             >
-              <View
-                style={
-                  Object {
-                    "backgroundColor": "#dbdbdb",
-                    "borderWidth": 1,
-                    "flex": 1,
-                    "flexDirection": "row",
-                    "maxHeight": 20,
-                  }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                >
-                  Drug name
-                </Text>
-              </View>
-              <View
-                style={
-                  Object {
-                    "backgroundColor": "#dddddd",
-                    "borderWidth": 1,
-                    "flex": 0,
-                    "flexDirection": "row",
-                    "height": 60,
-                  }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                >
-                  tylenol
-                </Text>
-              </View>
-            </View>
-            <View
-              style={
-                Object {
-                  "backgroundColor": "#adada0",
-                  "borderWidth": 1,
-                  "flex": 1,
-                  "flexDirection": "column",
-                  "maxWidth": 100,
-                  "minWidth": 100,
-                }
-              }
-            >
-              <View
-                style={
-                  Object {
-                    "backgroundColor": "#dbdbdb",
-                    "borderWidth": 1,
-                    "flex": 1,
-                    "flexDirection": "row",
-                    "maxHeight": 20,
-                  }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                >
-                  Actions
-                </Text>
-              </View>
-              <View
-                style={
-                  Object {
-                    "backgroundColor": "#dddddd",
-                    "borderWidth": 1,
-                    "flex": 0,
-                    "flexDirection": "row",
-                    "height": 60,
-                  }
-                }
-              >
-                <View
-                  accessibilityComponentType={undefined}
-                  accessibilityLabel={undefined}
-                  accessibilityTraits={undefined}
-                  accessible={true}
-                  collapsable={undefined}
-                  hasTVPreferredFocus={undefined}
-                  hitSlop={undefined}
-                  isTVSelectable={true}
-                  nativeID={undefined}
-                  onLayout={undefined}
-                  onResponderGrant={[Function]}
-                  onResponderMove={[Function]}
-                  onResponderRelease={[Function]}
-                  onResponderTerminate={[Function]}
-                  onResponderTerminationRequest={[Function]}
-                  onStartShouldSetResponder={[Function]}
-                  style={
-                    Object {
-                      "backgroundColor": "#2196F3",
-                      "borderRadius": 2,
-                      "elevation": 4,
-                      "flex": 1,
-                      "margin": 2,
-                      "opacity": 1,
-                      "padding": 4,
-                    }
-                  }
-                  testID={undefined}
-                  tvParallaxProperties={undefined}
-                >
-                  <Text
-                    accessible={true}
-                    allowFontScaling={true}
-                    ellipsizeMode="tail"
-                    style={
-                      Object {
-                        "color": "#fefefe",
-                        "fontWeight": "500",
-                        "textAlign": "center",
-                      }
-                    }
-                  >
-                    R
-                  </Text>
-                </View>
-                <View
-                  accessibilityComponentType={undefined}
-                  accessibilityLabel={undefined}
-                  accessibilityTraits={undefined}
-                  accessible={true}
-                  collapsable={undefined}
-                  hasTVPreferredFocus={undefined}
-                  hitSlop={undefined}
-                  isTVSelectable={true}
-                  nativeID={undefined}
-                  onLayout={undefined}
-                  onResponderGrant={[Function]}
-                  onResponderMove={[Function]}
-                  onResponderRelease={[Function]}
-                  onResponderTerminate={[Function]}
-                  onResponderTerminationRequest={[Function]}
-                  onStartShouldSetResponder={[Function]}
-                  style={
-                    Object {
-                      "backgroundColor": "#2196F3",
-                      "borderRadius": 2,
-                      "elevation": 4,
-                      "flex": 1,
-                      "margin": 2,
-                      "opacity": 1,
-                      "padding": 4,
-                    }
-                  }
-                  testID={undefined}
-                  tvParallaxProperties={undefined}
-                >
-                  <Text
-                    accessible={true}
-                    allowFontScaling={true}
-                    ellipsizeMode="tail"
-                    style={
-                      Object {
-                        "color": "#fefefe",
-                        "fontWeight": "500",
-                        "textAlign": "center",
-                      }
-                    }
-                  >
-                    C
-                  </Text>
-                </View>
-              </View>
-            </View>
-            <View
-              style={
-                Object {
-                  "backgroundColor": "#adadad",
-                  "borderWidth": 1,
-                  "flex": 1,
-                  "flexDirection": "column",
-                  "minWidth": 250,
-                }
-              }
-            >
-              <View
-                style={
-                  Object {
-                    "backgroundColor": "#dbdbdb",
-                    "borderWidth": 1,
-                    "flex": 1,
-                    "flexDirection": "row",
-                    "maxHeight": 20,
-                  }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                >
-                  19691232
-                </Text>
-              </View>
-              <View
-                style={
-                  Object {
-                    "backgroundColor": "#dddddd",
-                    "borderWidth": 1,
-                    "flex": 0,
-                    "flexDirection": "row",
-                    "height": 60,
-                  }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                >
-                  No medications for today
-                </Text>
-              </View>
-            </View>
-            <View
-              style={
-                Object {
-                  "backgroundColor": "#adadad",
-                  "borderWidth": 1,
-                  "flex": 1,
-                  "flexDirection": "column",
-                  "minWidth": 250,
-                }
-              }
-            >
-              <View
-                style={
-                  Object {
-                    "backgroundColor": "#dbdbdb",
-                    "borderWidth": 1,
-                    "flex": 1,
-                    "flexDirection": "row",
-                    "maxHeight": 20,
-                  }
-                }
-              >
-                <Text
-                  accessible={true}
-                  allowFontScaling={true}
-                  ellipsizeMode="tail"
-                >
-                  20180101
-                </Text>
-              </View>
-              <View
-                style={
-                  Object {
-                    "backgroundColor": "#dddddd",
-                    "borderWidth": 1,
-                    "flex": 0,
-                    "flexDirection": "row",
-                    "height": 60,
-                  }
-                }
-              >
-                <View
-                  style={
-                    Object {
-                      "backgroundColor": "#adadad",
-                      "borderWidth": 1,
-                      "flex": 1,
-                      "flexDirection": "column",
-                      "maxWidth": 60,
-                      "minWidth": 60,
-                    }
-                  }
-                >
-                  <Text
-                    accessible={true}
-                    allowFontScaling={true}
-                    ellipsizeMode="tail"
-                    style={
-                      Object {
-                        "textAlign": "center",
-                      }
-                    }
-                  >
-                    1
-                  </Text>
-                </View>
-                <View
-                  style={
-                    Object {
-                      "backgroundColor": "#adadad",
-                      "borderWidth": 1,
-                      "flex": 1,
-                      "flexDirection": "column",
-                      "maxWidth": 60,
-                      "minWidth": 60,
-                    }
-                  }
-                >
-                  <Text
-                    accessible={true}
-                    allowFontScaling={true}
-                    ellipsizeMode="tail"
-                    style={
-                      Object {
-                        "textAlign": "center",
-                      }
-                    }
-                  >
-                    1
-                  </Text>
-                </View>
-                <View
-                  style={
-                    Object {
-                      "backgroundColor": "#adadad",
-                      "borderWidth": 1,
-                      "flex": 1,
-                      "flexDirection": "column",
-                      "maxWidth": 60,
-                      "minWidth": 60,
-                    }
-                  }
-                >
-                  <Text
-                    accessible={true}
-                    allowFontScaling={true}
-                    ellipsizeMode="tail"
-                    style={
-                      Object {
-                        "textAlign": "center",
-                      }
-                    }
-                  >
-                    1
-                  </Text>
-                </View>
-                <View
-                  style={
-                    Object {
-                      "backgroundColor": "#adadad",
-                      "borderWidth": 1,
-                      "flex": 1,
-                      "flexDirection": "column",
-                      "minWidth": 150,
-                    }
-                  }
-                >
-                  <Text
-                    accessible={true}
-                    allowFontScaling={true}
-                    ellipsizeMode="tail"
-                    style={
-                      Object {
-                        "textAlign": "center",
-                      }
-                    }
-                  />
-                </View>
-              </View>
-            </View>
+              No data to show
+            </Text>
           </View>
         </View>
       </RCTScrollView>
@@ -475,10 +118,12 @@ exports[`renders correctly 1`] = `
           onStartShouldSetResponder={[Function]}
           style={
             Object {
+              "alignItems": "center",
               "backgroundColor": "#2196F3",
               "borderRadius": 2,
               "elevation": 4,
-              "height": 40,
+              "height": 60,
+              "justifyContent": "center",
               "margin": 4,
               "opacity": 1,
               "padding": 8,
@@ -493,11 +138,66 @@ exports[`renders correctly 1`] = `
             allowFontScaling={true}
             ellipsizeMode="tail"
             style={
-              Object {
-                "color": "#fefefe",
-                "fontWeight": "500",
-                "textAlign": "center",
-              }
+              Array [
+                Object {
+                  "color": "#fefefe",
+                  "fontWeight": "500",
+                  "textAlign": "center",
+                },
+                undefined,
+              ]
+            }
+          >
+            Save checkmarks
+          </Text>
+        </View>
+        <View
+          accessibilityComponentType={undefined}
+          accessibilityLabel={undefined}
+          accessibilityTraits={undefined}
+          accessible={true}
+          collapsable={undefined}
+          hasTVPreferredFocus={undefined}
+          hitSlop={undefined}
+          isTVSelectable={true}
+          nativeID={undefined}
+          onLayout={undefined}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "alignItems": "center",
+              "backgroundColor": "#2196F3",
+              "borderRadius": 2,
+              "elevation": 4,
+              "height": 60,
+              "justifyContent": "center",
+              "margin": 4,
+              "opacity": 1,
+              "padding": 8,
+              "width": 120,
+            }
+          }
+          testID={undefined}
+          tvParallaxProperties={undefined}
+        >
+          <Text
+            accessible={true}
+            allowFontScaling={true}
+            ellipsizeMode="tail"
+            style={
+              Array [
+                Object {
+                  "color": "#fefefe",
+                  "fontWeight": "500",
+                  "textAlign": "center",
+                },
+                undefined,
+              ]
             }
           >
             New Medication
@@ -522,10 +222,12 @@ exports[`renders correctly 1`] = `
           onStartShouldSetResponder={[Function]}
           style={
             Object {
+              "alignItems": "center",
               "backgroundColor": "#2196F3",
               "borderRadius": 2,
               "elevation": 4,
-              "height": 40,
+              "height": 60,
+              "justifyContent": "center",
               "margin": 4,
               "opacity": 1,
               "padding": 8,
@@ -540,14 +242,69 @@ exports[`renders correctly 1`] = `
             allowFontScaling={true}
             ellipsizeMode="tail"
             style={
-              Object {
-                "color": "#fefefe",
-                "fontWeight": "500",
-                "textAlign": "center",
-              }
+              Array [
+                Object {
+                  "color": "#fefefe",
+                  "fontWeight": "500",
+                  "textAlign": "center",
+                },
+                undefined,
+              ]
             }
           >
-            Completed
+            Completed Prescribing
+          </Text>
+        </View>
+        <View
+          accessibilityComponentType={undefined}
+          accessibilityLabel={undefined}
+          accessibilityTraits={undefined}
+          accessible={true}
+          collapsable={undefined}
+          hasTVPreferredFocus={undefined}
+          hitSlop={undefined}
+          isTVSelectable={true}
+          nativeID={undefined}
+          onLayout={undefined}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "alignItems": "center",
+              "backgroundColor": "#2196F3",
+              "borderRadius": 2,
+              "elevation": 4,
+              "height": 60,
+              "justifyContent": "center",
+              "margin": 4,
+              "opacity": 1,
+              "padding": 8,
+              "width": 120,
+            }
+          }
+          testID={undefined}
+          tvParallaxProperties={undefined}
+        >
+          <Text
+            accessible={true}
+            allowFontScaling={true}
+            ellipsizeMode="tail"
+            style={
+              Array [
+                Object {
+                  "color": "#fefefe",
+                  "fontWeight": "500",
+                  "textAlign": "center",
+                },
+                undefined,
+              ]
+            }
+          >
+            Filled
           </Text>
         </View>
       </View>

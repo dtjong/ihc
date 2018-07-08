@@ -7,6 +7,7 @@ export function createPatient(patient) {
   return new Promise((res,rej) => {
     setTimeout(() => {
       res(true);
+      // rej(new Error("Fake error in FakeServerDataService"));
     }, 500);
   });
 }
@@ -80,5 +81,10 @@ export function updatePatients(patients) {
 
 // Server endpoint: get /patients/:timestamp
 export function getUpdatedPatients(lastSynced) {
+  return new Promise((res,rej) => {
+    setTimeout(() => {
+      res([]);
+    }, 500);
+  });
 }
 /* eslint-enable */

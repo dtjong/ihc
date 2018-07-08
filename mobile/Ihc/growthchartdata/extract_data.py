@@ -2,13 +2,25 @@ import csv
 import json
 from collections import defaultdict
 
+# heights
 hcsvfile = open('statage.csv', 'r')
 hboysjson = open('boys_heights.json', 'w')
 hgirlsjson = open('girls_heights.json', 'w')
 
+# weights
 wcsvfile = open('wtage.csv', 'r')
 wboysjson = open('boys_weights.json', 'w')
 wgirlsjson = open('girls_weights.json', 'w')
+
+# infant heights
+infant_hcsvfile = open('infantlength.csv', 'r')
+infant_hboysjson = open('infant_boys_heights.json', 'w')
+infant_hgirlsjson = open('infant_girls_heights.json', 'w')
+
+# infant weights
+infant_wcsvfile = open('infantweight.csv', 'r')
+infant_wboysjson = open('infant_boys_weights.json', 'w')
+infant_wgirlsjson = open('infant_girls_weights.json', 'w')
 
 def convert(row):
     data = {}
@@ -31,12 +43,22 @@ def extractPoints(data, boyObj, girlObj):
     obj["P95"].append([data["Agemos"], data["P95"]])
     return
 
-# Sample 1/skipFactor points by skipping other rows
-skipFactor = 8
-
 def do(csvfile, boysjson, girlsjson):
+    # infant length fieldnames are different
+    infant_length_fieldnames = ("Sex", "Agemos", "L", "M", "S", "P3", "P5", "P10", \
+                    "P25", "P50", "P75", "P90", "P95", "P97", "Pub3", "Pub5", \
+                    "Pub10", "Pub25","Pub50","Pub75","Pub90","Pub95","Pub97", \
+                    "Diff3","Diff5","Diff10","Diff25","Diff50","Diff75","Diff90", \
+                    "Diff95","Diff97")
     fieldnames = ("Sex", "Agemos", "L", "M", "S", "P3", "P5", "P10", "P25", "P50", \
             "P75", "P90", "P95", "P97")
+    # Sample 1/skipFactor points by skipping other rows
+    skipFactor = 8
+    # use other fieldnames, skip less rows for infants
+    if csvfile == infant_hcsvfile:
+        fieldnames = infant_length_fieldnames
+    if csvfile == infant_hcsvfile or csvfile == infant_wcsvfile:
+        skipFactor = 1
     reader = csv.DictReader(csvfile, fieldnames)
     boysCount = 0 # count of rows (months)
     girlsCount = 0
@@ -62,3 +84,5 @@ def do(csvfile, boysjson, girlsjson):
 
 do(hcsvfile, hboysjson, hgirlsjson)
 do(wcsvfile, wboysjson, wgirlsjson)
+do(infant_hcsvfile, infant_hboysjson, infant_hgirlsjson)
+do(infant_wcsvfile, infant_wboysjson, infant_wgirlsjson)

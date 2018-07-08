@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  Button,
   Text,
   View
 } from 'react-native';
@@ -12,6 +11,7 @@ var Form = t.form.Form;
 import {localData, serverData} from '../services/DataService';
 import Patient from '../models/Patient';
 import Container from '../components/Container';
+import Button from '../components/Button';
 
 export default class SigninScreen extends Component<{}> {
   constructor(props) {
@@ -21,7 +21,8 @@ export default class SigninScreen extends Component<{}> {
       formType: this.Signin,
       successMsg: null,
       errorMsg: null,
-      loading: false
+      loading: false,
+      showRetryButton: false
     };
   }
 
@@ -79,9 +80,15 @@ export default class SigninScreen extends Component<{}> {
     if(!this.refs.form.validate().isValid()) {
       return;
     }
-    this.setState({loading: true});
     const form = this.refs.form.getValue();
     const patient = Patient.extractFromForm(form);
+
+    this.setState({
+      loading: true,
+      errorMsg: null,
+      successMsg: null,
+      patientKey: patient.key
+    });
 
     if(form.newPatient) {
       try {
@@ -95,25 +102,32 @@ export default class SigninScreen extends Component<{}> {
 
       serverData.createPatient(patient)
         .then( () => {
-          this.setState({
-            // Clear form, reset to Signin form
-            formValues: {newPatient: false},
-            formType: this.Signin,
-            successMsg: `${patient.firstName} added successfully`,
-            errorMsg: null,
-            loading: false
-          });
+          // View README: Handle syncing the tablet, point 3 for explanation
+          if(this.state.loading) {
+            this.setState({
+              // Clear form, reset to Signin form
+              formValues: {newPatient: false},
+              formType: this.Signin,
+              successMsg: `${patient.firstName} added successfully`,
+              errorMsg: null,
+              loading: false,
+              showRetryButton: false
+            });
+          }
         })
         .catch( (e) => {
-          // If server update fails, mark the patient as need to upload
-          // and give a message to syncronize with UploadUpdates
-          this.setState({
-            errorMsg: `${e.message}. Try to UploadUpdates`,
-            successMsg: null,
-            loading: false
-          });
+          if(this.state.loading) {
+            // If server update fails, mark the patient as need to upload
+            // and give a message to syncronize with UploadUpdates
+            this.setState({
+              errorMsg: `${e.message}. Try to UploadUpdates`,
+              successMsg: null,
+              loading: false,
+              showRetryButton: true
+            });
 
-          localData.markPatientNeedToUpload(patient.key);
+            localData.markPatientNeedToUpload(patient.key);
+          }
         });
 
       return;
@@ -130,33 +144,58 @@ export default class SigninScreen extends Component<{}> {
 
     serverData.updateStatus(statusObj)
       .then( () => {
-        this.setState({
-          // Clear form, reset to Signin form
-          formValues: {newPatient: false},
-          formType: this.Signin,
-          successMsg: `${patient.firstName} signed in successfully`,
-          errorMsg: null,
-          loading: false
-        });
+        // View README: Handle syncing the tablet, point 3 for explanation
+        if(this.state.loading){
+          this.setState({
+            // Clear form, reset to Signin form
+            formValues: {newPatient: false},
+            formType: this.Signin,
+            successMsg: `${patient.firstName} signed in successfully`,
+            errorMsg: null,
+            loading: false,
+            showRetryButton: false
+          });
+        }
       })
       .catch( (e) => {
-        // If server update fails, mark the patient as need to upload
-        // and give a message to syncronize with UploadUpdates
-        this.setState({
-          errorMsg: `${e.message}. Try to UploadUpdates`,
-          successMsg: null,
-          loading: false
-        });
+        if(this.state.loading){
+          // If server update fails, mark the patient as need to upload
+          // and give a message to syncronize with UploadUpdates
+          this.setState({
+            errorMsg: `${e.message}. Try to UploadUpdates`,
+            successMsg: null,
+            loading: false,
+            showRetryButton: true
+          });
 
-        localData.markPatientNeedToUpload(patient.key);
+          localData.markPatientNeedToUpload(patient.key);
+        }
       });
+  }
+
+  // If Loading was canceled, we want to show a retry button
+  setLoading = (val, canceled=false) => {
+    this.setState({loading: val, showRetryButton: canceled});
+  }
+
+  setMsg = (type, msg) => {
+    const obj = {};
+    obj[type] = msg;
+    const other = type === 'successMsg' ? 'errorMsg' : 'successMsg';
+    obj[other] = null;
+    this.setState(obj);
   }
 
   render() {
     return (
       <Container loading={this.state.loading}
         errorMsg={this.state.errorMsg}
-        successMsg={this.state.successMsg} >
+        successMsg={this.state.successMsg}
+        setLoading={this.setLoading}
+        setMsg={this.setMsg}
+        patientKey={this.state.patientKey}
+        showRetryButton={this.state.showRetryButton}
+      >
 
         <Text style={styles.title}>
           Signin
@@ -170,7 +209,8 @@ export default class SigninScreen extends Component<{}> {
           />
 
           <Button onPress={this.submit}
-            title='Submit' />
+            style={styles.button}
+            text='Submit' />
         </View>
       </Container>
     );

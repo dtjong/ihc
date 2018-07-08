@@ -12,7 +12,7 @@ export default class Status {
       name: Patient.fullName(patient),
       birthday: patient.birthday,
       date: stringDate(new Date()),
-      active: true,
+      medicationCheckmarks: [],
       checkinTime: new Date().getTime(),
       lastUpdated: new Date().getTime(),
     };
@@ -27,11 +27,11 @@ Status.schema = {
     name: 'string',
     birthday: 'string', // For convenience in patient select table
     date: 'string',
-    active: 'bool',
     checkinTime: 'int', // Timestamp, milliseconds
     triageCompleted: 'int?', // timestamp for when completed
     doctorCompleted: 'int?',
     pharmacyCompleted: 'int?',
+    medicationCheckmarks: 'MedicationCheckmarks[]',
     notes: 'string?',
     lastUpdated: 'int',
   }

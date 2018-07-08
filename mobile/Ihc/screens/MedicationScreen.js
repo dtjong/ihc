@@ -3,13 +3,15 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View
 } from 'react-native';
 import {localData, serverData} from '../services/DataService';
 import MedicationTable  from '../components/MedicationTable';
 import Container from '../components/Container';
 import {stringDate} from '../util/Date';
+import DrugUpdate from '../models/DrugUpdate';
+import Button from '../components/Button';
+import {downstreamSyncWithServer} from '../util/Sync';
 
 export default class MedicationScreen extends Component<{}> {
   /*
@@ -22,33 +24,64 @@ export default class MedicationScreen extends Component<{}> {
 
     this.state = {
       loading: false,
+      showRetryButton: false,
       updates: [],
-      dateToUpdates: {},
-      drugNames: new Set(),
-      errorMsg: null
+      errorMsg: null,
+      successMsg: null,
+      medicationCheckmarks: [],
+      todayDate: stringDate(new Date()),
+      upstreamSyncing: false, // Should be set before server calls to declare what kind of syncing
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
   // Reload table after new medication updates
+  // Replaces componentDidMount() because this will be called around the same
+  // time
   onNavigatorEvent(event) {
     if (event.id === 'willAppear') {
-      this.loadMedications();
+      this.syncAndLoadMedications();
     }
   }
 
   refillMedication = (prevDrugUpdate) => {
-    const date = stringDate(new Date());
     const newUpdate = Object.assign({}, prevDrugUpdate);
-    newUpdate.date = date;
+    newUpdate.date = this.state.todayDate;
 
     try {
-      localData.createDrugUpdate(newUpdate);
-      this.loadMedications();
-      this.setState({errorMsg: null});
+      localData.updateDrugUpdate(newUpdate);
     } catch(e) {
       this.setState({errorMsg: e.message});
+      return;
     }
+
+    this.setState({loading: true, upstreamSyncing: true});
+    serverData.updateDrugUpdate(newUpdate)
+      .then( () => {
+        // View README: Handle syncing the tablet, point 3 for explanation
+        if(this.state.loading) {
+          // if successful, then reload data
+          this.syncAndLoadMedications();
+
+          this.setState({
+            loading: false,
+            showRetryButton: false,
+            successMsg: 'Saved successfully',
+            errorMsg: null
+          });
+        }
+      })
+      .catch( (e) => {
+        if(this.state.loading) {
+          localData.markPatientNeedToUpload(this.props.patientKey);
+          this.setState({
+            errorMsg: e.message,
+            successMsg: null,
+            loading: false,
+            showRetryButton: true
+          });
+        }
+      });
   }
 
   changeMedication = (prevDrugUpdate) => {
@@ -64,6 +97,14 @@ export default class MedicationScreen extends Component<{}> {
     });
   }
 
+  discontinueMedication = (prevDrugUpdate) => {
+    // Add a dummy drug update to updates prop
+    const newUpdate = DrugUpdate.getDiscontinueDummy(prevDrugUpdate);
+    this.setState({
+      updates: this.state.updates.concat([newUpdate])
+    });
+  }
+
   createNewMedication = () => {
     this.props.navigator.push({
       screen: 'Ihc.MedicationUpdateScreen',
@@ -76,42 +117,89 @@ export default class MedicationScreen extends Component<{}> {
     });
   }
 
-  loadMedications = () => {
-    this.setState({ loading: true });
-    const updates = localData.getMedicationUpdates(this.props.patientKey);
-    const dateToUpdates = {};
-    const drugNames = new Set();
+  syncAndLoadMedications = () => {
+    this.setState({ loading: true, upstreamSyncing: false, errorMsg: null, successMsg: null });
 
-    updates.forEach( (update) => {
-      if(update.date in dateToUpdates) {
-        dateToUpdates[update.date].push(update);
-      } else{
-        dateToUpdates[update.date] = [update];
-      }
-
-      drugNames.add(update.name);
+    // Load local data in beginning to display even if sync doesn't work
+    let updates = localData.getMedicationUpdates(this.props.patientKey);
+    let statusObj = localData.getStatus(this.props.patientKey, this.state.todayDate);
+    const checkmarks = statusObj.medicationCheckmarks;
+    this.setState({
+      updates: updates,
+      medicationCheckmarks: checkmarks,
     });
 
-    this.setState({updates: updates, dateToUpdates: dateToUpdates,
-      drugNames: drugNames, loading: false});
+    downstreamSyncWithServer()
+      .then((failedPatientKeys) => {
+        if(failedPatientKeys.length > 0) {
+          throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
+        }
+
+        let updates = localData.getMedicationUpdates(this.props.patientKey);
+        let statusObj = localData.getStatus(this.props.patientKey, this.state.todayDate);
+        const checkmarks = statusObj.medicationCheckmarks;
+        this.setState({
+          updates: updates,
+          medicationCheckmarks: checkmarks,
+          loading: false
+        });
+      })
+      .catch(err => {
+        this.setState({loading: false, errorMsg: err.message});
+      });
   }
 
-  componentDidMount() {
-    this.loadMedications();
-  }
+  saveCheckmarks = () => {
+    // Local checkmark saves are handled in MedicationTable directly.
+    const statusObj = localData.getStatus(this.props.patientKey, this.state.todayDate);
 
+    this.setState({
+      loading: true,
+      errorMsg: null,
+      successMsg: null,
+    });
+
+    serverData.updateStatus(statusObj)
+      .then( () => {
+        // View README: Handle syncing the tablet, point 3 for explanation
+        if(this.state.loading) {
+          this.setState({
+            successMsg: 'Saved',
+            errorMsg: null,
+            loading: false,
+            showRetryButton: false
+          });
+        }
+      })
+      .catch( (e) => {
+        if(this.state.loading) {
+          localData.markPatientNeedToUpload(this.props.patientKey);
+          this.setState({
+            successMsg: null,
+            errorMsg: e.message,
+            loading: false,
+            showRetryButton: true
+          });
+        }
+      });
+  }
 
   // station: 'Doctor' or 'Pharmacy'
   updateStatus(station) {
-    this.setState({loading: true});
+    this.setState({
+      loading: true,
+      errorMsg: null,
+      successMsg: null,
+    });
+
     let statusObj = {};
-    if(station != 'Doctor' && station != 'Pharmacy') {
+    if(station !== 'Doctor' && station !== 'Pharmacy') {
       throw new Error(`Received invalid station: ${station}`);
     }
 
     const fieldName = station === 'Doctor' ? 'doctorCompleted' : 'pharmacyCompleted';
     try {
-      statusObj = localData.updateStatus(this.props.patientKey, stringDate(new Date()),
+      statusObj = localData.updateStatus(this.props.patientKey, this.state.todayDate,
         fieldName, new Date().getTime());
     } catch(e) {
       this.setState({errorMsg: e.message, successMsg: null, loading: false});
@@ -120,19 +208,26 @@ export default class MedicationScreen extends Component<{}> {
 
     serverData.updateStatus(statusObj)
       .then( () => {
-        this.setState({
-          successMsg: `${station} marked as completed`,
-          errorMsg: null,
-          loading: false
-        });
+        // View README: Handle syncing the tablet, point 3 for explanation
+        if(this.state.loading) {
+          this.setState({
+            successMsg: `${station} marked as completed`,
+            errorMsg: null,
+            loading: false,
+            showRetryButton: false
+          });
+        }
       })
       .catch( (e) => {
-        localData.markPatientNeedToUpload(this.props.patientKey);
-        this.setState({
-          successMsg: null,
-          errorMsg: `${e.message}. Try to UploadUpdates`,
-          loading: false
-        });
+        if(this.state.loading) {
+          localData.markPatientNeedToUpload(this.props.patientKey);
+          this.setState({
+            successMsg: null,
+            errorMsg: e.message,
+            loading: false,
+            showRetryButton: true
+          });
+        }
       });
   }
 
@@ -144,18 +239,42 @@ export default class MedicationScreen extends Component<{}> {
     this.updateStatus('Pharmacy');
   }
 
+  // If Loading was canceled, we want to show a retry button
+  setLoading = (val, canceled) => {
+    let errorMsg = null;
+    // View README: Handle syncing the tablet, point 5 for explanation
+    if(canceled && this.state.upstreamSyncing === false) {
+      errorMsg = 'Canceling may cause data to be out of sync.';
+    }
+    this.setState({loading: val, showRetryButton: canceled, errorMsg: errorMsg});
+  }
+
+  setMsg = (type, msg) => {
+    const obj = {};
+    obj[type] = msg;
+    const other = type === 'successMsg' ? 'errorMsg' : 'successMsg';
+    obj[other] = null;
+    this.setState(obj);
+  }
+
   render() {
     return (
       <Container loading={this.state.loading}
         errorMsg={this.state.errorMsg}
-        successMsg={this.state.successMsg} >
+        successMsg={this.state.successMsg}
+        setLoading={this.setLoading}
+        setMsg={this.setMsg}
+        patientKey={this.props.patientKey}
+        showRetryButton={this.state.showRetryButton}
+      >
 
         <View style={styles.headerContainer}>
           <Text style={styles.title}>
             {this.props.name}'s Medications
           </Text>
 
-          <Text>R: Refill, D: Change Dose</Text>
+          <Text>R: Refill, D: Change Dose, X: Cancel</Text>
+          <Text>T: Taking, N: Not Taking, I: Taking incorrectly</Text>
         </View>
 
         <ScrollView contentContainerStyle={styles.tableContainer} horizontal>
@@ -164,29 +283,35 @@ export default class MedicationScreen extends Component<{}> {
             change={this.changeMedication}
             discontinue={this.discontinueMedication}
             updates={this.state.updates}
-            dateToUpdates={this.state.dateToUpdates}
-            drugNames={this.state.drugNames}
+            medicationCheckmarks={this.state.medicationCheckmarks}
+            patientKey={this.props.patientKey}
           />
         </ScrollView>
 
         <View style={styles.footerContainer}>
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={this.createNewMedication}>
-            <Text style={styles.button}>New Medication</Text>
-          </TouchableOpacity>
+          <Button
+            onPress={this.saveCheckmarks}
+            style={styles.button}
+            text='Save checkmarks'>
+          </Button>
 
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={this.completed}>
-            <Text style={styles.button}>Completed Prescribing</Text>
-          </TouchableOpacity>
+          <Button
+            onPress={this.createNewMedication}
+            style={styles.button}
+            text='New Medication'>
+          </Button>
 
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={this.filled}>
-            <Text style={styles.button}>Filled</Text>
-          </TouchableOpacity>
+          <Button
+            onPress={this.completed}
+            style={styles.button}
+            text='Completed Prescribing'>
+          </Button>
+
+          <Button
+            onPress={this.filled}
+            style={styles.button}
+            text='Filled'>
+          </Button>
         </View>
       </Container>
     );
@@ -205,24 +330,14 @@ const styles = StyleSheet.create({
   tableContainer: {
     flex: 0,
   },
-  buttonContainer: {
-    width: 120,
-    margin: 4,
-    padding: 8,
-    elevation: 4,
-    borderRadius: 2,
-    backgroundColor: '#2196F3',
-    height: 40,
-  },
-  button: {
-    fontWeight: '500',
-    color: '#fefefe',
-    textAlign: 'center',
-  },
   footerContainer: {
     flex: 1,
     flexDirection: 'row',
     height: 40,
     margin: 4,
   },
+  button: {
+    width: 120,
+    height: 60 
+  }
 });

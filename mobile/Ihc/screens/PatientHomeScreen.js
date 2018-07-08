@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  TouchableOpacity,
   Text,
   View,
 } from 'react-native';
 import { Col, Grid } from 'react-native-easy-grid';
 import Container from '../components/Container';
+import Button from '../components/Button';
 
 export default class PatientHomeScreen extends Component<{}> {
   /*
@@ -79,27 +79,27 @@ export default class PatientHomeScreen extends Component<{}> {
         <View style={styles.gridContainer}>
           <Grid>
             <Col style={styles.col}>
-              <TouchableOpacity style={styles.buttonContainer} onPress={this.goToTriage}>
-                <Text style={styles.button}>Triage</Text>
-              </TouchableOpacity>
+              <Button onPress={this.goToTriage}
+                style={styles.button}
+                text='Triage' />
 
-              <TouchableOpacity style={styles.buttonContainer} onPress={this.goToSoap}>
-                <Text style={styles.button}>SOAP</Text>
-              </TouchableOpacity>
+              <Button onPress={this.goToSoap}
+                style={styles.button}
+                text='SOAP' />
 
-              <TouchableOpacity style={styles.buttonContainer} onPress={this.goToMedicationList}>
-                <Text style={styles.button}>Medications</Text>
-              </TouchableOpacity>
+              <Button onPress={this.goToMedicationList}
+                style={styles.button}
+                text='Medications' />
             </Col>
 
             <Col style={styles.col}>
-              <TouchableOpacity style={styles.buttonContainer} onPress={this.goToHistory}>
-                <Text style={styles.button}>History</Text>
-              </TouchableOpacity>
+              <Button onPress={this.goToHistory}
+                style={styles.button}
+                text='History' />
 
-              <TouchableOpacity style={styles.buttonContainer} onPress={this.goToGrowthChart}>
-                <Text style={styles.button}>Growth Chart</Text>
-              </TouchableOpacity>
+              <Button onPress={this.goToGrowthChart}
+                style={styles.button}
+                text='Growth Chart' />
             </Col>
           </Grid>
         </View>
@@ -122,17 +122,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 5,
   },
-  buttonContainer: {
-    width: 150,
-    margin: 10,
-    padding: 8,
-    elevation: 4,
-    borderRadius: 2,
-    backgroundColor: '#2196F3',
-  },
   button: {
-    fontWeight: '500',
-    color: '#fefefe',
-    textAlign: 'center',
+    width: '80%'
   }
 });

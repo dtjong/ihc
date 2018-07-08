@@ -198,9 +198,8 @@ describe('Download updates', () => {
     existingSoap.lastUpdated = now - 200;
     existingPatient.soaps = [existingSoap];
 
-    // Has same timestamp as existing soap so shouldnt trigger an update
     const incomingSoap = Soap.getInstance();
-    incomingSoap.lastUpdated = now - 200;
+    incomingSoap.lastUpdated = now - 300;
     incomingSoap.subjective = "Updated subjective";
     incomingPatient.soaps = [incomingSoap];
 
@@ -275,7 +274,7 @@ describe('Download updates', () => {
       const d = DrugUpdate.getInstance();
       d.frequency = "Updated freq";
       d.lastUpdated = 800;
-      p.medications = [d];
+      p.drugUpdates = [d];
 
       // Incoming patients should be updated if they have been updated more
       // recently than 800
@@ -295,7 +294,7 @@ describe('Download updates', () => {
       d2.name = "Advil";
       d2.frequency = "Updated duration";
       d2.lastUpdated = timestamp;
-      p.medications= [d, d2];
+      p.drugUpdates = [d, d2];
       return p;
     });
 
