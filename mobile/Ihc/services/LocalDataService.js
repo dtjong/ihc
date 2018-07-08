@@ -110,7 +110,7 @@ export function updateStatus(patientKey, strDate, field, value) {
   return statusObj;
 }
 
-export function createDrugUpdate(update) {
+export function updateDrugUpdate(update) {
   const patientObjs = realm.objects('Patient').filtered('key = "' + update.patientKey + '"');
   const patient = patientObjs['0'];
   if(!patient) {
@@ -123,8 +123,8 @@ export function createDrugUpdate(update) {
   realm.write(() => {
     patient.lastUpdated = timestamp;
     // If an object for that drug and date already exists, update it
-    for (var m in patient.medications) {
-      const old = patient.medications[m];
+    for (var m in patient.drugUpdates) {
+      const old = patient.drugUpdates[m];
       if(old.date === update.date && old.name === update.name) {
         old.dose = update.dose;
         old.frequency = update.frequency;
@@ -135,7 +135,7 @@ export function createDrugUpdate(update) {
     }
 
     // If doesn't exist, then add it
-    patient.medications.push(update);
+    patient.drugUpdates.push(update);
   });
 }
 
@@ -233,16 +233,10 @@ export function getMedicationUpdates(patientKey) {
   return updates;
 }
 
-// Return the statuses of the patients that are active and for this date
-export function getPatientSelectRows() {
-  const statuses = Object.values(realm.objects('Status').filtered('date = "' +
-      stringDate(new Date) + '" AND active = true').sorted('checkinTime'));
-
-  const columnOrder = ['name', 'birthday', 'checkinTime', 'triageCompleted',
-    'doctorCompleted', 'pharmacyCompleted', 'notes', 'patientKey'];
-
-  const toReturn = statuses.map((obj) => columnOrder.map( (key) => obj[key] ));
-  return toReturn;
+// Return the statuses of the patients for this date
+export function getStatuses(strDate) {
+  const statuses = Object.values(realm.objects('Status').filtered(`date = "${strDate}"`));
+  return statuses;
 }
 
 // Parameter 'all' should be true if want to upload all patients
@@ -327,8 +321,8 @@ export function handleDownloadedPatients(patients) {
       if(!updateObject(existingPatient, 'triages', incomingTriage))
         fails.add(existingPatient.key);
     });
-    incomingPatient.medications.forEach(incomingDrugUpdate => {
-      if(!updateObject(existingPatient, 'medications', incomingDrugUpdate))
+    incomingPatient.drugUpdates.forEach(incomingDrugUpdate => {
+      if(!updateObject(existingPatient, 'drugUpdates', incomingDrugUpdate))
         fails.add(existingPatient.key);
     });
     incomingPatient.statuses.forEach(incomingStatus => {
@@ -368,14 +362,14 @@ export function write(fn) {
 }
 
 /**
- * Type: string of either 'soaps', 'triages', 'medications', or 'statuses'
+ * Type: string of either 'soaps', 'triages', 'drugUpdates', or 'statuses'
  * Returns true if updated successfully, false if wasn't updated
  */
 function updateObject(existingPatient, type, incomingObject) {
   // Find existing form/object that corresponds to the incoming one
   let existingObject = {};
-  if (type === 'medications') {
-    existingObject = existingPatient.medications.find( med => {
+  if (type === 'drugUpdates') {
+    existingObject = existingPatient.drugUpdates.find( med => {
       return incomingObject.date === med.date && incomingObject.name === med.name;
     });
   } else {
@@ -399,6 +393,11 @@ function updateObject(existingPatient, type, incomingObject) {
         existingObject[p] = incomingObject[p];
       });
     });
+    return true;
+  }
+
+  // Don't need to update, but shouldn't return failure
+  if(incomingObject.lastUpdated === existingObject.lastUpdated) {
     return true;
   }
 

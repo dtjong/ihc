@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  TouchableOpacity,
   Text,
   View,
 } from 'react-native';
@@ -10,6 +9,7 @@ import {localData} from '../services/DataService';
 import {formatDate} from '../util/Date';
 import {shortDate} from '../util/Date';
 import Container from '../components/Container';
+import Button from '../components/Button';
 
 /* TODO: 
  * Make changes in behavior for the cases that a soap form is submitted, 
@@ -95,18 +95,18 @@ export default class PatientHistoryScreen extends Component<{}> {
 
             <Col style={styles.col}>
               {this.state.patient.soaps.map( (soap, i) => 
-                <TouchableOpacity key={i} style={styles.buttonContainer}
-                  onPress={() => this.goToSoap(soap.date)}>
-                  <Text style={styles.button}>SOAP</Text>
-                </TouchableOpacity> ) }
+                <Button key={i}
+                  onPress={() => this.goToSoap(soap.date)}
+                  text='SOAP' />
+              )}
             </Col>
 
             <Col style={styles.col}>
               {this.state.patient.soaps.map( (soap, i) => 
-                <TouchableOpacity key={i} style={styles.buttonContainer}
-                  onPress={() => this.goToTriage(soap.date)}>
-                  <Text style={styles.button}>Triage</Text>
-                </TouchableOpacity> ) }
+                <Button key={i}
+                  onPress={() => this.goToTriage(soap.date)}
+                  text='Triage' />
+              )}
             </Col>
           </Grid>
         </View>
@@ -128,23 +128,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 5,
   },
-  buttonContainer: {
-    width: 150,
-    margin: 10,
-    padding: 8,
-    elevation: 4,
-    borderRadius: 2,
-    backgroundColor: '#2196F3',
-  },
   dateContainer: {
     width: 150,
     margin: 10,
     padding: 8,
     elevation: 4,
   },
-  button: {
-    fontWeight: '500',
-    color: '#fefefe',
-    textAlign: 'center',
-  }
 });

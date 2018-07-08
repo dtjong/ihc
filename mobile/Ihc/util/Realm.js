@@ -1,7 +1,7 @@
 // Realm stores arrays as objects, so convert them before sending to server
 export function convertPatientForServer(patient) {
   const copy = Object.assign({}, patient);
-  copy.medications = Array.from(patient.medications);
+  copy.drugUpdates = Array.from(patient.drugUpdates);
   copy.soaps = Array.from(patient.soaps);
   copy.triages = Array.from(patient.triages);
   copy.statuses = Array.from(patient.statuses);

@@ -35,13 +35,9 @@ exports[`renders correctly 1`] = `
         Welcome to clinic!
       </Text>
       <View
-        accessibilityComponentType="button"
+        accessibilityComponentType={undefined}
         accessibilityLabel={undefined}
-        accessibilityTraits={
-          Array [
-            "button",
-          ]
-        }
+        accessibilityTraits={undefined}
         accessible={true}
         collapsable={undefined}
         hasTVPreferredFocus={undefined}
@@ -57,47 +53,43 @@ exports[`renders correctly 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           Object {
+            "alignItems": "center",
+            "backgroundColor": "#2196F3",
+            "borderRadius": 2,
+            "elevation": 4,
+            "height": 40,
+            "justifyContent": "center",
+            "margin": 4,
             "opacity": 1,
+            "padding": 8,
+            "width": 140,
           }
         }
         testID={undefined}
         tvParallaxProperties={undefined}
       >
-        <View
+        <Text
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
           style={
             Array [
-              Object {},
+              Object {
+                "color": "#fefefe",
+                "fontWeight": "500",
+                "textAlign": "center",
+              },
+              undefined,
             ]
           }
         >
-          <Text
-            accessible={true}
-            allowFontScaling={true}
-            disabled={undefined}
-            ellipsizeMode="tail"
-            style={
-              Array [
-                Object {
-                  "color": "#007AFF",
-                  "fontSize": 18,
-                  "padding": 8,
-                  "textAlign": "center",
-                },
-              ]
-            }
-          >
-            Signin
-          </Text>
-        </View>
+          Signin
+        </Text>
       </View>
       <View
-        accessibilityComponentType="button"
+        accessibilityComponentType={undefined}
         accessibilityLabel={undefined}
-        accessibilityTraits={
-          Array [
-            "button",
-          ]
-        }
+        accessibilityTraits={undefined}
         accessible={true}
         collapsable={undefined}
         hasTVPreferredFocus={undefined}
@@ -113,47 +105,43 @@ exports[`renders correctly 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           Object {
+            "alignItems": "center",
+            "backgroundColor": "#2196F3",
+            "borderRadius": 2,
+            "elevation": 4,
+            "height": 40,
+            "justifyContent": "center",
+            "margin": 4,
             "opacity": 1,
+            "padding": 8,
+            "width": 140,
           }
         }
         testID={undefined}
         tvParallaxProperties={undefined}
       >
-        <View
+        <Text
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
           style={
             Array [
-              Object {},
+              Object {
+                "color": "#fefefe",
+                "fontWeight": "500",
+                "textAlign": "center",
+              },
+              undefined,
             ]
           }
         >
-          <Text
-            accessible={true}
-            allowFontScaling={true}
-            disabled={undefined}
-            ellipsizeMode="tail"
-            style={
-              Array [
-                Object {
-                  "color": "#007AFF",
-                  "fontSize": 18,
-                  "padding": 8,
-                  "textAlign": "center",
-                },
-              ]
-            }
-          >
-            Select Patient
-          </Text>
-        </View>
+          Select Patient
+        </Text>
       </View>
       <View
-        accessibilityComponentType="button"
+        accessibilityComponentType={undefined}
         accessibilityLabel={undefined}
-        accessibilityTraits={
-          Array [
-            "button",
-          ]
-        }
+        accessibilityTraits={undefined}
         accessible={true}
         collapsable={undefined}
         hasTVPreferredFocus={undefined}
@@ -169,47 +157,43 @@ exports[`renders correctly 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           Object {
+            "alignItems": "center",
+            "backgroundColor": "#2196F3",
+            "borderRadius": 2,
+            "elevation": 4,
+            "height": 40,
+            "justifyContent": "center",
+            "margin": 4,
             "opacity": 1,
+            "padding": 8,
+            "width": 140,
           }
         }
         testID={undefined}
         tvParallaxProperties={undefined}
       >
-        <View
+        <Text
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
           style={
             Array [
-              Object {},
+              Object {
+                "color": "#fefefe",
+                "fontWeight": "500",
+                "textAlign": "center",
+              },
+              undefined,
             ]
           }
         >
-          <Text
-            accessible={true}
-            allowFontScaling={true}
-            disabled={undefined}
-            ellipsizeMode="tail"
-            style={
-              Array [
-                Object {
-                  "color": "#007AFF",
-                  "fontSize": 18,
-                  "padding": 8,
-                  "textAlign": "center",
-                },
-              ]
-            }
-          >
-            Upload updates
-          </Text>
-        </View>
+          Upload updates
+        </Text>
       </View>
       <View
-        accessibilityComponentType="button"
+        accessibilityComponentType={undefined}
         accessibilityLabel={undefined}
-        accessibilityTraits={
-          Array [
-            "button",
-          ]
-        }
+        accessibilityTraits={undefined}
         accessible={true}
         collapsable={undefined}
         hasTVPreferredFocus={undefined}
@@ -225,38 +209,38 @@ exports[`renders correctly 1`] = `
         onStartShouldSetResponder={[Function]}
         style={
           Object {
+            "alignItems": "center",
+            "backgroundColor": "#2196F3",
+            "borderRadius": 2,
+            "elevation": 4,
+            "height": 40,
+            "justifyContent": "center",
+            "margin": 4,
             "opacity": 1,
+            "padding": 8,
+            "width": 140,
           }
         }
         testID={undefined}
         tvParallaxProperties={undefined}
       >
-        <View
+        <Text
+          accessible={true}
+          allowFontScaling={true}
+          ellipsizeMode="tail"
           style={
             Array [
-              Object {},
+              Object {
+                "color": "#fefefe",
+                "fontWeight": "500",
+                "textAlign": "center",
+              },
+              undefined,
             ]
           }
         >
-          <Text
-            accessible={true}
-            allowFontScaling={true}
-            disabled={undefined}
-            ellipsizeMode="tail"
-            style={
-              Array [
-                Object {
-                  "color": "#007AFF",
-                  "fontSize": 18,
-                  "padding": 8,
-                  "textAlign": "center",
-                },
-              ]
-            }
-          >
-            Download updates
-          </Text>
-        </View>
+          Download updates
+        </Text>
       </View>
     </View>
   </RCTScrollView>

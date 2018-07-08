@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  Button,
   Text,
   View
 } from 'react-native';
@@ -12,6 +11,7 @@ import {localData} from '../services/DataService';
 import Soap from '../models/Soap';
 import {stringDate} from '../util/Date';
 import Container from '../components/Container';
+import Button from '../components/Button';
 
 export default class SoapScreen extends Component<{}> {
   /*
@@ -134,8 +134,8 @@ export default class SoapScreen extends Component<{}> {
           />
 
           <Button onPress={this.submit}
-            styles={styles.button}
-            title="Update" />
+            style={styles.updateButton}
+            text="Update" />
         </View>
       </Container>
     );

@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   TextInput,
-  TouchableOpacity,
   Text,
   Modal,
   View
 } from 'react-native';
+import Button from './Button';
 
 /*
  * Modal to update a status object's notes field
@@ -44,14 +44,12 @@ export default class UpdateStatusNotesModal extends Component<{}> {
               value={this.props.currNotes}
               onChangeText={this.props.updateNotes} />
             <View style={styles.modalFooter}>
-              <TouchableOpacity style={styles.buttonContainer} onPress={this.props.closeModal}>
-                <Text style={styles.button}>Cancel</Text>
-              </TouchableOpacity>
+              <Button style={styles.buttonContainer} onPress={this.props.closeModal}
+                text='Cancel' />
 
-              <TouchableOpacity style={styles.buttonContainer}
-                onPress={this.props.saveModal}>
-                <Text style={styles.button}>Save</Text>
-              </TouchableOpacity>
+              <Button style={styles.buttonContainer}
+                onPress={this.props.saveModal}
+                text='Save' />
             </View>
           </View>
         </View>
@@ -90,16 +88,6 @@ export const styles = StyleSheet.create({
   buttonContainer: {
     width: 150,
     height: 40,
-    margin: 10,
-    padding: 8,
-    elevation: 4,
-    borderRadius: 2,
-    backgroundColor: '#2196F3',
-  },
-  button: {
-    fontWeight: '500',
-    color: '#fefefe',
-    textAlign: 'center',
   },
   notesInput: {
     backgroundColor: 'white',

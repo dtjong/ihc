@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
   CheckBox,
   StyleSheet,
-  TouchableOpacity,
   Text,
   View,
 } from 'react-native';
@@ -10,6 +9,7 @@ import { Col, Row, Grid } from 'react-native-easy-grid';
 import {stringDate} from '../util/Date';
 import MedicationCheckmarks from '../models/MedicationCheckmarks';
 import {localData} from '../services/DataService';
+import Button from './Button';
 
 export default class MedicationTable extends Component<{}> {
   /*
@@ -147,23 +147,22 @@ export default class MedicationTable extends Component<{}> {
 
       return (
         <Row style={styles.row} key={`buttonRow${i}`}>
-          <TouchableOpacity
-            style={[styles.buttonContainer, disableRefill && {opacity: 0.5}]}
+          <Button
+            style={[styles.button, disableRefill && {opacity: 0.5}]}
             onPress={() => this.props.refill(prevUpdate)}
-            disabled={disableRefill}>
-            <Text style={styles.button}>R</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={() => this.props.change(todayUpdate || prevUpdate)}>
-            <Text style={styles.button}>D</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.buttonContainer, disableDiscontinue && {opacity: 0.5}]}
+            disabled={disableRefill}
+            text='R' />
+
+          <Button
+            style={styles.button}
+            onPress={() => this.props.change(todayUpdate || prevUpdate)}
+            text='D' />
+
+          <Button
+            style={[styles.button, disableDiscontinue && {opacity: 0.5}]}
             onPress={() => this.props.discontinue(prevUpdate)}
-            disabled={disableDiscontinue}>
-            <Text style={styles.button}>X</Text>
-          </TouchableOpacity>
+            disabled={disableDiscontinue}
+            text='X' />
         </Row>
       );
     });
@@ -333,17 +332,7 @@ export const styles = StyleSheet.create({
   text: {
     textAlign: 'center',
   },
-  buttonContainer: {
-    flex: 1,
-    margin: 2,
-    padding: 4,
-    elevation: 4,
-    borderRadius: 2,
-    backgroundColor: '#2196F3',
-  },
   button: {
-    fontWeight: '500',
-    color: '#fefefe',
-    textAlign: 'center',
+    flex: 1
   }
 });

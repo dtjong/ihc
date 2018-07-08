@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  Button,
   Text,
   View
 } from 'react-native';
@@ -12,6 +11,7 @@ var Form = t.form.Form;
 import {localData, serverData} from '../services/DataService';
 import Patient from '../models/Patient';
 import Container from '../components/Container';
+import Button from '../components/Button';
 
 export default class SigninScreen extends Component<{}> {
   constructor(props) {
@@ -102,6 +102,7 @@ export default class SigninScreen extends Component<{}> {
 
       serverData.createPatient(patient)
         .then( () => {
+          // View README: Handle syncing the tablet, point 3 for explanation
           if(this.state.loading) {
             this.setState({
               // Clear form, reset to Signin form
@@ -143,6 +144,7 @@ export default class SigninScreen extends Component<{}> {
 
     serverData.updateStatus(statusObj)
       .then( () => {
+        // View README: Handle syncing the tablet, point 3 for explanation
         if(this.state.loading){
           this.setState({
             // Clear form, reset to Signin form
@@ -207,7 +209,8 @@ export default class SigninScreen extends Component<{}> {
           />
 
           <Button onPress={this.submit}
-            title='Submit' />
+            style={styles.button}
+            text='Submit' />
         </View>
       </Container>
     );

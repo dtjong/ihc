@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  Button,
   Text,
   View
 } from 'react-native';
@@ -11,6 +10,7 @@ import {localData, serverData} from '../services/DataService';
 import Triage from '../models/Triage';
 import {stringDate} from '../util/Date';
 import Container from '../components/Container';
+import Button from '../components/Button';
 import TriageLabsWheel from '../components/TriageLabsWheel';
 
 export default class TriageScreen extends Component<{}> {
@@ -28,11 +28,13 @@ export default class TriageScreen extends Component<{}> {
       date: this.props.todayDate || stringDate(new Date())
     };
 
-    // Hold objects including a test's name, options, and result
+    // Hold objects including a test's name, options, and result (int that
+    // indexes into the options array)
     // TODO: replace with real tests and options once we get the template
+    // and also update the Triage models on mobile and server side
     const labTestObjects = {
-      blood: TriageLabsWheel.createLabTestObject('blood', ['Good', 'Bad']),
-      nitrite: TriageLabsWheel.createLabTestObject('nitrite', ['Good', 'Bad']),
+      blood: TriageLabsWheel.createLabTestObject('blood', ['N/a', 'Good', 'Bad']),
+      nitrites: TriageLabsWheel.createLabTestObject('nitrites', ['N/a', 'Good', 'Bad']),
     };
 
     this.state = {
@@ -91,7 +93,27 @@ export default class TriageScreen extends Component<{}> {
       formType: Triage.getFormType(triage, gender),
       formValues: triage,
       loading: false,
+      labTestObjects: this.getLabTestObjects(triage)
     });
+  }
+
+  // From an existing triage form, properly update the lab test objects with the
+  // existing values
+  getLabTestObjects = (triage) => {
+    const labTestObjectsCopy = Object.assign({}, this.state.labTestObjects);
+    // For each test, set the result field of the labTestObject to the proper
+    // index of the options array
+    for(const [testName,test] of Object.entries(labTestObjectsCopy)) {
+      if(!triage[testName]){
+        // If there is no value yet for that test, then skip it
+        continue;
+      }
+      test.result = test.options.indexOf(triage[testName]);
+      if(test.result === -1) {
+        throw new Error(`${test} does not contain string option ${triage[testName]}`);
+      }
+    }
+    return labTestObjectsCopy;
   }
 
   componentDidMount() {
@@ -118,6 +140,7 @@ export default class TriageScreen extends Component<{}> {
 
     serverData.updateStatus(statusObj)
       .then( () => {
+        // View README: Handle syncing the tablet, point 3 for explanation
         if(this.state.loading) {
           this.setState({
             successMsg: 'Triage marked as completed, but not yet submitted',
@@ -150,7 +173,7 @@ export default class TriageScreen extends Component<{}> {
     });
 
     const form = this.refs.form.getValue();
-    const triage = Triage.extractFromForm(form, this.props.patientKey);
+    const triage = Triage.extractFromForm(form, this.props.patientKey, this.state.labTestObjects);
 
     try {
       localData.updateTriage(triage);
@@ -187,6 +210,13 @@ export default class TriageScreen extends Component<{}> {
     this.setState(obj);
   }
 
+  // Takes in the test name and the string result
+  updateLabTests = (name,result) => {
+    const oldTests = Object.assign({}, this.state.labTestObjects);
+    oldTests[name].result = result;
+    this.setState(oldTests);
+  }
+
   render() {
     return (
       <Container loading={this.state.loading}
@@ -213,23 +243,20 @@ export default class TriageScreen extends Component<{}> {
             this.state.formValues.labsDone ?
               (
                 <TriageLabsWheel
-                  updateLabResult={(name, option) => {console.log(name,option);}}
+                  updateLabResult={this.updateLabTests}
                   tests = {Object.values(this.state.labTestObjects)}
                 />
               ) : null
           }
 
           <Button onPress={this.gotoMedications}
-            styles={styles.button}
-            title='To Medications' />
+            text='Mark Medications' />
 
           <Button onPress={this.completed}
-            styles={styles.button}
-            title='Triage completed' />
+            text='Triage completed' />
 
           <Button onPress={this.submit}
-            styles={styles.button}
-            title='Update' />
+            text='Update' />
 
         </View>
       </Container>
@@ -246,7 +273,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10,
   },
-  button: {
-    margin: 4,
-  }
 });

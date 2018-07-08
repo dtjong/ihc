@@ -35,7 +35,9 @@ router.put('/patients', PatientController.UpdatePatients);
 //get soap info
 router.get('/patient/:key/soap/:date', PatientController.GetSoap);
 
+
 //COMPLETE
+//Kenny
 //get status info
 router.get('/patient/:key/status/:date', PatientController.GetStatus);
 
@@ -47,10 +49,11 @@ router.get('/patient/:key/triage/:date', PatientController.GetTriage);
 //get drug info
 router.get('/patient/:key/drugUpdates', PatientController.GetDrugUpdates);
 
-//Update Functions also add the object if it does not exist**
-
+//Kenny
+//updates the soap of the patient
 router.put('/patient/:key/soap/:date', PatientController.UpdateSoap);
 
+//Kenny
 //updates the status of the patient
 router.put('/patient/:key/status/:date', PatientController.UpdateStatus);
 
@@ -60,7 +63,8 @@ router.put('/patient/:key/triage/:date', PatientController.UpdateTriage);
 
 //TO DO
 //updates the Medicine of the patient
-router.put('/patient/:key/drugUpdates/:date', PatientController.UpdateDrugUpdates);
+router.put('/patient/:key/drugUpdate/:date', PatientController.UpdateDrugUpdate);
+
 
 // return all the statuses for the given date
 router.get('/patients/statuses/:date', PatientController.GetStatuses);

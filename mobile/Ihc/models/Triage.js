@@ -24,10 +24,15 @@ export default class Triage {
     throw new Error('No form type for these settings...');
   }
 
-  static extractFromForm(form, patientKey) {
+  static extractFromForm(form, patientKey, labTestObjects) {
     const triage = Object.assign({}, form);
     triage.patientKey = patientKey;
     triage.lastUpdated = new Date().getTime();
+
+    // Go through test objects, and add the result to the triage object
+    for(let obj of Object.values(labTestObjects)) {
+      triage[obj.name] = obj.options[obj.result];
+    }
     return triage;
   }
 

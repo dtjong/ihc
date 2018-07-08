@@ -25,6 +25,7 @@ export default class TriageLabsWheel extends Component<{}> {
             <TriageLabComponent
               name={test.name}
               options={test.options}
+              selectedIndex={test.result}
               onValueChange={
                 (index) => {this.props.updateLabResult(test.name, index);}
               }

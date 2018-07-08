@@ -8,6 +8,7 @@ import {localData, serverData} from '../services/DataService';
 import {stringDate} from '../util/Date';
 import PatientTable from '../components/PatientTable';
 import Container from '../components/Container';
+import {downstreamSyncWithServer} from '../util/Sync';
 
 export default class PatientSelectScreen extends Component<{}> {
   constructor(props) {
@@ -19,26 +20,55 @@ export default class PatientSelectScreen extends Component<{}> {
       loading: false,
       rows: [],
       showRetryButton: false,
+      upstreamSyncing: false // Should be set before server calls to declare what kind of syncing
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
-  loadPatients = () => {
-    this.setState({ loading: true });
-    const data = localData.getPatientSelectRows();
-    this.setState({ rows: data, loading: false });
+  convertStatusesToRows(statuses) {
+    const columnOrder = ['name', 'birthday', 'checkinTime', 'triageCompleted',
+      'doctorCompleted', 'pharmacyCompleted', 'notes', 'patientKey'];
+
+    // Sort statuses by checkin time for now
+    statuses.sort( (status1, status2) => status1.checkinTime - status2.checkinTime );
+
+    const toReturn = statuses.map((obj) => columnOrder.map( (key) => obj[key] ));
+    return toReturn;
+  }
+
+  // Sync up tablet first with server before grabbing statuses
+  syncAndLoadPatients = () => {
+    this.setState({ loading: true, upstreamSyncing: false, errorMsg: null, successMsg: null });
+
+    // Load local data in beginning to display even if sync doesn't work
+    const today = stringDate(new Date());
+    const oldStatuses = localData.getStatuses(today);
+    const oldRowData = this.convertStatusesToRows(oldStatuses);
+    this.setState({rows: oldRowData});
+
+    downstreamSyncWithServer()
+      .then((failedPatientKeys) => {
+        if(failedPatientKeys.length > 0) {
+          throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
+        }
+        const newStatuses = localData.getStatuses(today);
+        const newRowData = this.convertStatusesToRows(newStatuses);
+        this.setState({rows: newRowData, loading: false});
+      })
+      .catch(err => {
+        this.setState({loading: false, errorMsg: err.message});
+      });
   }
 
   // Reload table after moving back to table
+  // Replaces componentDidMount() because this will be called around the same
+  // time
   onNavigatorEvent(event) {
     if (event.id === 'willAppear') {
-      this.loadPatients();
+      this.syncAndLoadPatients();
     }
   }
 
-  componentDidMount() {
-    this.loadPatients();
-  }
 
   goToPatient = (patient) => {
     this.props.navigator.push({
@@ -59,19 +89,19 @@ export default class PatientSelectScreen extends Component<{}> {
       return;
     }
 
-    this.setState({loading: true});
+    this.setState({loading: true, upstreamSyncing: true, patientKey: patientKey});
     serverData.updateStatus(statusObj)
       .then( () => {
+        // View README: Handle syncing the tablet, point 3 for explanation
         if(this.state.loading) {
-          // if successful, then reload data and close modal
-          this.loadPatients();
+          // if successful, then reload screen (which closes modal too)
+          this.syncAndLoadPatients();
           this.setState({
             loading: false,
             showRetryButton: false,
             successMsg: 'Saved successfully',
             errorMsg: null
           });
-          this.closeModal();
         }
       })
       .catch( (e) => {
@@ -89,7 +119,12 @@ export default class PatientSelectScreen extends Component<{}> {
 
   // If Loading was canceled, we want to show a retry button
   setLoading = (val, canceled) => {
-    this.setState({loading: val, showRetryButton: canceled});
+    let errorMsg = null;
+    // View README: Handle syncing the tablet, point 5 for explanation
+    if(canceled && this.state.upstreamSyncing === false) {
+      errorMsg = 'Canceling may cause data to be out of sync.';
+    }
+    this.setState({loading: val, showRetryButton: canceled, errorMsg: errorMsg});
   }
 
   setMsg = (type, msg) => {
