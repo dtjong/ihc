@@ -15,12 +15,8 @@ it('renders correctly', () => {
   const patient = Patient.getInstance();
   const patient2 = Patient.getInstance();
   const statuses = [Status.newStatus(patient), Status.newStatus(patient2)];
-  const columnOrder = ['name', 'birthday', 'checkinTime', 'triageCompleted',
-    'doctorCompleted', 'pharmacyCompleted', 'notes', 'patientKey'];
 
-  const rows = statuses.map((obj) => columnOrder.map( (key) => obj[key] ));
-
-  sinon.stub(localData, 'getPatientSelectRows').returns(rows);
+  sinon.stub(localData, 'getStatuses').returns(statuses);
 
   const fakeNavigator = { setOnNavigatorEvent: (param) => {} };
   const json = renderer.create(

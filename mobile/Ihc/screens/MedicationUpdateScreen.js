@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 var t = require('tcomb-form-native');
 var Form = t.form.Form;
-import {localData} from '../services/DataService';
+import {localData, serverData} from '../services/DataService';
 import DrugUpdate from '../models/DrugUpdate';
 import Container from '../components/Container';
 import Button from '../components/Button';
@@ -23,6 +23,8 @@ export default class MedicationUpdateScreen extends Component<{}> {
     this.state = {
       formValues: this.props.drugUpdate,
       errorMsg: null,
+      loading: false,
+      showRetryButton: false,
     };
   }
 
@@ -55,16 +57,55 @@ export default class MedicationUpdateScreen extends Component<{}> {
     const update = DrugUpdate.extractFromForm(form, this.props.patientKey);
 
     try {
-      localData.createDrugUpdate(update);
-      this.props.navigator.pop();
+      localData.updateDrugUpdate(update);
     } catch(e) {
       this.setState({errorMsg: e.message});
+      return;
     }
+
+    // Upload to server
+    this.setState({loading: true});
+    serverData.updateDrugUpdate(update)
+      .then( () => {
+        if(this.state.loading) {
+          // if successful, then pop screen
+          this.props.navigator.pop();
+        }
+      })
+      .catch( (e) => {
+        if(this.state.loading) {
+          localData.markPatientNeedToUpload(this.props.patientKey);
+          this.setState({
+            errorMsg: e.message,
+            loading: false,
+            showRetryButton: true
+          });
+        }
+      });
+  }
+
+  // If Loading was canceled, we want to show a retry button
+  setLoading = (val, canceled) => {
+    this.setState({loading: val, showRetryButton: canceled});
+  }
+
+  setMsg = (type, msg) => {
+    const obj = {};
+    obj[type] = msg;
+    const other = type === 'successMsg' ? 'errorMsg' : 'successMsg';
+    obj[other] = null;
+    this.setState(obj);
   }
 
   render() {
     return (
-      <Container errorMsg={this.state.errorMsg} >
+      <Container errorMsg={this.state.errorMsg} 
+        loading={this.state.loading}
+        setLoading={this.setLoading}
+        setMsg={this.setMsg}
+        patientKey={this.props.patientKey}
+        showRetryButton={this.state.showRetryButton} >
+
         <Text style={styles.title}>
           {this.props.action === 'new' ? 'New Medication' : 'Update Medication'}
         </Text>

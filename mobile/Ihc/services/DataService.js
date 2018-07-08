@@ -15,7 +15,7 @@ import config from '../config.json';
 let localData = (config.fakeLocalDataService === 'true') ? fakeLocalData : localDataService;
 
 // If we are testing the server data service, then use the real one
-let serverData = (config.fakeServerDataService === 'true' && config.testingServerDataService == 'false')
+let serverData = (config.fakeServerDataService === 'true' && config.testingServerDataService === 'false')
   ? fakeServerData : serverDataService;
 
 export {localData, serverData};

@@ -140,6 +140,7 @@ export default class TriageScreen extends Component<{}> {
 
     serverData.updateStatus(statusObj)
       .then( () => {
+        // View README: Handle syncing the tablet, point 3 for explanation
         if(this.state.loading) {
           this.setState({
             successMsg: 'Triage marked as completed, but not yet submitted',

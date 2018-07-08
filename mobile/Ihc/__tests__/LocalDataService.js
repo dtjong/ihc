@@ -198,9 +198,8 @@ describe('Download updates', () => {
     existingSoap.lastUpdated = now - 200;
     existingPatient.soaps = [existingSoap];
 
-    // Has same timestamp as existing soap so shouldnt trigger an update
     const incomingSoap = Soap.getInstance();
-    incomingSoap.lastUpdated = now - 200;
+    incomingSoap.lastUpdated = now - 300;
     incomingSoap.subjective = "Updated subjective";
     incomingPatient.soaps = [incomingSoap];
 

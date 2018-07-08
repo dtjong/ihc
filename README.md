@@ -11,11 +11,19 @@ Shortcuts:
 
 * [Command line](#command-line)
 * [How to](#how-to)
+##### 0. setup the environment
+##### 1. go through coding process
+##### 2. make a new screen
+##### 3. make a new Express API route
+##### 4. create automated tests for the server API
+##### 5. manually test the server API
+##### 6. start the router setup for tablets
+##### 7. test React Native code
+##### 8. install the app on an emulator/device
+##### 9. Handle syncing the tablets with the server
 * [Overview](#overview-use-cases)
 * [API](#local-server-api)
 * [Local storage plan](#local-storage)
-* [Mobile](#mobile-plantodo)
-* [Laptop](#laptop-plantodo)
 * [Local Database](#realm-database-design)
 * [Server Database](#mongo-database-design)
 
@@ -257,6 +265,61 @@ Other options are available: https://wix.github.io/react-native-navigation/#/scr
 
   3. Go to the Downloads file on the device and click on the .apk file
 
+##### 9. Handle syncing the tablets with the server
+
+  1. Anytime we want data from the local database, such as when we click on a
+     Patient and want to see their current SOAP form, then as a general rule of
+     thumb, 
+
+     i. Grab data locally, to display in case the server sync doesn't work
+     ii. Sync with the server using the helper functions in
+         mobile/Ihc/util/Sync.js
+     iii. Re-grab data locally, which should now include the data that was just
+          received from the server
+     iv. If the server sync failed, then display an error message, and render
+         the preexisting data
+
+  2. Anytime we are saving data to the local database, then 
+    
+    i. Save data locally
+    ii. Upload data to server using the appropriate ServerDataService function
+        call
+    iii. If the server upload fails, then display an error message and show a retry
+         button so they can try again
+ 
+  3. To allow the user to "cancel" service calls:
+
+    i. There is a button within the Loading component that calls this.props.setLoading,
+       which is passed from the parent screen (into the Container component,
+       which passes it to the Loading component). View PatientSelectScreen for
+       an example.
+    ii. However, fetch calls can't actually be cancelled because the API doesn't
+        support it. Thus, by "cancel", we actually mean return control over to
+        the user, but let the network request happen in the background.
+        This is so that in cases where the network might be unresponsive, users can
+        still operate the tablet with the understanding that updates might not
+        be sent to the server.
+    iii. To support this, after the service call (i.e. serverData.createPatient()),
+         you can check if this.state.loading === true. If it is true, then user
+         did not "cancel" the service call. However, if this.state.loading ===
+         false, then the user DID "cancel" the service call (because
+         "cancelling" exits out of the loading screen). Thus we want to display
+         the proper response. Generally, we only want to display the server's
+         response if the service call was not cancelled, because otherwise the
+         user isn't expecting there to be a response.
+    iv. CAVEAT: For post/puts, the user might try sending a server call and
+        then cancelling, thus thinking that the call won't go to the network,
+        but in the background it still is. They also might think that the data
+        was not saved locally, but the data should have been saved locally,
+        regardless of if the server call was cancelled. 
+        TODO: Find some way of conveying this properly...
+    v. We also want to keep note that if the user cancels a GET server call,
+       then the tablet may be out of sync if the cancel means we did not
+       download new data from the server. Thus, you may need to keep track of if
+       the server call is a downstream/GET call or an upstream/POST/PUT call,
+       and then render a different message if the downstream call was cancelled.
+       View PatientSelectScreen for an example.
+
 ==========================================
 
 ### Overview Use Cases:
@@ -267,15 +330,9 @@ Medication and growth chart forms reused
 Other considerations:
 Misc file upload per patient
   - folder to hold scans of anything
-Ensure pharmacy can change medications after doctor wrote it in
-  - editable table
-Timestamp instead of checkbox for patient select for when they finished
-  - does this need to persist?
 Field for who was triager
 Potential password? lock screen after given amount of time?
 If router went out, potentailly pass tablets around
-  - But wouldnt know patients are signed-in in the first place
-  - Maybe have offline patient search
 
 ##### High level plan:
 
@@ -306,7 +363,7 @@ Laptop:
 Any :date field should be represented as a string in the form yyyymmdd
 When saying _Model, such as PatientModel, it means that the object should
 have the same properties as the schema for that Model. It shouldn't be an actual Mongoose
-Model object because we will construct that on the backen. If we run into issues
+Model object because we will construct that on the backend. If we run into issues
 with this level of vagueness, we can specify which properties exactly should be
 passed.
 
@@ -450,16 +507,13 @@ Beginning:
 Signin:
 - If new patient, then add to local storage and send to server for others to
 grab
-- All stuff on patient select page don't store locally
-  - including patients that are checked in, which stations they are done with,
-    special notes/requests (notes section will not be persistent)
+- If existing patient, then update their Status object both locally and on the
+  server
 
 Triage/SOAP:
 (Only let one person modify at a time)
 - Call server, if it doesn't have a form yet then open blank form
   - If form does exist, render
-- On clicking "View Growth Chart", Add weight and height to local storage and
-  read local storage to get rest of growth chart data
 - If "Save", add to local storage and then send to server
 
 Medication List:
@@ -472,76 +526,6 @@ At end of session:
   - (Should base last_updated_timestamps on local device, not the server)
   - Replace patients with new data
  
-==========================================
-
-### Mobile Plan/TODO:
-React Native
-
-- "Sync" button
-  - Locally store updates with AsyncStorage
-  - Disable "Sync" if updates exist
-
--- Begin N/A --
-
-"Upload Updates" put /groups/:group/all -> Express API:
-Send list of local updates
-Locally save list of timestamps when "Upload Updates" was clicked
-Body:
-  {
-    timestamp: When "Upload Updates" button is clicked,
-    userUpdates: list of user updates
-        [{ <Match user object in database design section> }]
-  }
-
-"Sync" GET /groups/:group/all/:timestamp?exclude=[timestamps] -> Express API:
-Pass in 
-  :timestamp of when last synced
-  [timestamps] 
-    - Timestamps when "Upload Updates" was clicked to exclude from results to
-      avoid duplicates
-
-Retrieve list of all updates since given timestamp (last synced)
-  - Go through list and locally save updates
-  - Clear local list of "Upload Updates" timestamps
-
--- End N/A --
-
-
-==========================================
-
-### Laptop Plan/TODO:
-React and Express local server
-
-TODO
-- Form to manually add new information (?)
-
--- Begin N/A --
-
-Routes:
-  ESSENTIAL:
-  
-  GET   /groups/:group/all/:timestamp   => Return information for updates after
-                                           last_synced_timestamp
-    1. Grab list of send_update_timestamps from groups/:groupid
-    2. For each send_update_timestamp that is later than the last_synced_timestamp
-      ("Last synced" is property of the tablet)
-      - Ignore timestamps passed in to exclude param 
-      - Get list of updates from groups/:timestamp and consolidate into one list
-
-  put /groups/:group/all   => Update information for all people
-    - Body contains 
-    {
-      timestamp: send_update_timestamps,
-      user_updates: list of user updates
-    }
-
-  NONESSENTIAL:
-  GET   /groups/:group/:id   => Return information for that person
-  POST  /groups/:group      => Add information for new person
-  put /groups/:group/:id   => Update information for person
-
--- End N/A --
-
 ==========================================
 
 ### Realm Database design:

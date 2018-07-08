@@ -53,8 +53,18 @@ export default class Patient {
     return str;
   }
 
-  static extractFromForm(form) {
+  // Capitalize first letter, lowercase the rest
+  static standardizeName(name) {
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  }
+
+  static extractFromForm = (form) => {
     const patient = Object.assign({}, form);
+
+    patient.firstName = Patient.standardizeName(form.firstName);
+    patient.fatherName = Patient.standardizeName(form.fatherName);
+    patient.motherName = Patient.standardizeName(form.motherName);
+
     patient.birthday = stringDate(form.birthday);
     patient.key = Patient.makeKey(patient);
     patient.needToUpload = false;

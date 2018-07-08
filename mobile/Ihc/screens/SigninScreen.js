@@ -102,6 +102,7 @@ export default class SigninScreen extends Component<{}> {
 
       serverData.createPatient(patient)
         .then( () => {
+          // View README: Handle syncing the tablet, point 3 for explanation
           if(this.state.loading) {
             this.setState({
               // Clear form, reset to Signin form
@@ -143,6 +144,7 @@ export default class SigninScreen extends Component<{}> {
 
     serverData.updateStatus(statusObj)
       .then( () => {
+        // View README: Handle syncing the tablet, point 3 for explanation
         if(this.state.loading){
           this.setState({
             // Clear form, reset to Signin form

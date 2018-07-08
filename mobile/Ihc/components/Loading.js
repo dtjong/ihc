@@ -20,6 +20,7 @@ export default class Loading extends Component<{}> {
    * setMsg: function to set error msg if cancel button is clicked
    *   or null if not needed
    * setLoading: function to toggle loading, second param is true if user canceled
+   * cancellable: optional boolean, true by default
    */
   constructor(props) {
     super(props);
@@ -42,7 +43,8 @@ export default class Loading extends Component<{}> {
       <View style={styles.container}>
         <Text style={styles.text}>Loading...</Text>
         <ActivityIndicator size="large" />
-        <Button text="Cancel" onPress={this.cancel} />
+        { this.props.cancellable === true || this.props.cancellable === undefined ?
+          <Button style={styles.button} text="Cancel" onPress={this.cancel} /> : null }
       </View>
     );
   }
@@ -60,4 +62,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#F5FCFF'
   },
+  button: {
+    width: 120
+  }
 });

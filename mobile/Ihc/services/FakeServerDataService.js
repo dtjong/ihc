@@ -81,5 +81,10 @@ export function updatePatients(patients) {
 
 // Server endpoint: get /patients/:timestamp
 export function getUpdatedPatients(lastSynced) {
+  return new Promise((res,rej) => {
+    setTimeout(() => {
+      res([]);
+    }, 500);
+  });
 }
 /* eslint-enable */

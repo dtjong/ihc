@@ -9,6 +9,7 @@ import SuccessErrorMessages from './SuccessErrorMessages';
 import Loading from './Loading';
 import {localData, serverData} from '../services/DataService';
 import Button from './Button';
+import {downstreamSyncWithServer} from '../util/Sync';
 
 /*
  * Common wrapper around Screens. Includes code for the ScrollView,
@@ -28,6 +29,9 @@ export default class Container extends Component<{}> {
    * setLoading: function that configures loading in parent, and passes in
    *   second param that is true if the loading was Canceled
    * showRetryButton: boolean
+   * cancellableLoading: optional boolean, true by default
+   * isUploading: true if the screen is trying to upload to the server, false if
+   * the screen is trying to download from the server. Used for Retry button.
    *
    * use Container like
    * <Container loading={this.state.loading}>
@@ -41,6 +45,36 @@ export default class Container extends Component<{}> {
   // Retry retries sending ALL updates, so is equivalent to Upload Updates
   // button on the WelcomeScreen
   retry = () => {
+    if(this.props.isUploading)
+      this.retryUpload();
+    else
+      this.retryDownload();
+  }
+
+  retryDownload = () => {
+    this.props.setLoading(true);
+    downstreamSyncWithServer()
+      .then((failedPatientKeys) => {
+        if(this.props.loading) {
+          if(failedPatientKeys.length > 0) {
+            throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
+          }
+
+          if(this.props.setMsg)
+            this.props.setMsg('successMsg', 'Downloaded successfully');
+          this.props.setLoading(false);
+        }
+      })
+      .catch(err => {
+        if(this.props.loading) {
+          if(this.props.setMsg)
+            this.props.setMsg('errorMsg', err.message);
+          this.props.setLoading(false);
+        }
+      });
+  }
+
+  retryUpload = () => {
     this.props.setLoading(true);
     const patients = localData.getPatientsToUpload();
     serverData.updatePatients(patients)
@@ -49,19 +83,16 @@ export default class Container extends Component<{}> {
           localData.markPatientsUploaded();
           if(this.props.setMsg)
             this.props.setMsg('successMsg', 'Uploaded successfully');
-          if(this.props.setLoading)
-            this.props.setLoading(false);
+          this.props.setLoading(false);
         }
       })
       .catch(err => {
         if(this.props.loading) {
           if(this.props.setMsg)
             this.props.setMsg('errorMsg', err.message);
-          if(this.props.setLoading)
-            this.props.setLoading(false);
+          this.props.setLoading(false);
         }
       });
-
   }
 
   render = () => {
@@ -72,6 +103,7 @@ export default class Container extends Component<{}> {
             patientKey={this.props.patientKey}
             setMsg={this.props.setMsg}
             setLoading={this.props.setLoading}
+            cancellable={this.props.cancellableLoading}
           />
         </View>
       );
