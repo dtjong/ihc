@@ -211,3 +211,58 @@ export function getUpdatedPatients(lastSynced) {
       return Promise.reject(err);
     });
 }
+
+// Server endpoint: post /medication-inventory
+export function createMedication(newMedication) {
+  return fetch(fetchUrl + '/medication-inventory', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({medication: newMedication})
+  }).then(response => response.json())
+    .then(json => {
+      if (!json.status) {
+        throw new Error(json.error);
+      }
+      return Promise.resolve(true);
+    })
+    .catch(err => {
+      return Promise.resolve(err);
+    });
+}
+// Server endpoint: get /medication-inventory/:name
+export function getMedications(name) {
+  return fetch(fetchUrl + '/medication-inventory/' + name)
+    .then(response => response.json())
+    .then(json => {
+      if (!json.status) {
+        throw new Error(json.error);
+      }
+      return Promise.resolve(json.medications);
+    })
+    .catch(err => {
+      return Promise.resolve(err);
+    });
+}
+// Server endpoint: put /medication-inventory/:name/:date
+export function updateMedication(name, date, update) {
+  return fetch(fetchUrl + '/medication-inventory/' + name + '/' + date, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({medication: update})
+  }).then(response => response.json())
+    .then(json => {
+      if (!json.status) {
+        throw new Error(json.error);
+      }
+      return Promise.resolve(true);
+    })
+    .catch(err => {
+      return Promise.resolve(err);
+    });
+}

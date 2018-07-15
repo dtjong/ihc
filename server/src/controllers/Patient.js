@@ -2,6 +2,7 @@
 //to access/modify these containers, look up mongodb functions
 import PatientModel from '../models/Patient';
 import TriageModel from '../models/Triage';
+import MedicationModel from '../models/Medication';
 
 //function params for all calls are generally the same function(req,res)
 const PatientController = {
@@ -411,6 +412,69 @@ const PatientController = {
       patient.save(function(err) {
         if(err) {
           res.json({status: false, error: err.message});
+          return;
+        }
+        res.json({status: true});
+        return;
+      });
+    });
+  },
+  /* body: medication object */
+  CreateMedication: function(req, res) {
+    MedicationModel.findOne({drugName: req.body.medication.drugName, expirationDate: req.body.medication.expirationDate}, function(err, drug) {
+      if (drug) {
+        err = new Error(`A medication with the name ${req.body.medication.drugName} and expiration date ${req.body.medication.expirationDate} already exists`);
+      }
+      if (err) {
+        res.json({status: false, error: err.message});
+        return;
+      }
+      MedicationModel.create(req.body.medication, function (err) {
+        if(err) {
+          res.json({status: false, error: err.message});
+          return;
+        }
+        res.json({status: true});
+        return;
+      });
+    })
+  },
+  /* body: NA, returns: array of medication objects */
+  GetMedications: function(req, res) {
+    MedicationModel.find({drugName: req.params.name}, function(err, drugs) {
+      if (drugs.length == 0) {
+        err = new Error(`A medication with the name ${req.params.name} does not exist`)
+      }
+      if(err) {
+        res.json({status: false, error: err.message});
+        return;
+      }
+      res.json({status: true, medications: drugs})
+      return;
+    });
+  },
+  /* body: medication object */
+  UpdateMedication: function(req, res) {
+    MedicationModel.findOne({drugName: req.params.name, expirationDate: req.params.date}, function(err, drug) {
+      if (!drug) {
+        err = new Error(`A medication with the name ${req.params.name} and expiration date ${req.params.date} does not exist`)
+      }
+      if (err) {
+        res.json({status: false, error: err.message});
+        return;
+      }
+
+      // Only update the given properties (can't change expiration date for safety reasons)
+      const properties = ['drugName', 'dosage', 'quantity', 'units', 'comments'];
+      properties.forEach( p => {
+        if(req.body.medication[p])
+          drug[p] = req.body.medication[p];
+      });
+
+      //saves it, callback function to handle error
+      drug.save(function(e) {
+        if(e) {
+          res.json({status: false, error: e.message});
           return;
         }
         res.json({status: true});
