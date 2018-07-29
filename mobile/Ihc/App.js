@@ -3,7 +3,13 @@ import { Navigation } from 'react-native-navigation';
 import { registerScreens } from './screens';
 import config from './config.json';
 
-registerScreens(); // this is where you register all of your app's screens
+import { createStore } from 'redux';
+import reducers from './reduxReducers/reducers';
+import { Provider } from 'react-redux';
+
+const store = createStore(reducers);
+
+registerScreens(store, Provider); // this is where you register all of your app's screens
 
 if (config.testingServerDataService === 'true' ) {
   // Test server data service with buttons that call service

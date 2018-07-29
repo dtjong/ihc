@@ -229,7 +229,7 @@ export function createMedication(newMedication) {
       return Promise.resolve(true);
     })
     .catch(err => {
-      return Promise.resolve(err);
+      return Promise.reject(err);
     });
 }
 // Server endpoint: get /medication-inventory/:name
@@ -243,12 +243,12 @@ export function getMedications(name) {
       return Promise.resolve(json.medications);
     })
     .catch(err => {
-      return Promise.resolve(err);
+      return Promise.reject(err);
     });
 }
-// Server endpoint: put /medication-inventory/:name/:date
-export function updateMedication(name, date, update) {
-  return fetch(fetchUrl + '/medication-inventory/' + name + '/' + date, {
+// Server endpoint: put /medication-inventory/:name/update/:date
+export function updateMedication(name, update) {
+  return fetch(fetchUrl + '/medication-inventory/' + name + '/update', {
     method: 'PUT',
     headers: {
       Accept: 'application/json',
@@ -263,6 +263,25 @@ export function updateMedication(name, date, update) {
       return Promise.resolve(true);
     })
     .catch(err => {
-      return Promise.resolve(err);
+      return Promise.reject(err);
+    });
+}
+// Server endpoint: put /medication-inventory/:name/delete/:date
+export function deleteMedication(name) {
+  return fetch(fetchUrl + '/medication-inventory/' + name + '/delete', {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    }
+  }).then(response => response.json())
+    .then(json => {
+      if (!json.status) {
+        throw new Error(json.error);
+      }
+      return Promise.resolve(true);
+    })
+    .catch(err => {
+      return Promise.reject(err);
     });
 }

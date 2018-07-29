@@ -13,24 +13,22 @@ import DrugUpdate from '../models/DrugUpdate';
 import Button from '../components/Button';
 import {downstreamSyncWithServer} from '../util/Sync';
 
-export default class MedicationScreen extends Component<{}> {
+class MedicationScreen extends Component<{}> {
   /*
+   * Redux props:
+   * loading: boolean
+   * currentPatientKey: string
+   *
    * Props:
    * name: patient's name for convenience
-   * patientKey: string of patient's key
    */
   constructor(props) {
     super(props);
 
     this.state = {
-      loading: false,
-      showRetryButton: false,
       updates: [],
-      errorMsg: null,
-      successMsg: null,
       medicationCheckmarks: [],
       todayDate: stringDate(new Date()),
-      upstreamSyncing: false, // Should be set before server calls to declare what kind of syncing
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -55,31 +53,26 @@ export default class MedicationScreen extends Component<{}> {
       return;
     }
 
-    this.setState({loading: true, upstreamSyncing: true});
+    this.props.setLoading(true);
+    this.props.isUploading(true);
+
     serverData.updateDrugUpdate(newUpdate)
       .then( () => {
         // View README: Handle syncing the tablet, point 3 for explanation
-        if(this.state.loading) {
+        if(this.props.loading) {
           // if successful, then reload data
           this.syncAndLoadMedications();
 
-          this.setState({
-            loading: false,
-            showRetryButton: false,
-            successMsg: 'Saved successfully',
-            errorMsg: null
-          });
+          this.props.setLoading(false);
+          this.props.setSuccessMessage('Saved successfully');
         }
       })
       .catch( (e) => {
-        if(this.state.loading) {
-          localData.markPatientNeedToUpload(this.props.patientKey);
-          this.setState({
-            errorMsg: e.message,
-            successMsg: null,
-            loading: false,
-            showRetryButton: true
-          });
+        if(this.props.loading) {
+          localData.markPatientNeedToUpload(this.props.currentPatientKey);
+
+          this.props.setLoading(false, true);
+          this.props.setErrorMessage(e.message);
         }
       });
   }
@@ -91,7 +84,6 @@ export default class MedicationScreen extends Component<{}> {
       passProps: {
         drugUpdate: prevDrugUpdate,
         action: 'change',
-        patientKey: this.props.patientKey,
         name: this.props.name
       }
     });
@@ -118,11 +110,13 @@ export default class MedicationScreen extends Component<{}> {
   }
 
   syncAndLoadMedications = () => {
-    this.setState({ loading: true, upstreamSyncing: false, errorMsg: null, successMsg: null });
+    this.props.setLoading(true);
+    this.props.isUploading(false);
+    this.props.clearMessages();
 
     // Load local data in beginning to display even if sync doesn't work
-    let updates = localData.getMedicationUpdates(this.props.patientKey);
-    let statusObj = localData.getStatus(this.props.patientKey, this.state.todayDate);
+    let updates = localData.getMedicationUpdates(this.props.currentPatientKey);
+    let statusObj = localData.getStatus(this.props.currentPatientKey, this.state.todayDate);
     const checkmarks = statusObj.medicationCheckmarks;
     this.setState({
       updates: updates,
@@ -131,66 +125,60 @@ export default class MedicationScreen extends Component<{}> {
 
     downstreamSyncWithServer()
       .then((failedPatientKeys) => {
-        if(failedPatientKeys.length > 0) {
-          throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
-        }
+        // View README: Handle syncing the tablet, point 3 for explanation
+        if(this.props.loading) {
+          if(failedPatientKeys.length > 0) {
+            throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
+          }
 
-        let updates = localData.getMedicationUpdates(this.props.patientKey);
-        let statusObj = localData.getStatus(this.props.patientKey, this.state.todayDate);
-        const checkmarks = statusObj.medicationCheckmarks;
-        this.setState({
-          updates: updates,
-          medicationCheckmarks: checkmarks,
-          loading: false
-        });
+          let updates = localData.getMedicationUpdates(this.props.currentPatientKey);
+          let statusObj = localData.getStatus(this.props.currentPatientKey, this.state.todayDate);
+          const checkmarks = statusObj.medicationCheckmarks;
+
+          this.setState({
+            updates: updates,
+            medicationCheckmarks: checkmarks,
+          });
+          this.props.setLoading(false);
+        }
       })
       .catch(err => {
-        this.setState({loading: false, errorMsg: err.message});
+        if(this.props.loading) {
+          this.props.setLoading(false);
+          this.props.setErrorMessage(err.message);
+        }
       });
   }
 
   saveCheckmarks = () => {
     // Local checkmark saves are handled in MedicationTable directly.
-    const statusObj = localData.getStatus(this.props.patientKey, this.state.todayDate);
+    const statusObj = localData.getStatus(this.props.currentPatientKey, this.state.todayDate);
 
-    this.setState({
-      loading: true,
-      errorMsg: null,
-      successMsg: null,
-    });
+    this.props.setLoading(true);
+    this.props.clearMessages();
 
     serverData.updateStatus(statusObj)
       .then( () => {
         // View README: Handle syncing the tablet, point 3 for explanation
-        if(this.state.loading) {
-          this.setState({
-            successMsg: 'Saved',
-            errorMsg: null,
-            loading: false,
-            showRetryButton: false
-          });
+        if(this.props.loading) {
+          this.props.setSuccessMessage('Saved');
+          this.props.setLoading(false);
         }
       })
       .catch( (e) => {
-        if(this.state.loading) {
-          localData.markPatientNeedToUpload(this.props.patientKey);
-          this.setState({
-            successMsg: null,
-            errorMsg: e.message,
-            loading: false,
-            showRetryButton: true
-          });
+        if(this.props.loading) {
+          localData.markPatientNeedToUpload(this.props.currentPatientKey);
+
+          this.props.setErrorMessage(e.message);
+          this.props.setLoading(false, true);
         }
       });
   }
 
   // station: 'Doctor' or 'Pharmacy'
   updateStatus(station) {
-    this.setState({
-      loading: true,
-      errorMsg: null,
-      successMsg: null,
-    });
+    this.props.setLoading(true);
+    this.props.clearMessages();
 
     let statusObj = {};
     if(station !== 'Doctor' && station !== 'Pharmacy') {
@@ -199,34 +187,27 @@ export default class MedicationScreen extends Component<{}> {
 
     const fieldName = station === 'Doctor' ? 'doctorCompleted' : 'pharmacyCompleted';
     try {
-      statusObj = localData.updateStatus(this.props.patientKey, this.state.todayDate,
+      statusObj = localData.updateStatus(this.props.currentPatientKey, this.state.todayDate,
         fieldName, new Date().getTime());
     } catch(e) {
-      this.setState({errorMsg: e.message, successMsg: null, loading: false});
+      this.props.setLoading(false);
+      this.props.setErrorMessage(e.message);
       return;
     }
 
     serverData.updateStatus(statusObj)
       .then( () => {
         // View README: Handle syncing the tablet, point 3 for explanation
-        if(this.state.loading) {
-          this.setState({
-            successMsg: `${station} marked as completed`,
-            errorMsg: null,
-            loading: false,
-            showRetryButton: false
-          });
+        if(this.props.loading) {
+          this.props.setSuccessMessage(`${station} marked as completed`);
+          this.props.setLoading(false);
         }
       })
       .catch( (e) => {
-        if(this.state.loading) {
-          localData.markPatientNeedToUpload(this.props.patientKey);
-          this.setState({
-            successMsg: null,
-            errorMsg: e.message,
-            loading: false,
-            showRetryButton: true
-          });
+        if(this.props.loading) {
+          localData.markPatientNeedToUpload(this.props.currentPatientKey);
+          this.props.setErrorMessage(e.message);
+          this.props.setLoading(false, true);
         }
       });
   }
@@ -239,34 +220,9 @@ export default class MedicationScreen extends Component<{}> {
     this.updateStatus('Pharmacy');
   }
 
-  // If Loading was canceled, we want to show a retry button
-  setLoading = (val, canceled) => {
-    let errorMsg = null;
-    // View README: Handle syncing the tablet, point 5 for explanation
-    if(canceled && this.state.upstreamSyncing === false) {
-      errorMsg = 'Canceling may cause data to be out of sync.';
-    }
-    this.setState({loading: val, showRetryButton: canceled, errorMsg: errorMsg});
-  }
-
-  setMsg = (type, msg) => {
-    const obj = {};
-    obj[type] = msg;
-    const other = type === 'successMsg' ? 'errorMsg' : 'successMsg';
-    obj[other] = null;
-    this.setState(obj);
-  }
-
   render() {
     return (
-      <Container loading={this.state.loading}
-        errorMsg={this.state.errorMsg}
-        successMsg={this.state.successMsg}
-        setLoading={this.setLoading}
-        setMsg={this.setMsg}
-        patientKey={this.props.patientKey}
-        showRetryButton={this.state.showRetryButton}
-      >
+      <Container>
 
         <View style={styles.headerContainer}>
           <Text style={styles.title}>
@@ -284,7 +240,7 @@ export default class MedicationScreen extends Component<{}> {
             discontinue={this.discontinueMedication}
             updates={this.state.updates}
             medicationCheckmarks={this.state.medicationCheckmarks}
-            patientKey={this.props.patientKey}
+            patientKey={this.props.currentPatientKey}
           />
         </ScrollView>
 
@@ -341,3 +297,22 @@ const styles = StyleSheet.create({
     height: 60 
   }
 });
+
+// Redux
+import { setLoading, setErrorMessage, setSuccessMessage, clearMessages, isUploading } from '../reduxActions/containerActions';
+import { connect } from 'react-redux';
+
+const mapStateToProps = state => ({
+  loading: state.loading,
+  currentPatientKey: state.currentPatientKey
+});
+
+const mapDispatchToProps = dispatch => ({
+  setLoading: (val,showRetryButton) => dispatch(setLoading(val, showRetryButton)),
+  setErrorMessage: val => dispatch(setErrorMessage(val)),
+  setSuccessMessage: val => dispatch(setSuccessMessage(val)),
+  clearMessages: () => dispatch(clearMessages()),
+  isUploading: val => dispatch(isUploading(val))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MedicationScreen);

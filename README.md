@@ -213,7 +213,7 @@ Other options are available: https://wix.github.io/react-native-navigation/#/scr
      ```mongo``` to start a database shell, which will allow you to look around
      the db
 
-     ```use ihc``` to switch to the 'ihc' database
+     ```use data``` to switch to the 'data' database
 
      ```db.patients.find()``` to view all of the patients in the database
 
