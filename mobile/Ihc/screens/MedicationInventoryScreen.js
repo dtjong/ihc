@@ -35,7 +35,7 @@ export default class MedicationInventoryScreen extends Component<{}> {
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
-
+/*
   // Reload table after new medication updates
   // Replaces componentDidMount() because this will be called around the same
   // time
@@ -89,17 +89,10 @@ export default class MedicationInventoryScreen extends Component<{}> {
       }
     });
   }
-
+*/
   render() {
     return (
-      <Container loading={this.state.loading}
-        errorMsg={this.state.errorMsg}
-        successMsg={this.state.successMsg}
-        setLoading={this.setLoading}
-        setMsg={this.setMsg}
-        patientKey={this.props.patientKey}
-        showRetryButton={this.state.showRetryButton}
-      >
+      <Container>
 
         <View style={styles.headerContainer}>
           <Text style={styles.title}>Medication Inventory</Text>
@@ -112,11 +105,6 @@ export default class MedicationInventoryScreen extends Component<{}> {
 
         <View style={styles.footerContainer}>
 
-          <Button
-            onPress={this.createNewMedication}
-            style={styles.button}
-            text='New Medication'>
-          </Button>
 
         </View>
       </Container>

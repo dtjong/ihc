@@ -12,29 +12,31 @@ import {
 import {localData} from '../services/DataService';
 import Button from './Button';
 
-export default class Loading extends Component<{}> {
+class Loading extends Component<{}> {
   /*
-   * props:
-   * patientKey: the patientKey to mark as upload in case loading is canceled,
-   *   or null if not needed
-   * setMsg: function to set error msg if cancel button is clicked
+   * Redux props:
+   * setErrorMessage: function to set error msg if cancel button is clicked
    *   or null if not needed
    * setLoading: function to toggle loading, second param is true if user canceled
-   * cancellable: optional boolean, true by default
+   * currentPatientKey: the patientKey to mark as upload in case loading is canceled,
+   *   or null if not needed
    */
   constructor(props) {
     super(props);
   }
 
   cancel = () => {
-    if(this.props.patientKey) {
-      localData.markPatientNeedToUpload(this.props.patientKey);
+    if(this.props.currentPatientKey) {
+      localData.markPatientNeedToUpload(this.props.currentPatientKey);
     }
 
-    if(this.props.setMsg) {
-      this.props.setMsg('errorMsg', 'Cancelled. May need to retry.');
-    }
+    // If we cancelled a downstream sync, then display a different message
+    if(this.props.uploading)
+      this.props.setErrorMessage('Cancelled. May need to retry.');
+    else
+      this.props.setErrorMessage('Canceling may cause data to be out of sync.');
 
+    // Show retry button when cancel button is pressed
     this.props.setLoading(false, true);
   }
 
@@ -43,8 +45,7 @@ export default class Loading extends Component<{}> {
       <View style={styles.container}>
         <Text style={styles.text}>Loading...</Text>
         <ActivityIndicator size="large" />
-        { this.props.cancellable === true || this.props.cancellable === undefined ?
-          <Button style={styles.button} text="Cancel" onPress={this.cancel} /> : null }
+        <Button style={styles.button} text="Cancel" onPress={this.cancel} />
       </View>
     );
   }
@@ -66,3 +67,19 @@ const styles = StyleSheet.create({
     width: 120
   }
 });
+
+// Redux
+import { setLoading, setErrorMessage } from '../reduxActions/containerActions';
+import { connect } from 'react-redux';
+
+const mapStateToProps = state => ({
+  currentPatientKey: state.currentPatientKey,
+  uploading: state.uploading
+});
+
+const mapDispatchToProps = dispatch => ({
+  setLoading: (val,showRetryButton) => dispatch(setLoading(val, showRetryButton)),
+  setErrorMessage: val => dispatch(setErrorMessage(val)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Loading);

@@ -8,11 +8,19 @@ import sinon from 'sinon';
 import {localData} from '../services/DataService';
 import Patient from '../models/Patient';
 
+import { createStore } from 'redux';
+import reducers from '../reduxReducers/reducers';
+import { Provider } from 'react-redux';
+
+const store = createStore(reducers);
+
 it('renders correctly', () => {
   sinon.stub(localData, 'getPatient').returns(Patient.getInstance());
 
   const json = renderer.create(
-    <PatientHistoryScreen todayDate = '20180101' />
+    <Provider store={store}>
+      <PatientHistoryScreen todayDate = '20180101' />
+    </Provider>
   ).toJSON();
   expect(json).toMatchSnapshot();
 });

@@ -10,17 +10,16 @@ import PatientTable from '../components/PatientTable';
 import Container from '../components/Container';
 import {downstreamSyncWithServer} from '../util/Sync';
 
-export default class PatientSelectScreen extends Component<{}> {
+class PatientSelectScreen extends Component<{}> {
+  /*
+   * Redux props:
+   * loading: boolean
+   */
   constructor(props) {
     super(props);
 
     this.state = {
-      errorMsg: null,
-      successMsg: null,
-      loading: false,
       rows: [],
-      showRetryButton: false,
-      upstreamSyncing: false // Should be set before server calls to declare what kind of syncing
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
@@ -38,7 +37,10 @@ export default class PatientSelectScreen extends Component<{}> {
 
   // Sync up tablet first with server before grabbing statuses
   syncAndLoadPatients = () => {
-    this.setState({ loading: true, upstreamSyncing: false, errorMsg: null, successMsg: null });
+    this.props.setCurrentPatientKey(null);
+    this.props.setLoading(true);
+    this.props.isUploading(false);
+    this.props.clearMessages();
 
     // Load local data in beginning to display even if sync doesn't work
     const today = stringDate(new Date());
@@ -48,15 +50,23 @@ export default class PatientSelectScreen extends Component<{}> {
 
     downstreamSyncWithServer()
       .then((failedPatientKeys) => {
-        if(failedPatientKeys.length > 0) {
-          throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
+        // View README: Handle syncing the tablet, point 3 for explanation
+        if(this.props.loading) {
+          if(failedPatientKeys.length > 0) {
+            throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
+          }
+          const newStatuses = localData.getStatuses(today);
+          const newRowData = this.convertStatusesToRows(newStatuses);
+
+          this.setState({rows: newRowData});
+          this.props.setLoading(false);
         }
-        const newStatuses = localData.getStatuses(today);
-        const newRowData = this.convertStatusesToRows(newStatuses);
-        this.setState({rows: newRowData, loading: false});
       })
       .catch(err => {
-        this.setState({loading: false, errorMsg: err.message});
+        if(this.props.loading) {
+          this.props.setLoading(false);
+          this.props.setErrorMessage(err.message);
+        }
       });
   }
 
@@ -69,12 +79,14 @@ export default class PatientSelectScreen extends Component<{}> {
     }
   }
 
-
+  // patient is an array containing one row of data from the PatientTable
+  // PatientKey stored in index 7
   goToPatient = (patient) => {
+    this.props.setCurrentPatientKey(patient[7]);
     this.props.navigator.push({
       screen: 'Ihc.PatientHomeScreen',
       title: patient.name,
-      passProps: { name: patient[0], patientKey: patient[7] }
+      passProps: { name: patient[0] }
     });
   }
 
@@ -85,66 +97,38 @@ export default class PatientSelectScreen extends Component<{}> {
       statusObj = localData.updateStatus(patientKey, stringDate(new Date()),
         'notes', notes);
     } catch(e) {
-      this.setState({errorMsg: e.message, successMsg: null});
+      this.props.setErrorMessage(e.message);
       return;
     }
 
-    this.setState({loading: true, upstreamSyncing: true, patientKey: patientKey});
+    this.props.setLoading(true);
+    this.props.isUploading(true);
+    this.props.setCurrentPatientKey(patientKey);
+
     serverData.updateStatus(statusObj)
       .then( () => {
         // View README: Handle syncing the tablet, point 3 for explanation
-        if(this.state.loading) {
+        if(this.props.loading) {
           // if successful, then reload screen (which closes modal too)
           this.syncAndLoadPatients();
-          this.setState({
-            loading: false,
-            showRetryButton: false,
-            successMsg: 'Saved successfully',
-            errorMsg: null
-          });
+
+          this.props.setLoading(false);
+          this.props.setSuccessMessage('Saved successfully');
         }
       })
       .catch( (e) => {
-        if(this.state.loading) {
+        if(this.props.loading) {
           localData.markPatientNeedToUpload(patientKey);
-          this.setState({
-            errorMsg: e.message,
-            successMsg: null,
-            loading: false,
-            showRetryButton: true
-          });
+
+          this.props.setLoading(false, true);
+          this.props.setErrorMessage(e.message);
         }
       });
   }
 
-  // If Loading was canceled, we want to show a retry button
-  setLoading = (val, canceled) => {
-    let errorMsg = null;
-    // View README: Handle syncing the tablet, point 5 for explanation
-    if(canceled && this.state.upstreamSyncing === false) {
-      errorMsg = 'Canceling may cause data to be out of sync.';
-    }
-    this.setState({loading: val, showRetryButton: canceled, errorMsg: errorMsg});
-  }
-
-  setMsg = (type, msg) => {
-    const obj = {};
-    obj[type] = msg;
-    const other = type === 'successMsg' ? 'errorMsg' : 'successMsg';
-    obj[other] = null;
-    this.setState(obj);
-  }
-
   render() {
     return (
-      <Container loading={this.state.loading}
-        errorMsg={this.state.errorMsg}
-        successMsg={this.state.successMsg}
-        setLoading={this.setLoading}
-        setMsg={this.setMsg}
-        patientKey={this.state.patientKey}
-        showRetryButton={this.state.showRetryButton}
-      >
+      <Container>
         <Text style={styles.title}>
           Select a Patient
         </Text>
@@ -171,3 +155,22 @@ const styles = StyleSheet.create({
     width: '100%'
   },
 });
+
+// Redux
+import { setLoading, setErrorMessage, setSuccessMessage, clearMessages, isUploading, setCurrentPatientKey } from '../reduxActions/containerActions';
+import { connect } from 'react-redux';
+
+const mapStateToProps = state => ({
+  loading: state.loading
+});
+
+const mapDispatchToProps = dispatch => ({
+  setLoading: (val,showRetryButton) => dispatch(setLoading(val, showRetryButton)),
+  setErrorMessage: val => dispatch(setErrorMessage(val)),
+  setSuccessMessage: val => dispatch(setSuccessMessage(val)),
+  clearMessages: () => dispatch(clearMessages()),
+  isUploading: val => dispatch(isUploading(val)),
+  setCurrentPatientKey: key => dispatch(setCurrentPatientKey(key))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(PatientSelectScreen);
