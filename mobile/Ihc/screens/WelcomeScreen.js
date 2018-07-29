@@ -28,6 +28,13 @@ export default class WelcomeScreen extends Component<{}> {
     });
   }
 
+  goToMedicationInventory = () => {
+    this.props.navigator.push({
+      screen: 'Ihc.MedicationInventoryScreen',
+      title: 'Medication Inventory'
+    });
+  }
+
   // Don't need to show a retry button because they could just click
   // UploadUpdates again
   /* eslint-disable no-unused-vars */
@@ -98,6 +105,10 @@ export default class WelcomeScreen extends Component<{}> {
         />
         <Button onPress={this.download}
           text="Download updates"
+          style={styles.button}
+        />
+        <Button onPress={this.goToMedicationInventory}
+          text="Medication Screen"
           style={styles.button}
         />
       </Container>

@@ -11,6 +11,7 @@ import SoapScreen from './SoapScreen';
 import TriageScreen from './TriageScreen';
 import PatientHistoryScreen from './PatientHistoryScreen';
 import TestServerScreen from './TestServerScreen';
+import MedicationInventoryScreen from './MedicationInventoryScreen';
 
 // register all screens of the app (including internal ones)
 export function registerScreens() {
@@ -26,4 +27,5 @@ export function registerScreens() {
   Navigation.registerComponent('Ihc.TriageScreen', () => TriageScreen);
   Navigation.registerComponent('Ihc.PatientHistoryScreen', () => PatientHistoryScreen);
   Navigation.registerComponent('Ihc.TestServerScreen', () => TestServerScreen);
+  Navigation.registerComponent('Ihc.MedicationInventoryScreen', () => MedicationInventoryScreen);
 }
