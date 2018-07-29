@@ -13,17 +13,18 @@ import PatientHistoryScreen from './PatientHistoryScreen';
 import TestServerScreen from './TestServerScreen';
 
 // register all screens of the app (including internal ones)
-export function registerScreens() {
+// store and Provider are pieces of Redux
+export function registerScreens(store, Provider) {
   // All ID names should be Ihc.<Component Name>
-  Navigation.registerComponent('Ihc.WelcomeScreen', () => WelcomeScreen);
-  Navigation.registerComponent('Ihc.SigninScreen', () => SigninScreen);
-  Navigation.registerComponent('Ihc.PatientSelectScreen', () => PatientSelectScreen);
-  Navigation.registerComponent('Ihc.PatientHomeScreen', () => PatientHomeScreen);
-  Navigation.registerComponent('Ihc.MedicationScreen', () => MedicationScreen);
-  Navigation.registerComponent('Ihc.GrowthChartScreen', () => GrowthChartScreen);
-  Navigation.registerComponent('Ihc.MedicationUpdateScreen', () => MedicationUpdateScreen);
-  Navigation.registerComponent('Ihc.SoapScreen', () => SoapScreen);
-  Navigation.registerComponent('Ihc.TriageScreen', () => TriageScreen);
-  Navigation.registerComponent('Ihc.PatientHistoryScreen', () => PatientHistoryScreen);
+  Navigation.registerComponent('Ihc.WelcomeScreen', () => WelcomeScreen, store, Provider);
+  Navigation.registerComponent('Ihc.SigninScreen', () => SigninScreen, store, Provider);
+  Navigation.registerComponent('Ihc.PatientSelectScreen', () => PatientSelectScreen, store, Provider);
+  Navigation.registerComponent('Ihc.PatientHomeScreen', () => PatientHomeScreen, store, Provider);
+  Navigation.registerComponent('Ihc.MedicationScreen', () => MedicationScreen, store, Provider);
+  Navigation.registerComponent('Ihc.GrowthChartScreen', () => GrowthChartScreen, store, Provider);
+  Navigation.registerComponent('Ihc.MedicationUpdateScreen', () => MedicationUpdateScreen, store, Provider);
+  Navigation.registerComponent('Ihc.SoapScreen', () => SoapScreen, store, Provider);
+  Navigation.registerComponent('Ihc.TriageScreen', () => TriageScreen, store, Provider);
+  Navigation.registerComponent('Ihc.PatientHistoryScreen', () => PatientHistoryScreen, store, Provider);
   Navigation.registerComponent('Ihc.TestServerScreen', () => TestServerScreen);
 }

@@ -8,10 +8,9 @@ import Container from '../components/Container';
 import Button from '../components/Button';
 import {downstreamSyncWithServer} from '../util/Sync';
 
-export default class WelcomeScreen extends Component<{}> {
+class WelcomeScreen extends Component<{}> {
   constructor(props) {
     super(props);
-    this.state = {loading: false, errorMsg: null, successMsg: null};
   }
 
   goToSignin = () => {
@@ -28,59 +27,57 @@ export default class WelcomeScreen extends Component<{}> {
     });
   }
 
-  // Don't need to show a retry button because they could just click
-  // UploadUpdates again
-  /* eslint-disable no-unused-vars */
-  setLoading = (val, canceled = false) => {
-    this.setState({loading: val});
-  }
-  /* eslint-enable no-unused-vars */
-
   upload = () => {
-    this.setState({loading: true, errorMsg: null, successMsg: null});
+    this.props.setLoading(true);
+    this.props.isUploading(true);
+    this.props.clearMessages();
+
     const patients = localData.getPatientsToUpload();
     serverData.updatePatients(patients)
       .then(() => {
         // View README: Handle syncing the tablet, point 3 for explanation
-        if(this.state.loading) {
+        if(this.props.loading) {
           localData.markPatientsUploaded();
-          this.setState({successMsg: 'Uploaded successfully', errorMsg: null, loading: false});
+          this.props.setLoading(false);
+          this.props.setSuccessMessage('Uploaded successfully');
         }
       })
       .catch(err => {
-        if(this.state.loading) {
-          this.setState({errorMsg: err.message, successMsg: null, loading: false});
+        if(this.props.loading) {
+          this.props.setLoading(false);
+          this.props.setErrorMessage(err.message);
         }
       });
   }
 
   download = () => {
-    this.setState({loading: true, errorMsg: null, successMsg: null});
+    this.props.setLoading(true);
+    this.props.isUploading(false);
+    this.props.clearMessages();
 
     downstreamSyncWithServer()
       .then((failedPatientKeys) => {
         // View README: Handle syncing the tablet, point 3 for explanation
-        if(this.state.loading) {
+        if(this.props.loading) {
           if(failedPatientKeys.length > 0) {
             throw new Error(`${failedPatientKeys.length} patients failed to download. Try again`);
           }
-          this.setState({successMsg: 'Downloaded successfully', errorMsg: null, loading: false});
+
+          this.props.setLoading(false);
+          this.props.setSuccessMessage('Downloaded successfully');
         }
       })
       .catch(err => {
-        if(this.state.loading) {
-          this.setState({errorMsg: err.message, successMsg: null, loading: false});
+        if(this.props.loading) {
+          this.props.setLoading(true);
+          this.props.setErrorMessage(err.message);
         }
       });
   }
 
   render() {
     return (
-      <Container loading={this.state.loading} 
-        successMsg={this.state.successMsg}
-        errorMsg={this.state.errorMsg}
-        setLoading={this.setLoading}
-      >
+      <Container>
         <Text style={styles.welcome}>
           Welcome to clinic!
         </Text>
@@ -115,3 +112,21 @@ const styles = StyleSheet.create({
     width: 140
   }
 });
+
+// Redux
+import { setLoading, setErrorMessage, setSuccessMessage, clearMessages, isUploading } from '../reduxActions/containerActions';
+import { connect } from 'react-redux';
+
+const mapStateToProps = state => ({
+  loading: state.loading
+});
+
+const mapDispatchToProps = dispatch => ({
+  setLoading: val => dispatch(setLoading(val)),
+  setErrorMessage: val => dispatch(setErrorMessage(val)),
+  setSuccessMessage: val => dispatch(setSuccessMessage(val)),
+  clearMessages: () => dispatch(clearMessages()),
+  isUploading: val => dispatch(isUploading(val))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(WelcomeScreen);

@@ -10,6 +10,12 @@ import {localData} from '../services/DataService';
 // Note: test renderer must be required after react-native.
 import renderer from 'react-test-renderer';
 
+import { createStore } from 'redux';
+import reducers from '../reduxReducers/reducers';
+import { Provider } from 'react-redux';
+
+const store = createStore(reducers);
+
 it('renders correctly', () => {
   sinon.useFakeTimers(100);
   const drug1 = DrugUpdate.getInstance();
@@ -19,7 +25,9 @@ it('renders correctly', () => {
 
   const fakeNavigator = { setOnNavigatorEvent: (param) => {} };
   const json = renderer.create(
-    <MedicationScreen navigator={fakeNavigator} />
+    <Provider store={store}>
+      <MedicationScreen navigator={fakeNavigator} />
+    </Provider>
   ).toJSON();
   expect(json).toMatchSnapshot();
 });

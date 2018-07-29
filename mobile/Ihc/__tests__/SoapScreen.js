@@ -8,10 +8,18 @@ import {localData} from '../services/DataService';
 import sinon from 'sinon';
 import Soap from '../models/Soap';
 
+import { createStore } from 'redux';
+import reducers from '../reduxReducers/reducers';
+import { Provider } from 'react-redux';
+
+const store = createStore(reducers);
+
 it('renders correctly', () => {
   sinon.stub(localData, 'getSoap').returns(Soap.getInstance());
   const json = renderer.create(
-    <SoapScreen todayDate='20180101' />
+    <Provider store={store}>
+      <SoapScreen todayDate='20180101' />
+    </Provider>
   ).toJSON();
   expect(json).toMatchSnapshot();
 });
