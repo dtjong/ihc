@@ -7,14 +7,19 @@ import {
 var t = require('tcomb-form-native');
 var Form = t.form.Form;
 
-import {localData} from '../services/DataService';
+import {localData, serverData} from '../services/DataService';
 import Soap from '../models/Soap';
 import {stringDate} from '../util/Date';
 import Container from '../components/Container';
 import Button from '../components/Button';
+import {downstreamSyncWithServer} from '../util/Sync';
 
-export default class SoapScreen extends Component<{}> {
+class SoapScreen extends Component<{}> {
   /*
+   * Redux props:
+   * loading: boolean
+   * currentPatientKey: string
+   *
    * Props:
    * name: patient's name for convenience
    * patientKey: string of patient's key
@@ -67,47 +72,87 @@ export default class SoapScreen extends Component<{}> {
     }
   }
 
-  // Load existing SOAP info if it exists
-  loadFormValues = () => {
-    this.setState({ loading: true });
-    const soap = localData.getSoap(this.props.patientKey, this.state.todayDate);
+  syncAndLoadFormValues = () => {
+    this.props.setLoading(true);
+    this.props.isUploading(false);
+    this.props.clearMessages();
+
+    // Load existing SOAP info if it exists
+    const soap = localData.getSoap(this.props.currentPatientKey, this.state.todayDate);
     if (!soap) {
-      this.setState({loading: false});
+      this.props.setLoading(false);
       return;
     }
+    this.setState({ formValues: soap });
 
-    this.setState({
-      formValues: soap,
-      loading: false
-    });
+    // Attempt server download and reload information if successful
+    downstreamSyncWithServer()
+      .then( ( failedPatientKeys) => {
+        if (this.props.loading) {
+          if (failedPatientKeys.length > 0) {
+            throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
+          }
+
+          const soap = localData.getSoap(this.props.currentPatientKey, this.state.todayDate);
+          if (!soap) {
+            this.props.setLoading(false);
+            return;
+          }
+          this.setState({ formValues: soap });
+
+          this.props.setLoading(false);
+        }
+      })
+      .catch( (err) => {
+        if (this.props.loading) {
+          this.props.setErrorMessage(err.message);
+          this.props.setLoading(false);
+        }
+      })
   }
 
   componentDidMount() {
-    this.loadFormValues();
+    this.syncAndLoadFormValues();
   }
 
   submit = () => {
     if(!this.refs.form.validate().isValid()) {
       return;
     }
-    this.setState({loading: true});
     const form = this.refs.form.getValue();
-    const soap = Soap.extractFromForm(form, this.props.patientKey);
+    const soap = Soap.extractFromForm(form, this.props.currentPatientKey);
+
+    // Update local data first
+    this.props.setLoading(true);
+    this.props.isUploading(true);
+    this.props.clearMessages();
 
     try {
       localData.updateSoap(soap);
     } catch(e) {
-      this.setState({errorMsg: e.message, successMsg: null});
+      this.props.setErrorMessage(e.message);
+      this.props.setLoading(false);
       return;
     }
 
-    // TODO: Submit on server too
+    // Send updates to server
+    serverData.updateSoap(soap)
+      .then( () => {
+        if (this.props.loading) {
+          this.props.setLoading(false);
+          this.props.setSuccessMessage('Saved');
+        }
+      })
+      .catch( (err) => {
+        if (this.props.loading) {
+          this.props.setLoading(false, true);
+          this.props.setErrorMessage(err.message);
+        }
+      })
 
-    this.setState({
-      successMsg: 'SOAP updated successfully',
-      errorMsg: null,
-      loading: false
-    });
+    this.props.setSuccessMessage('SOAP updated successfully');
+    this.props.setLoading(false);
+    this.props.isUploading(false);
   }
 
   onFormChange = (value) => {
@@ -118,7 +163,7 @@ export default class SoapScreen extends Component<{}> {
 
   render() {
     return (
-      <Container loading={this.state.loading} errorMsg={this.state.errorMsg} 
+      <Container loading={this.state.loading} errorMsg={this.state.errorMsg}
         successMsg={this.state.successMsg}>
 
         <Text style={styles.title}>
@@ -152,3 +197,22 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
+
+// Redux
+import { setLoading, setSuccessMessage, setErrorMessage, clearMessages, isUploading } from '../reduxActions/containerActions';
+import { connect } from 'react-redux';
+
+const mapStateToProps = state => ({
+  loading: state.loading,
+  currentPatientKey: state.currentPatientKey
+});
+
+const mapDispatchToProps = dispatch => ({
+  setLoading: (val,showRetryButton) => dispatch(setLoading(val, showRetryButton)),
+  setErrorMessage: val => dispatch(setErrorMessage(val)),
+  setSuccessMessage: val => dispatch(setSuccessMessage(val)),
+  clearMessages: () => dispatch(clearMessages()),
+  isUploading: val => dispatch(isUploading(val))
+});
+
+export default connect (mapStateToProps, mapDispatchToProps)(SoapScreen);

@@ -67,4 +67,16 @@ router.put('/patient/:key/drugUpdate/:date', PatientController.UpdateDrugUpdate)
 // return all the statuses for the given date
 router.get('/patients/statuses/:date', PatientController.GetStatuses);
 
+//adds a new medication to the inventory
+router.post('/medication-inventory', PatientController.CreateMedication);
+
+//return all the medications (varying expiration dates) for the given drug name
+router.get('/medication-inventory/:name', PatientController.GetMedications);
+
+//updates the information for an existing medication
+router.put('/medication-inventory/:name/update', PatientController.UpdateMedication);
+
+//deletes the information for an existing medication
+router.put('/medication-inventory/:name/delete', PatientController.DeleteMedication)
+
 module.exports = router;

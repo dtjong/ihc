@@ -15,26 +15,21 @@ import {downstreamSyncWithServer} from '../util/Sync';
  * Common wrapper around Screens. Includes code for the ScrollView,
  * Success/Error messages, Retry button, and Loading indicator
  */
-export default class Container extends Component<{}> {
+class Container extends Component<{}> {
   /*
-   * props:
+   * Redux props:
    * loading: boolean true if the component is loading
-   * successMsg: null or string
-   * errorMsg: null or string
-   * children: the JSX that will be displayed within the container
-   * patientKey: the patientKey to mark as upload in case loading is canceled,
-   *   or null if not needed
-   * setMsg: function to set msg, or null if not needed.
-   *   First param is 'successMsg'/'errorMsg', second is  the message.
-   * setLoading: function that configures loading in parent, and passes in
-   *   second param that is true if the loading was Canceled
+   * successMessage: null or string
+   * errorMessage: null or string
    * showRetryButton: boolean
-   * cancellableLoading: optional boolean, true by default
-   * isUploading: true if the screen is trying to upload to the server, false if
-   * the screen is trying to download from the server. Used for Retry button.
+   * uploading: true if the screen is trying to upload to the server, false if
+   *   the screen is trying to download from the server. Used for Retry button.
+   *
+   * Props from parent:
+   * children: the JSX that will be displayed within the container
    *
    * use Container like
-   * <Container loading={this.state.loading}>
+   * <Container>
    *  <Text>Text</Text>
    * </Container>
    */
@@ -45,7 +40,7 @@ export default class Container extends Component<{}> {
   // Retry retries sending ALL updates, so is equivalent to Upload Updates
   // button on the WelcomeScreen
   retry = () => {
-    if(this.props.isUploading)
+    if(this.props.uploading)
       this.retryUpload();
     else
       this.retryDownload();
@@ -60,15 +55,13 @@ export default class Container extends Component<{}> {
             throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
           }
 
-          if(this.props.setMsg)
-            this.props.setMsg('successMsg', 'Downloaded successfully');
+          this.props.setSuccessMessage('Downloaded successfully');
           this.props.setLoading(false);
         }
       })
       .catch(err => {
         if(this.props.loading) {
-          if(this.props.setMsg)
-            this.props.setMsg('errorMsg', err.message);
+          this.props.setErrorMessage(err.message);
           this.props.setLoading(false);
         }
       });
@@ -81,15 +74,13 @@ export default class Container extends Component<{}> {
       .then(() => {
         if(this.props.loading) {
           localData.markPatientsUploaded();
-          if(this.props.setMsg)
-            this.props.setMsg('successMsg', 'Uploaded successfully');
+          this.props.setSuccessMessage('Uploaded successfully');
           this.props.setLoading(false);
         }
       })
       .catch(err => {
         if(this.props.loading) {
-          if(this.props.setMsg)
-            this.props.setMsg('errorMsg', err.message);
+          this.props.setErrorMessage(err.message);
           this.props.setLoading(false);
         }
       });
@@ -99,12 +90,7 @@ export default class Container extends Component<{}> {
     if (this.props.loading) {
       return (
         <View style={styles.outside}>
-          <Loading
-            patientKey={this.props.patientKey}
-            setMsg={this.props.setMsg}
-            setLoading={this.props.setLoading}
-            cancellable={this.props.cancellableLoading}
-          />
+          <Loading />
         </View>
       );
     }
@@ -120,8 +106,8 @@ export default class Container extends Component<{}> {
             <Button text="Retry" onPress={this.retry} />
           </View>
 
-          <SuccessErrorMessages errorMsg={this.props.errorMsg}
-            successMsg={this.props.successMsg} />
+          <SuccessErrorMessages errorMsg={this.props.errorMessage}
+            successMsg={this.props.successMessage} />
         </View>
       );
     }
@@ -132,8 +118,8 @@ export default class Container extends Component<{}> {
           {this.props.children}
         </ ScrollView>
 
-        <SuccessErrorMessages errorMsg={this.props.errorMsg}
-          successMsg={this.props.successMsg} />
+        <SuccessErrorMessages errorMsg={this.props.errorMessage}
+          successMsg={this.props.successMessage} />
       </View>
     );
   }
@@ -156,3 +142,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+// Redux
+import { setLoading, setErrorMessage, setSuccessMessage, clearMessages } from '../reduxActions/containerActions';
+import { connect } from 'react-redux';
+
+const mapStateToProps = state => ({
+  loading: state.loading,
+  errorMessage: state.messages.errorMessage,
+  successMessage: state.messages.successMessage,
+  showRetryButton: state.showRetryButton,
+  uploading: state.uploading
+});
+
+const mapDispatchToProps = dispatch => ({
+  setLoading: val => dispatch(setLoading(val)),
+  setErrorMessage: val => dispatch(setErrorMessage(val)),
+  setSuccessMessage: val => dispatch(setSuccessMessage(val)),
+  clearMessages: () => dispatch(clearMessages())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Container);

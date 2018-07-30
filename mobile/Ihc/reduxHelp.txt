@@ -1,0 +1,40 @@
+GO THROUGH THIS TUTORIAL
+https://redux.js.org/basics
+
+This file contains information about the design of our Redux usage.
+
+App.js initializes the store
+reduxActions and reduxReducers hold relevant files
+
+Info needed in our store object:
+loading: boolean,
+errorMsg: string or null,
+successMsg: string or null,
+showRetryButton: boolean,
+currentPatientKey: string or null,
+
+The store object's shape is defined within the reduxReducers/reducers file.
+i.e. The line with
+  combineReducers({loading, uploading, messages...}) 
+causes the store object's shape to look like
+  {
+    loading: shape returned by loading(state, action) (i.e. boolean),
+    uploading: shape returned by uploading(state, action) (i.e. boolean),
+    messages: shape returned by messages(state, action)
+      (i.e. object { successMessage: string, errorMessage: string })
+  }
+  
+An example of which might be:
+  {
+    loading: true,
+    uploading: true,
+    messages: {successMessage: "Success", errorMessage: null}
+  }
+
+When choosing if a component should accept props from Redux or from the parent,
+we'd prefer not having to interact with Redux if not necessary. Because Redux is
+useful for propogating changes from child to parent component, then generally
+include Redux if we need to use callbacks to update a parent component. However
+if we are mostly just displaying information and not updating any information
+relevant to a parent component, then you can probably just pass relevant information
+through the parent and NOT Redux.

@@ -2,6 +2,7 @@
 //to access/modify these containers, look up mongodb functions
 import PatientModel from '../models/Patient';
 import TriageModel from '../models/Triage';
+import MedicationModel from '../models/Medication';
 
 //function params for all calls are generally the same function(req,res)
 const PatientController = {
@@ -127,7 +128,7 @@ const PatientController = {
       // Only update the given properties
       const properties = ['birthday', 'gender', 'phone', 'motherHeight', 'fatherHeight', 'lastUpdated'];
       properties.forEach( p => {
-        if(req.body.patient[p])
+        if(req.body.patient[p] !== undefined)
           oldPatient[p] = req.body.patient[p];
       });
 
@@ -150,6 +151,11 @@ const PatientController = {
     PatientModel.findOne({key: req.params.key}, function(err, patient) {
       if(!patient) {
         err = new Error('Patient with key ' + req.params.key + ' doesn\'t exist');
+      }
+
+      if (err) {
+        res.json({status: false, error: err.message});
+        return;
       }
 
       for(let soap of patient.soaps) {
@@ -251,6 +257,11 @@ const PatientController = {
         err = new Error('Patient with key ' + req.params.key + ' doesn\'t exist');
       }
 
+      if(err) {
+        res.json({status: false, error: err.message});
+        return;
+      }
+
       for(let [i,soap] of patient.soaps.entries()) {
         // If an existing soap for that date exists, then update it
         if(soap.date === req.params.date) {
@@ -293,6 +304,11 @@ const PatientController = {
     PatientModel.findOne({key: req.params.key}, function(err, patient) {
       if(!patient) {
         err = new Error('Patient with key ' + req.params.key + ' doesn\'t exist');
+      }
+
+      if(err) {
+        res.json({status: false, error: err.message});
+        return;
       }
 
       for (let [i,status] of patient.statuses.entries()) {
@@ -340,6 +356,11 @@ const PatientController = {
         err = new Error('Patient with key ' + req.params.key + ' doesn\'t exist');
       }
 
+      if(err) {
+        res.json({status: false, error: err.message});
+        return;
+      }
+
       for(let [i,triage] of patient.triages.entries()) {
         // If an existing triage for that date exists, then update it
         if(triage.date === req.body.triage.date) {
@@ -384,6 +405,11 @@ const PatientController = {
         err = new Error('Patient with key ' + req.params.key + ' doesn\'t exist');
       }
 
+      if(err) {
+        res.json({status: false, error: err.message});
+        return;
+      }
+
       for (let [i,drugUpdate] of patient.drugUpdates.entries()) {
         if (drugUpdate.date === req.params.date && drugUpdate.name === req.body.drugUpdate.name) {
           if (drugUpdate.lastUpdated > req.body.drugUpdate.lastUpdated) {
@@ -420,6 +446,79 @@ const PatientController = {
         res.json({status: true});
         return;
       });
+    });
+  },
+  /* body: medication object */
+  CreateMedication: function(req, res) {
+    MedicationModel.findOne({drugName: req.body.medication.drugName}, function(err, drug) {
+      if (drug) {
+        err = new Error(`A medication with the name ${req.body.medication.drugName} already exists`);
+      }
+      if (err) {
+        res.json({status: false, error: err.message});
+        return;
+      }
+      MedicationModel.create(req.body.medication, function (err) {
+        if(err) {
+          res.json({status: false, error: err.message});
+          return;
+        }
+        res.json({status: true});
+        return;
+      });
+    })
+  },
+  /* body: NA, returns: array of medication objects */
+  GetMedications: function(req, res) {
+    MedicationModel.find({drugName: req.params.name}, function(err, drugs) {
+      if (drugs.length == 0) {
+        err = new Error(`A medication with the name ${req.params.name} does not exist`)
+      }
+      if(err) {
+        res.json({status: false, error: err.message});
+        return;
+      }
+      res.json({status: true, medications: drugs})
+      return;
+    });
+  },
+  /* body: medication object */
+  UpdateMedication: function(req, res) {
+    MedicationModel.findOne({drugName: req.params.name}, function(err, drug) {
+      if (!drug) {
+        err = new Error(`A medication with the name ${req.params.name} does not exist`)
+      }
+      if (err) {
+        res.json({status: false, error: err.message});
+        return;
+      }
+
+      for (let p in req.body.medication) {
+        drug[p] = req.body.medication[p];
+      }
+
+      //saves it, callback function to handle error
+      drug.save(function(e) {
+        if(e) {
+          res.json({status: false, error: e.message});
+          return;
+        }
+        res.json({status: true});
+        return;
+      });
+    });
+  },
+  DeleteMedication: function(req, res) {
+    MedicationModel.deleteMany({drugName: req.params.name}, function(err, drug) {
+      if(!drug) {
+        err = new Error(`A medication with the name ${req.params.name} does not exist`);
+      }
+      if (err) {
+        res.json({status: false, error: err.message});
+        return;
+      }
+      res.json({status: true})
+      return;
     });
   }
 };

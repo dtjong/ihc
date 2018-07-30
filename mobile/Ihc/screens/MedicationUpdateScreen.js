@@ -11,20 +11,19 @@ import DrugUpdate from '../models/DrugUpdate';
 import Container from '../components/Container';
 import Button from '../components/Button';
 
-export default class MedicationUpdateScreen extends Component<{}> {
+class MedicationUpdateScreen extends Component<{}> {
   /*
-   * Take in an
+   * Redux props:
+   *   loading: boolean
+   *   currentPatientKey: what patient is this for
+   * Props from parent:
    *   action: 'change' or 'new'
    *   drugUpdate: If action is 'change', then what is the old update info
-   *   patientKey: what patient is this for
    */
   constructor(props) {
     super(props);
     this.state = {
       formValues: this.props.drugUpdate,
-      errorMsg: null,
-      loading: false,
-      showRetryButton: false,
     };
   }
 
@@ -54,58 +53,39 @@ export default class MedicationUpdateScreen extends Component<{}> {
     }
     const form = Object.assign({}, this.refs.form.getValue());
 
-    const update = DrugUpdate.extractFromForm(form, this.props.patientKey);
+    const update = DrugUpdate.extractFromForm(form, this.props.currentPatientKey);
 
     try {
       localData.updateDrugUpdate(update);
     } catch(e) {
-      this.setState({errorMsg: e.message});
+      this.setErrorMessage(e.message);
       return;
     }
 
     // Upload to server
-    this.setState({loading: true});
+    this.props.setLoading(true);
+    this.props.isUploading(true);
+
     serverData.updateDrugUpdate(update)
       .then( () => {
-        if(this.state.loading) {
+        if(this.props.loading) {
           // if successful, then pop screen
           this.props.navigator.pop();
         }
       })
       .catch( (e) => {
-        if(this.state.loading) {
-          localData.markPatientNeedToUpload(this.props.patientKey);
-          this.setState({
-            errorMsg: e.message,
-            loading: false,
-            showRetryButton: true
-          });
+        if(this.props.loading) {
+          localData.markPatientNeedToUpload(this.props.currentPatientKey);
+
+          this.setErrorMessage(e.message);
+          this.props.setLoading(false, true);
         }
       });
   }
 
-  // If Loading was canceled, we want to show a retry button
-  setLoading = (val, canceled) => {
-    this.setState({loading: val, showRetryButton: canceled});
-  }
-
-  setMsg = (type, msg) => {
-    const obj = {};
-    obj[type] = msg;
-    const other = type === 'successMsg' ? 'errorMsg' : 'successMsg';
-    obj[other] = null;
-    this.setState(obj);
-  }
-
   render() {
     return (
-      <Container errorMsg={this.state.errorMsg} 
-        loading={this.state.loading}
-        setLoading={this.setLoading}
-        setMsg={this.setMsg}
-        patientKey={this.props.patientKey}
-        showRetryButton={this.state.showRetryButton} >
-
+      <Container>
         <Text style={styles.title}>
           {this.props.action === 'new' ? 'New Medication' : 'Update Medication'}
         </Text>
@@ -138,3 +118,20 @@ const styles = StyleSheet.create({
     width: '100%'
   }
 });
+
+// Redux
+import { setLoading, setErrorMessage, isUploading } from '../reduxActions/containerActions';
+import { connect } from 'react-redux';
+
+const mapStateToProps = state => ({
+  loading: state.loading,
+  currentPatientKey: state.currentPatientKey
+});
+
+const mapDispatchToProps = dispatch => ({
+  setLoading: (val,showRetryButton) => dispatch(setLoading(val, showRetryButton)),
+  setErrorMessage: val => dispatch(setErrorMessage(val)),
+  isUploading: val => dispatch(isUploading(val))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MedicationUpdateScreen);
