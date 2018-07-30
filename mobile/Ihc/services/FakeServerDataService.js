@@ -21,7 +21,7 @@ export function updateStatus(statusObj) {
 }
 
 // Server endpoint: put /patient/:key/drugUpdate
-export function createDrugUpdate(update) {
+export function updateDrugUpdate(update) {
   return new Promise((res,rej) => {
     setTimeout(() => {
       res(true);

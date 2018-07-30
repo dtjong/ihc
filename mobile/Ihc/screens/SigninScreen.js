@@ -13,16 +13,16 @@ import Patient from '../models/Patient';
 import Container from '../components/Container';
 import Button from '../components/Button';
 
-export default class SigninScreen extends Component<{}> {
+class SigninScreen extends Component<{}> {
+  /*
+   * Redux props:
+   *   loading: boolean
+   */
   constructor(props) {
     super(props);
     this.state = {
       formValues: {newPatient: false},
       formType: this.Signin,
-      successMsg: null,
-      errorMsg: null,
-      loading: false,
-      showRetryButton: false
     };
   }
 
@@ -83,12 +83,10 @@ export default class SigninScreen extends Component<{}> {
     const form = this.refs.form.getValue();
     const patient = Patient.extractFromForm(form);
 
-    this.setState({
-      loading: true,
-      errorMsg: null,
-      successMsg: null,
-      patientKey: patient.key
-    });
+    this.props.setLoading(true);
+    this.props.clearMessages();
+    this.props.isUploading(true);
+    this.props.setCurrentPatientKey(patient.key);
 
     if(form.newPatient) {
       try {
@@ -96,35 +94,30 @@ export default class SigninScreen extends Component<{}> {
         // that should propogate to the server call
         localData.createPatient(patient);
       } catch(e) {
-        this.setState({errorMsg: e.message, successMsg: null, loading: false});
+        this.props.setLoading(false);
+        this.props.setErrorMessage(e.message);
         return;
       }
 
       serverData.createPatient(patient)
         .then( () => {
           // View README: Handle syncing the tablet, point 3 for explanation
-          if(this.state.loading) {
+          if(this.props.loading) {
+            this.props.setLoading(false);
+            this.props.setSuccessMessage(`${patient.firstName} added successfully`);
+
             this.setState({
               // Clear form, reset to Signin form
               formValues: {newPatient: false},
               formType: this.Signin,
-              successMsg: `${patient.firstName} added successfully`,
-              errorMsg: null,
-              loading: false,
-              showRetryButton: false
             });
           }
         })
         .catch( (e) => {
-          if(this.state.loading) {
+          if(this.props.loading) {
             // If server update fails, mark the patient as need to upload
-            // and give a message to syncronize with UploadUpdates
-            this.setState({
-              errorMsg: `${e.message}. Try to UploadUpdates`,
-              successMsg: null,
-              loading: false,
-              showRetryButton: true
-            });
+            this.props.setLoading(false, true);
+            this.props.setSuccessMessage(e.message);
 
             localData.markPatientNeedToUpload(patient.key);
           }
@@ -138,65 +131,39 @@ export default class SigninScreen extends Component<{}> {
     try {
       statusObj = localData.signinPatient(patient);
     } catch(e) {
-      this.setState({errorMsg: e.message, successMsg: null, loading: false});
+      this.props.setLoading(false);
+      this.props.setErrorMessage(e.message);
       return;
     }
 
     serverData.updateStatus(statusObj)
       .then( () => {
         // View README: Handle syncing the tablet, point 3 for explanation
-        if(this.state.loading){
+        if(this.props.loading){
+          this.props.setLoading(false);
+          this.props.setSuccessMessage(`${patient.firstName} signed in successfully`);
+
           this.setState({
             // Clear form, reset to Signin form
             formValues: {newPatient: false},
             formType: this.Signin,
-            successMsg: `${patient.firstName} signed in successfully`,
-            errorMsg: null,
-            loading: false,
-            showRetryButton: false
           });
         }
       })
       .catch( (e) => {
-        if(this.state.loading){
+        if(this.props.loading){
           // If server update fails, mark the patient as need to upload
-          // and give a message to syncronize with UploadUpdates
-          this.setState({
-            errorMsg: `${e.message}. Try to UploadUpdates`,
-            successMsg: null,
-            loading: false,
-            showRetryButton: true
-          });
+          this.props.setLoading(false, true);
+          this.props.setSuccessMessage(e.message);
 
           localData.markPatientNeedToUpload(patient.key);
         }
       });
   }
 
-  // If Loading was canceled, we want to show a retry button
-  setLoading = (val, canceled=false) => {
-    this.setState({loading: val, showRetryButton: canceled});
-  }
-
-  setMsg = (type, msg) => {
-    const obj = {};
-    obj[type] = msg;
-    const other = type === 'successMsg' ? 'errorMsg' : 'successMsg';
-    obj[other] = null;
-    this.setState(obj);
-  }
-
   render() {
     return (
-      <Container loading={this.state.loading}
-        errorMsg={this.state.errorMsg}
-        successMsg={this.state.successMsg}
-        setLoading={this.setLoading}
-        setMsg={this.setMsg}
-        patientKey={this.state.patientKey}
-        showRetryButton={this.state.showRetryButton}
-      >
-
+      <Container>
         <Text style={styles.title}>
           Signin
         </Text>
@@ -227,3 +194,22 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
+
+// Redux
+import { setLoading, setErrorMessage, setSuccessMessage, clearMessages, isUploading, setCurrentPatientKey } from '../reduxActions/containerActions';
+import { connect } from 'react-redux';
+
+const mapStateToProps = state => ({
+  loading: state.loading,
+});
+
+const mapDispatchToProps = dispatch => ({
+  setLoading: (val,showRetryButton) => dispatch(setLoading(val, showRetryButton)),
+  setErrorMessage: val => dispatch(setErrorMessage(val)),
+  setSuccessMessage: val => dispatch(setSuccessMessage(val)),
+  clearMessages: () => dispatch(clearMessages()),
+  isUploading: val => dispatch(isUploading(val)),
+  setCurrentPatientKey: key => dispatch(setCurrentPatientKey(key))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SigninScreen);

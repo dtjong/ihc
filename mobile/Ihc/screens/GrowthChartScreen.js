@@ -21,16 +21,17 @@ const infantGirlsHeightData = require('../growthchartdata/infant_girls_heights.j
 const PLOT_HEIGHT = 400;
 const PLOT_WIDTH = 400;
 
-export default class GrowthChartScreen extends Component<{}> {
+class GrowthChartScreen extends Component<{}> {
   /*
+   * Props:
    * patientKey
    */
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
-      error: null,
       patient: {},
+      weightData: [],
+      heightData: []
     };
   }
 
@@ -48,12 +49,14 @@ export default class GrowthChartScreen extends Component<{}> {
   }
 
   loadPatient = () => {
-    this.setState({ loading: true });
+    this.props.setLoading(true);
+
     let patient = {};
     try {
       patient = localData.getPatient(this.props.patientKey);
     } catch(err) {
-      this.setState({ error: err.message, loading: false });
+      this.props.setErrorMessage(err.message);
+      this.props.setLoading(false);
       return;
     }
 
@@ -78,8 +81,9 @@ export default class GrowthChartScreen extends Component<{}> {
     const growthChartData = patient.growthChartData;
     weightData.push({ color: 'black', unit: '%', values: growthChartData.weights});
     heightData.push({ color: 'black', unit: '%', values: growthChartData.heights});
-    this.setState({patient: patient, weightData: weightData, heightData: heightData,
-      error: null, loading: false});
+
+    this.setState({patient: patient, weightData: weightData, heightData: heightData});
+    this.props.setLoading(false);
   }
 
   componentDidMount() {
@@ -89,7 +93,7 @@ export default class GrowthChartScreen extends Component<{}> {
   render() {
     if (!this.state.patient) {
       return (
-        <Container errorMsg={this.state.error} >
+        <Container>
           <Text style={styles.title}>Growth Chart</Text>
           <Text>No patient exists</Text>
         </Container>
@@ -105,7 +109,7 @@ export default class GrowthChartScreen extends Component<{}> {
 
     return (
       // TODO: Label the grid lines
-      <Container errorMsg={this.state.error} >
+      <Container>
         <Text style={styles.title}>Growth Chart</Text>
 
         <View style={styles.plotsContainer}>
@@ -164,3 +168,14 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
+
+// Redux
+import { setLoading, setErrorMessage } from '../reduxActions/containerActions';
+import { connect } from 'react-redux';
+
+const mapDispatchToProps = dispatch => ({
+  setLoading: val => dispatch(setLoading(val)),
+  setErrorMessage: val => dispatch(setErrorMessage(val))
+});
+
+export default connect(null, mapDispatchToProps)(GrowthChartScreen);
