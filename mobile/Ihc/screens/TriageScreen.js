@@ -12,11 +12,13 @@ import {stringDate} from '../util/Date';
 import Container from '../components/Container';
 import Button from '../components/Button';
 import TriageLabsWheel from '../components/TriageLabsWheel';
+import {downstreamSyncWithServer} from '../util/Sync';
 
-export default class TriageScreen extends Component<{}> {
+class TriageScreen extends Component<{}> {
   /**
-   * Expected props:
-   * patientKey
+   * Redux props:
+   * currentPatientKey
+   * loading
    * todayDate (optional, if doesn't exist, then assume date is for today,
    *   can be used for gathering old traige data from history)
    */
@@ -41,12 +43,11 @@ export default class TriageScreen extends Component<{}> {
       formValues: this.startingFormValues,
       formType: Triage.getFormType(this.startingFormValues, 2),
       gender: 2, // 1: male, 2: female
-      loading: false,
-      errorMsg: null,
-      successMsg: null,
       todayDate: this.startingFormValues.date,
       labTestObjects: labTestObjects
     };
+
+    this.props.clearMessages();
   }
 
   // TODO: any other styling? multiline fields needed?
@@ -62,28 +63,30 @@ export default class TriageScreen extends Component<{}> {
 
   // to set the triage form correctly depending on gender
   loadPatient = () => {
-    this.setState({ loading: true });
+    this.props.setLoading(true);
+
     try {
-      const patient = localData.getPatient(this.props.patientKey);
+      const patient = localData.getPatient(this.props.currentPatientKey);
       this.setState({
         gender: patient.gender,
-        loading: false
       });
+
       // Call loadFormValues here, or else gender state isn't propogated like
       // expected
       this.loadFormValues(patient.gender);
     } catch(err) {
-      this.setState({ errorMsg: err.message, loading: false });
+      this.props.setErrorMessage(err.message);
+      this.props.setLoading(false);
     }
   }
 
   // Load existing Triage info if it exists
   loadFormValues = (gender) => {
-    this.setState({ loading: true });
-    const triage = localData.getTriage(this.props.patientKey, this.state.todayDate);
+    this.props.setLoading(true);
+    const triage = localData.getTriage(this.props.currentPatientKey, this.state.todayDate);
     if (!triage) {
+      this.props.setLoading(false);
       this.setState({
-        loading: false,
         formType: Triage.getFormType(this.startingFormValues, gender)
       });
       return;
@@ -92,9 +95,39 @@ export default class TriageScreen extends Component<{}> {
     this.setState({
       formType: Triage.getFormType(triage, gender),
       formValues: triage,
-      loading: false,
       labTestObjects: this.getLabTestObjects(triage)
     });
+
+    downstreamSyncWithServer()
+      .then( (failedPatientKeys) => {
+        if (this.props.loading) {
+          if (failedPatientKeys.length > 0) {
+            throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
+          }
+
+          const triage = localData.getTriage(this.props.currentPatientKey, this.state.todayDate);
+          if (!triage) {
+            this.props.setLoading(false);
+            this.setState({
+              formType: Triage.getFormType(this.startingFormValues, gender)
+            });
+            return;
+          }
+
+          this.props.setLoading(false);
+          this.setState({
+            formType: Triage.getFormType(triage, gender),
+            formValues: triage,
+            labTestObjects: this.getLabTestObjects(triage)
+          });
+        }
+      })
+      .catch( (err) => {
+        if (this.props.loading) {
+          this.props.setErrorMessage(err.message);
+          this.props.setLoading(false);
+        }
+      });
   }
 
   // From an existing triage form, properly update the lab test objects with the
@@ -127,87 +160,82 @@ export default class TriageScreen extends Component<{}> {
     });
   }
 
+  // Updates the timestamp that displays in the PatientSelectScreen
+  // Doesn't actually save the Triage form
   completed = () => {
-    this.setState({loading: true});
+    this.props.setLoading(true);
     let statusObj = {};
     try {
-      statusObj = localData.updateStatus(this.props.patientKey, this.state.todayDate,
+      statusObj = localData.updateStatus(this.props.currentPatientKey, this.state.todayDate,
         'triageCompleted', new Date().getTime());
     } catch(e) {
-      this.setState({errorMsg: e.message, successMsg: null});
+      this.props.setLoading(false);
+      this.props.setErrorMessage(e.message);
       return;
     }
 
+    this.props.isUploading(true);
     serverData.updateStatus(statusObj)
       .then( () => {
         // View README: Handle syncing the tablet, point 3 for explanation
-        if(this.state.loading) {
-          this.setState({
-            successMsg: 'Triage marked as completed, but not yet submitted',
-            errorMsg: null,
-            loading: false
-          });
+        if(this.props.loading) {
+          this.props.setLoading(false);
+          this.props.setSuccessMessage('Triage marked as completed, but not yet submitted');
         }
       })
       .catch( (e) => {
-        if(this.state.loading) {
-          localData.markPatientNeedToUpload(this.props.patientKey);
-          this.setState({
-            successMsg: null,
-            errorMsg: `${e.message}. Try to UploadUpdates`,
-            loading: false
-          });
+        if(this.props.loading) {
+          localData.markPatientNeedToUpload(this.props.currentPatientKey);
+          this.props.setErrorMessage(e.message);
+          this.props.setLoading(false, true);
         }
       });
   }
 
+  // Saves the Triage, first locally, then over the server
   submit = () => {
     if(!this.refs.form.validate().isValid()) {
+      this.props.setErrorMessage('Form not correct. Review form.');
       return;
     }
 
-    this.setState({
-      loading: true,
-      errorMsg: null,
-      successMsg: null,
-    });
+    this.props.clearMessages();
+    this.props.setLoading(true);
 
     const form = this.refs.form.getValue();
-    const triage = Triage.extractFromForm(form, this.props.patientKey, this.state.labTestObjects);
+    const triage = Triage.extractFromForm(form, this.props.currentPatientKey, this.state.labTestObjects);
 
     try {
       localData.updateTriage(triage);
     } catch(e) {
-      this.setState({errorMsg: e.message, successMsg: null});
+      this.props.setErrorMessage(e.message);
+      this.props.setLoading(false);
       return;
     }
 
-    this.setState({
-      successMsg: 'Triage updated successfully',
-      errorMsg: null,
-      loading: false
-    });
+    serverData.updateTriage(triage)
+      .then( () => {
+        if (this.props.loading) {
+          this.props.setLoading(false);
+          this.props.setSuccessMessage('Triage updated successfully');
+        }
+      })
+      .catch( (e) => {
+        if (this.props.loading) {
+          localData.markPatientNeedToUpload(this.props.currentPatientKey);
+
+          this.props.setLoading(false, true);
+          this.props.setErrorMessage(e.message);
+        }
+      });
   }
 
   gotoMedications = () => {
     this.props.navigator.push({
       screen: 'Ihc.MedicationScreen',
       title: 'Back to triage',
-      passProps: { name: this.props.name, patientKey: this.props.patientKey }
+      passProps: { name: this.props.name, patientKey: this.props.currentPatientKey }
     });
-  }
-
-  // If Loading was canceled, we want to show a retry button
-  setLoading = (val, canceled) => {
-    this.setState({loading: val, showRetryButton: canceled});
-  }
-
-  setMsg = (type, msg) => {
-    const obj = {};
-    obj[type] = msg;
-    const other = type === 'successMsg' ? 'errorMsg' : 'successMsg';
-    obj[other] = null;
-    this.setState(obj);
   }
 
   // Takes in the test name and the string result
@@ -219,13 +247,7 @@ export default class TriageScreen extends Component<{}> {
 
   render() {
     return (
-      <Container loading={this.state.loading}
-        errorMsg={this.state.errorMsg}
-        successMsg={this.state.successMsg}
-        setLoading={this.setLoading}
-        setMsg={this.setMsg}
-        patientKey={this.props.patientKey}
-      >
+      <Container>
 
         <Text style={styles.title}>
           Triage
@@ -274,3 +296,22 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
+
+// Redux
+import { setLoading, setErrorMessage, setSuccessMessage, clearMessages, isUploading } from '../reduxActions/containerActions';
+import { connect } from 'react-redux';
+
+const mapStateToProps = state => ({
+  loading: state.loading,
+  currentPatientKey: state.currentPatientKey
+});
+
+const mapDispatchToProps = dispatch => ({
+  setLoading: (val,showRetryButton) => dispatch(setLoading(val, showRetryButton)),
+  setErrorMessage: val => dispatch(setErrorMessage(val)),
+  setSuccessMessage: val => dispatch(setSuccessMessage(val)),
+  clearMessages: () => dispatch(clearMessages()),
+  isUploading: val => dispatch(isUploading(val)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TriageScreen);
