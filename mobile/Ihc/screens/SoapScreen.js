@@ -108,7 +108,9 @@ class SoapScreen extends Component<{}> {
     this.syncAndLoadFormValues();
   }
 
+  //updating soap form, updates local, and then server data
   submit = () => {
+    //validations 
     if(!this.refs.form.validate().isValid()) {
       this.props.setErrorMessage('Form not correct. Review form.');
       return;
@@ -118,9 +120,11 @@ class SoapScreen extends Component<{}> {
 
     // Update local data first
     this.props.setLoading(true);
+    //dont think isUploading does anything rn
     this.props.isUploading(true);
     this.props.clearMessages();
 
+    //updates local database
     try {
       localData.updateSoap(soap);
     } catch(e) {
