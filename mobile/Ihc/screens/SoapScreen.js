@@ -4,8 +4,8 @@ import {
   Text,
   View
 } from 'react-native';
-var t = require('tcomb-form-native');
-var Form = t.form.Form;
+let t = require('tcomb-form-native');
+let Form = t.form.Form;
 
 import {localData, serverData} from '../services/DataService';
 import Soap from '../models/Soap';
@@ -143,6 +143,8 @@ class SoapScreen extends Component<{}> {
       })
       .catch( (err) => {
         if(this.props.loading) {
+          localData.markPatientNeedToUpload(this.props.patientKey);
+          
           this.props.setLoading(false, true);
           this.props.setErrorMessage(err.message);
           return;
