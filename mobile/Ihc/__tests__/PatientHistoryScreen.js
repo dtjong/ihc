@@ -17,9 +17,10 @@ const store = createStore(reducers);
 it('renders correctly', () => {
   sinon.stub(localData, 'getPatient').returns(Patient.getInstance());
 
+  const fakeNavigator = { setOnNavigatorEvent: (param) => {} };
   const json = renderer.create(
     <Provider store={store}>
-      <PatientHistoryScreen todayDate = '20180101' />
+      <PatientHistoryScreen todayDate = '20180101' navigator={fakeNavigator} />
     </Provider>
   ).toJSON();
   expect(json).toMatchSnapshot();

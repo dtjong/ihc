@@ -4,8 +4,8 @@ import {
   Text,
   View
 } from 'react-native';
-var t = require('tcomb-form-native');
-var Form = t.form.Form;
+let t = require('tcomb-form-native');
+let Form = t.form.Form;
 import {localData, serverData} from '../services/DataService';
 import DrugUpdate from '../models/DrugUpdate';
 import Container from '../components/Container';

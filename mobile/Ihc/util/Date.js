@@ -1,14 +1,14 @@
 export function formatDate(date) {
-  var monthNames = [
+  let monthNames = [
     'January', 'February', 'March',
     'April', 'May', 'June', 'July',
     'August', 'September', 'October',
     'November', 'December'
   ];
 
-  var day = date.getDate();
-  var monthIndex = date.getMonth();
-  var year = date.getFullYear();
+  let day = date.getDate();
+  let monthIndex = date.getMonth();
+  let year = date.getFullYear();
 
   return day + ' ' + monthNames[monthIndex] + ' ' + year;
 }

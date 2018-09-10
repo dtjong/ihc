@@ -12,9 +12,10 @@ import { Provider } from 'react-redux';
 const store = createStore(reducers);
 
 it('renders correctly', () => {
+  const fakeNavigator = { setOnNavigatorEvent: (param) => {} };
   const json = renderer.create(
     <Provider store={store}>
-      <PatientHomeScreen todayDateString={'Tue Apr 10 2018'} />
+      <PatientHomeScreen todayDateString={'Tue Apr 10 2018'} navigator={fakeNavigator} />
     </Provider>
   ).toJSON();
   expect(json).toMatchSnapshot();

@@ -60,7 +60,7 @@ export function signinPatient(patientForm) {
   const statusObj = Status.newStatus(patientForm);
   statusObj.lastUpdated = timestamp;
 
-  for ( var k in patient.statuses ){
+  for ( let k in patient.statuses ){
     if(patient.statuses[k].date === statusObj.date) {
       throw new Error('This patient already checked in');
     }
@@ -121,7 +121,7 @@ export function updateDrugUpdate(update) {
   realm.write(() => {
     patient.lastUpdated = timestamp;
     // If an object for that drug and date already exists, update it
-    for (var m in patient.drugUpdates) {
+    for (let m in patient.drugUpdates) {
       const old = patient.drugUpdates[m];
       if(old.date === update.date && old.name === update.name) {
         old.dose = update.dose;

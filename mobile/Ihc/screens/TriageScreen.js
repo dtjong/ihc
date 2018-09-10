@@ -4,8 +4,8 @@ import {
   Text,
   View
 } from 'react-native';
-var t = require('tcomb-form-native');
-var Form = t.form.Form;
+let t = require('tcomb-form-native');
+let Form = t.form.Form;
 import {localData, serverData} from '../services/DataService';
 import Triage from '../models/Triage';
 import {stringDate} from '../util/Date';
@@ -13,6 +13,8 @@ import Container from '../components/Container';
 import Button from '../components/Button';
 import TriageLabsWheel from '../components/TriageLabsWheel';
 import {downstreamSyncWithServer} from '../util/Sync';
+
+const MU_UNICODE = '\u03bc';
 
 class TriageScreen extends Component<{}> {
   /**
@@ -30,13 +32,26 @@ class TriageScreen extends Component<{}> {
       date: this.props.todayDate || stringDate(new Date())
     };
 
-    // Hold objects including a test's name, options, and result (int that
+    // Hold objects including a test's propertyName, displayName, options, and result (int that
     // indexes into the options array)
-    // TODO: replace with real tests and options once we get the template
-    // and also update the Triage models on mobile and server side
+    // The keys in this object should also match the propertyName
     const labTestObjects = {
-      blood: TriageLabsWheel.createLabTestObject('blood', ['N/a', 'Good', 'Bad']),
-      nitrites: TriageLabsWheel.createLabTestObject('nitrites', ['N/a', 'Good', 'Bad']),
+      glucose: TriageLabsWheel.createLabTestObject('glucose', 'glucose (mg/dL)',
+        ['-', '100+/-', '250+', '500++', '1000+++', '>=2000++++']),
+      bilirubin: TriageLabsWheel.createLabTestObject('bilirubin', 'bilirubin (mg/dL)',
+        ['-', '1+', '2++', '4+++']),
+      ketone: TriageLabsWheel.createLabTestObject('ketone', 'ketone (mg/dL)', ['-', '5+/-', '15+']),
+      specificGravity: TriageLabsWheel.createLabTestObject('specificGravity', 'specific gravity',
+        ['1.000', '1.005', '1.010', '1.015', '1.020', '1.025', '1.030']),
+      blood: TriageLabsWheel.createLabTestObject('blood', 'blood',
+        ['-', '+/-', '+', '5-10', `50 Ery/${MU_UNICODE}L`]),
+      ph: TriageLabsWheel.createLabTestObject('ph', 'pH', ['5.0', '6.0', '6.5', '7.0', '7.5', '8.0', '9.0']),
+      protein: TriageLabsWheel.createLabTestObject('protein', 'protein (mg/dL)', ['-', '5+/-', '15+']),
+      uroglobin: TriageLabsWheel.createLabTestObject('uroglobin', 'uroglobin (mg/dL)',
+        ['0.2', '1', '2', '4', '8', '12']),
+      nitrites: TriageLabsWheel.createLabTestObject('nitrites', 'nitrites', ['-', '+']),
+      leukocytes: TriageLabsWheel.createLabTestObject('leukocytes', `leukocytes (Leu/${MU_UNICODE}L)`,
+        ['-', '15 +/-', '70+', '125++', '500+++'])
     };
 
     this.state = {
@@ -95,7 +110,7 @@ class TriageScreen extends Component<{}> {
     this.setState({
       formType: Triage.getFormType(triage, gender),
       formValues: triage,
-      labTestObjects: this.getLabTestObjects(triage)
+      labTestObjects: this.getExistingLabTestObjects(triage, this.state.labTestObjects),
     });
 
     downstreamSyncWithServer()
@@ -118,7 +133,7 @@ class TriageScreen extends Component<{}> {
           this.setState({
             formType: Triage.getFormType(triage, gender),
             formValues: triage,
-            labTestObjects: this.getLabTestObjects(triage)
+            labTestObjects: this.getExistingLabTestObjects(triage, this.state.labTestObjects),
           });
         }
       })
@@ -132,8 +147,9 @@ class TriageScreen extends Component<{}> {
 
   // From an existing triage form, properly update the lab test objects with the
   // existing values
-  getLabTestObjects = (triage) => {
-    const labTestObjectsCopy = Object.assign({}, this.state.labTestObjects);
+  // Pass in the lab test objects we are getting values from
+  getExistingLabTestObjects = (triage, labTestObjects) => {
+    const labTestObjectsCopy = Object.assign({}, labTestObjects);
     // For each test, set the result field of the labTestObject to the proper
     // index of the options array
     for(const [testName,test] of Object.entries(labTestObjectsCopy)) {
@@ -239,8 +255,8 @@ class TriageScreen extends Component<{}> {
   }
 
   // Takes in the test name and the string result
-  updateLabTests = (name,result) => {
-    const oldTests = Object.assign({}, this.state.labTestObjects);
+  updateLabTests = (name, result, labTestObjects) => {
+    const oldTests = Object.assign({}, labTestObjects);
     oldTests[name].result = result;
     this.setState(oldTests);
   }
@@ -262,12 +278,15 @@ class TriageScreen extends Component<{}> {
           />
 
           {
-            this.state.formValues.labsDone ?
+            this.state.formValues.urineTestDone ?
               (
-                <TriageLabsWheel
-                  updateLabResult={this.updateLabTests}
-                  tests = {Object.values(this.state.labTestObjects)}
-                />
+                <View style={styles.labsContainer}>
+                  <TriageLabsWheel
+                    updateLabResult={(name, result) =>
+                      this.updateLabTests(name, result, this.state.labTestObjects)}
+                    tests = {Object.values(this.state.labTestObjects)}
+                  />
+                </View>
               ) : null
           }
 
@@ -295,6 +314,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10,
   },
+  labsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start'
+  }
 });
 
 // Redux

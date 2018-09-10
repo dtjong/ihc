@@ -11,6 +11,7 @@
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
     "testService": "jest LocalDataService",
+    "updateSnapshots": "jest -u",
     "lint": "eslint components/* models/* screens/* services/* util/* redux*/*",
     "lintFix": "eslint --fix components/* models/* screens/* services/* /util/*",
     "check": "npm run test && npm run lint"

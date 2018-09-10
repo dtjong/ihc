@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-var t = require('tcomb-form-native');
+let t = require('tcomb-form-native');
 
 export default class Triage {
 
@@ -7,17 +7,20 @@ export default class Triage {
    * Return the form type, given the value of certain buttons
    */
   static getFormType(form, gender) {
-    if(gender === 1 && form.urineTestDone) { // male
-      return MaleTriageUrine;
+    if(gender === 1 && form.labsDone) { // male
+      return MaleTriageLabs;
     }
-    if(gender === 1 && !form.urineTestDone) { // male
+    if(gender === 1 && form.labsDone) { // male
+      return MaleTriageLabs;
+    }
+    if(gender === 1 && !form.labsDone) { // male
       return MaleTriage;
     }
 
-    if(gender === 2 && form.urineTestDone) { // Female
-      return FemaleTriageUrine;
+    if(gender === 2 && form.labsDone) { // Female
+      return FemaleTriageLabs;
     }
-    if(gender === 2 && !form.urineTestDone) { // Female
+    if(gender === 2 && !form.labsDone) { // Female
       return FemaleTriage;
     }
 
@@ -31,7 +34,7 @@ export default class Triage {
 
     // Go through test objects, and add the result to the triage object
     for(let obj of Object.values(labTestObjects)) {
-      triage[obj.name] = obj.options[obj.result];
+      triage[obj.propertyName] = obj.options[obj.result];
     }
     return triage;
   }
@@ -74,13 +77,18 @@ export default class Triage {
       miscarriages: 'string?',
       //---END IF---
       labsDone: 'bool',
+      //---IF LABS DONE---
+      bgl: 'string?',
+      a1c: 'string?',
+      fasting: 'bool?',
+      pregnancyTest: 'string?',
       //---IF URINE TEST---
       urineTestDone: 'bool',
       leukocytes: 'string?',
       blood: 'string?',
       nitrites: 'string?',
       specificGravity: 'string?',
-      urobilirubin: 'string?',
+      uroglobin: 'string?',
       ketone: 'string?',
       protein: 'string?',
       bilirubin: 'string?',
@@ -127,13 +135,18 @@ Triage.schema = {
     miscarriages: 'string?',
     //---END IF---
     labsDone: 'bool',
+    //---IF LABS DONE---
+    bgl: 'string?',
+    a1c: 'string?',
+    fasting: 'bool?',
+    pregnancyTest: 'string?',
     //---IF URINE TEST---
     urineTestDone: 'bool',
     leukocytes: 'string?',
     blood: 'string?',
     nitrites: 'string?',
     specificGravity: 'string?',
-    urobilirubin: 'string?',
+    uroglobin: 'string?',
     ketone: 'string?',
     protein: 'string?',
     bilirubin: 'string?',
@@ -192,29 +205,24 @@ FemaleTriage = MaleTriage.extend({
   miscarriages: t.maybe(t.String),
 });
 
-// Render the urineTest button after other stuff
-MaleTriage = MaleTriage.extend({urineTestDone: t.Boolean});
-FemaleTriage = FemaleTriage.extend({urineTestDone: t.Boolean});
-
-urineTestObject = {
-  leukocytes: t.maybe(t.String),
-  blood: t.maybe(t.String),
-  nitrites: t.maybe(t.String),
-  specificGravity: t.maybe(t.String),
-  urobilirubin: t.maybe(t.String),
-  ketone: t.maybe(t.String),
-  protein: t.maybe(t.String),
-  bilirubin: t.maybe(t.String),
-  ph: t.maybe(t.String),
-  glucose: t.maybe(t.String),
-  labsDone: t.Boolean,
-};
-
-MaleTriageUrine = MaleTriage.extend(urineTestObject);
-FemaleTriageUrine = FemaleTriage.extend(urineTestObject);
-
-// Render the labsDone button after any urine tests
 MaleTriage = MaleTriage.extend({labsDone: t.Boolean});
 FemaleTriage = FemaleTriage.extend({labsDone: t.Boolean});
+
+labTestObject = {
+  bgl: t.maybe(t.String),
+  a1c: t.maybe(t.String),
+  fasting: t.maybe(t.Boolean),
+  pregnancyTest: t.maybe(t.String)
+};
+
+MaleTriageLabs = MaleTriage.extend(labTestObject);
+FemaleTriageLabs = FemaleTriage.extend(labTestObject);
+
+// Show urineTestDone button last so that the special urine test wheels will
+// show up beneath this
+MaleTriage = MaleTriage.extend({urineTestDone: t.Boolean});
+FemaleTriage = FemaleTriage.extend({urineTestDone: t.Boolean});
+MaleTriageLabs = MaleTriageLabs.extend({urineTestDone: t.Boolean});
+FemaleTriageLabs = FemaleTriageLabs.extend({urineTestDone: t.Boolean});
 
 /* eslint-enable no-undef */
