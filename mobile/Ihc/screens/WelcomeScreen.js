@@ -105,7 +105,7 @@ class WelcomeScreen extends Component<{}> {
           style={styles.button}
         />
         <Button onPress={this.goToMedicationInventory}
-          text="Medication Screen"
+          text="Medication Inventory"
           style={styles.button}
         />
       </Container>

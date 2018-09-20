@@ -12,7 +12,7 @@ import {stringDate} from '../util/Date';
 import Button from '../components/Button';
 import {downstreamSyncWithServer} from '../util/Sync';
 
-export default class MedicationInventoryScreen extends Component<{}> {
+class MedicationInventoryScreen extends Component<{}> {
   /*
    * Props:
 	 * 
@@ -35,39 +35,25 @@ export default class MedicationInventoryScreen extends Component<{}> {
   }
 
   // Update the statusObj with notes from the modal
-  saveModal = (, notes) => {
+  saveModal2 = (medicationKey, medicationProps) => {
     let statusObj = {};
-    try {
+    /*try {
       statusObj = localData.updateStatus(patientKey, stringDate(new Date()),
         'notes', notes);
     } catch(e) {
       this.props.setErrorMessage(e.message);
       return;
-    }
+    }*/
 
     this.props.setLoading(true);
     this.props.isUploading(true);
-    this.props.setCurrentPatientKey(patientKey);
+    //this.props.setCurrentPatientKey(patientKey);
 
-    serverData.updateStatus(statusObj)
-      .then( () => {
-        // View README: Handle syncing the tablet, point 3 for explanation
-        if(this.props.loading) {
-          // if successful, then reload screen (which closes modal too)
-          this.syncAndLoadPatients();
-
-          this.props.setLoading(false);
-          this.props.setSuccessMessage('Saved successfully');
-        }
-      })
-      .catch( (e) => {
-        if(this.props.loading) {
-          localData.markPatientNeedToUpload(patientKey);
-
-          this.props.setLoading(false, true);
-          this.props.setErrorMessage(e.message);
-        }
-      });
+  }
+  saveModal1 = (newMedication) => {
+    let statusObj = {};
+    this.props.setLoading(true);
+    this.props.isUploading(true);
   }
 
   // Reload table after new medication updates
@@ -82,18 +68,20 @@ export default class MedicationInventoryScreen extends Component<{}> {
   // Sync up tablet first with server before grabbing statuses
   syncAndLoadMedications = () => {
     this.props.setLoading(true);
-    this.props.isUploading(false);
+    //this.props.isUploading(false);
     this.props.clearMessages();
-
+    
     // Load local data in beginning to display even if sync doesn't work
-    let updates = localData.getMedicationUpdates(this.props.currentPatientKey);
+    /*let updates = localData.getMedicationUpdates(this.props.currentPatientKey);
     let statusObj = localData.getStatus(this.props.currentPatientKey, this.state.todayDate);
     const checkmarks = statusObj.medicationCheckmarks;
     this.setState({
       updates: updates,
       medicationCheckmarks: checkmarks,
     });
-
+    */
+    this.props.setLoading(false);
+/*
     downstreamSyncWithServer()
       .then((failedPatientKeys) => {
         // View README: Handle syncing the tablet, point 3 for explanation
@@ -118,11 +106,26 @@ export default class MedicationInventoryScreen extends Component<{}> {
           this.props.setLoading(false);
           this.props.setErrorMessage(err.message);
         }
-      });
+      });*/
   }
 
 
   render() {
+
+    /*tempRows = [];
+
+    medication1 = {
+      name: 'Medication',
+      properties: {
+        medicationKey: 'hello', 
+        drugName: 'brent', 
+        quantity: 6, 
+        dosage: 2, 
+        units: 'kgs', 
+        comments: 'these are comments'
+      }
+    }
+    tempRows.push(medication1);*/
     return (
       <Container>
 
@@ -131,12 +134,14 @@ export default class MedicationInventoryScreen extends Component<{}> {
         </View>
 
         <ScrollView contentContainerStyle={styles.tableContainer} horizontal>
-          <MedicationInventory style={styles.table}/>
+          <MedicationInventory
+            rows={[]}
+            saveModal1={this.saveModal1}
+            saveModal2={this.saveModal2}
+          />
         </ScrollView>
 
-        <View style={styles.footerContainer}>
-
-        </View>
+        
       </Container>
     );
   }
@@ -182,4 +187,4 @@ const mapDispatchToProps = dispatch => ({
   isUploading: val => dispatch(isUploading(val))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(MedicationScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(MedicationInventoryScreen);

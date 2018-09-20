@@ -9,29 +9,30 @@ import {
 import Button from './Button';
 
 /*
- * Modal to add a new Medication
+ * Modal to update a status object's notes field
  */
-export default class NewMedicationModal extends Component<{}> {
+export default class UpdateMedicationModal extends Component<{}> {
   /*
    * Expects in props:
    *  {
    *    showModal: boolean
    *    closeModal: function
-   *    addMedication: function
    *    saveModal: function
+   *    updateMedication: function
+   *    medicationProps: array
    *  }
    */
   constructor(props) {
     super(props);
     this.medication = {
       name: 'Medication',
-      properties: {
+        properties: {
         //TODO: maybe have a category property (i.e. painkillers, antibiotics, dietary supplements, etc)
         //      mainly so that you can search for all drugs in a certain category
-        medicationKey: 'string',
+        medicationKey: '',
         drugName: '',
-        quantity: 0,
-        dosage: 0,
+        quantity: '0',
+        dosage: '0',
         units: '',
         comments: '' //Consider keeping track of multiple comments (array of strings)
       }
@@ -77,26 +78,31 @@ export default class NewMedicationModal extends Component<{}> {
             <TextInput style={styles.notesInput}
               multiline={false}
               numberOfLines={1}
+              value={this.medication.properties.drugName}
               onChangeText={this.updateName} />
             <Text>Quantity:</Text>
             <TextInput style={styles.notesInput}
               multiline={false}
               numberOfLines={1}
+              value={this.medication.properties.quantity}
               onChangeText={this.updateQuantity} />
             <Text>Dosage</Text>
             <TextInput style={styles.notesInput}
               multiline={false}
               numberOfLines={1}
+              value={this.medication.properties.dosage}
               onChangeText={this.updateDosage} />
             <Text>Units:</Text>
             <TextInput style={styles.notesInput}
               multiline={false}
               numberOfLines={1}
+              value={this.medication.properties.units}
               onChangeText={this.updateUnits} />
             <Text>Comments:</Text>
             <TextInput style={styles.notesInput}
               multiline={false}
               numberOfLines={1}
+              value={this.medication.properties.comments}
               onChangeText={this.updateComments} />
             <View style={styles.modalFooter}>
               <Button style={styles.buttonContainer} onPress={this.props.closeModal}
@@ -104,7 +110,7 @@ export default class NewMedicationModal extends Component<{}> {
 
               <Button style={styles.buttonContainer}
                 onPress={this.props.saveModal}
-                text='Add Medication' />
+                text='Save' />
             </View>
           </View>
         </View>

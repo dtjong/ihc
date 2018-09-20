@@ -28,5 +28,5 @@ export function registerScreens(store, Provider) {
   Navigation.registerComponent('Ihc.TriageScreen', () => TriageScreen, store, Provider);
   Navigation.registerComponent('Ihc.PatientHistoryScreen', () => PatientHistoryScreen, store, Provider);
   Navigation.registerComponent('Ihc.TestServerScreen', () => TestServerScreen);
-  Navigation.registerComponent('Ihc.MedicationInventoryScreen', () => MedicationInventoryScreen);
+  Navigation.registerComponent('Ihc.MedicationInventoryScreen', () => MedicationInventoryScreen, store, Provider);
 }
