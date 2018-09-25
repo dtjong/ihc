@@ -5,8 +5,8 @@ import {
   View
 } from 'react-native';
 import {formatDate} from '../util/Date';
-var t = require('tcomb-form-native');
-var Form = t.form.Form;
+let t = require('tcomb-form-native');
+let Form = t.form.Form;
 
 import {localData, serverData} from '../services/DataService';
 import Patient from '../models/Patient';

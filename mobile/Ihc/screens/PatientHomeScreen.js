@@ -27,7 +27,7 @@ class PatientHomeScreen extends Component<{}> {
     this.props.navigator.push({
       screen: 'Ihc.TriageScreen',
       title: 'Back to patient',
-      passProps: { name: this.props.name, patientKey: this.props.patientKey }
+      passProps: { name: this.props.name }
     });
   }
 
@@ -35,7 +35,7 @@ class PatientHomeScreen extends Component<{}> {
     this.props.navigator.push({
       screen: 'Ihc.SoapScreen',
       title: 'Back to patient',
-      passProps: { name: this.props.name, patientKey: this.props.patientKey }
+      passProps: { name: this.props.name }
     });
   }
 
@@ -43,7 +43,7 @@ class PatientHomeScreen extends Component<{}> {
     this.props.navigator.push({
       screen: 'Ihc.MedicationScreen',
       title: 'Back to patient',
-      passProps: { name: this.props.name, patientKey: this.props.patientKey }
+      passProps: { name: this.props.name }
     });
   }
 
@@ -51,7 +51,7 @@ class PatientHomeScreen extends Component<{}> {
     this.props.navigator.push({
       screen: 'Ihc.PatientHistoryScreen',
       title: 'Back to patient',
-      passProps: { name: this.props.name, patientKey: this.props.patientKey }
+      passProps: { name: this.props.name }
     });
   }
 
@@ -61,7 +61,6 @@ class PatientHomeScreen extends Component<{}> {
     this.props.navigator.push({
       screen: 'Ihc.GrowthChartScreen',
       title: 'Back to patient',
-      passProps: { patientKey: this.props.patientKey}
     });
   }
 

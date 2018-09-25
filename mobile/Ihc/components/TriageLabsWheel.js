@@ -23,13 +23,13 @@ export default class TriageLabsWheel extends Component<{}> {
         { this.props.tests.map( test => {
           return (
             <TriageLabComponent
-              name={test.name}
+              name={test.displayName}
               options={test.options}
               selectedIndex={test.result}
               onValueChange={
-                (index) => {this.props.updateLabResult(test.name, index);}
+                (index) => {this.props.updateLabResult(test.propertyName, index);}
               }
-              key={`${test.name}lab`}
+              key={`${test.propertyName}lab`}
             />
           );
         })}
@@ -37,19 +37,21 @@ export default class TriageLabsWheel extends Component<{}> {
     );
   }
 
-  // Name of the test, options for the test results, result is the index of the
+  // Name of the property in the model),
+  // Name to be displayed in the application
+  // options for the test results, result is the index of the
   // option selected
-  static createLabTestObject(name, options, result = 0) {
-    return {name, options, result};
+  static createLabTestObject(propertyName, displayName, options, result = 0) {
+    return {propertyName, displayName, options, result};
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width: '100%',
     flexDirection: 'row',
-    margin: 0,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'flex-start',
+    flexWrap: 'wrap'
   }
 });
