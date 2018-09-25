@@ -26,7 +26,7 @@
             { "SwitchCase": 1 }
         ],
         "linebreak-style": [
-            "error",
+            "off",
             "unix"
         ],
         "quotes": [
@@ -40,6 +40,9 @@
         "eqeqeq": [
             "error",
             "smart"
+        ],
+        "no-var": [
+          "error"
         ],
         "react-native/no-unused-styles": 2,
         "react-native/split-platform-components": 2,

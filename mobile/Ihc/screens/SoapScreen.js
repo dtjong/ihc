@@ -4,8 +4,8 @@ import {
   Text,
   View
 } from 'react-native';
-var t = require('tcomb-form-native');
-var Form = t.form.Form;
+let t = require('tcomb-form-native');
+let Form = t.form.Form;
 
 import {localData, serverData} from '../services/DataService';
 import Soap from '../models/Soap';
@@ -31,10 +31,7 @@ class SoapScreen extends Component<{}> {
     const todayDate = this.props.todayDate || stringDate(new Date());
     this.state = {
       formValues: {date: todayDate},
-      errorMsg: null,
-      todayDate: todayDate,
-      successMsg: null,
-      loading: false
+      todayDate: todayDate
     };
   }
 
@@ -79,11 +76,9 @@ class SoapScreen extends Component<{}> {
 
     // Load existing SOAP info if it exists
     const soap = localData.getSoap(this.props.currentPatientKey, this.state.todayDate);
-    if (!soap) {
-      this.props.setLoading(false);
-      return;
+    if (soap) {
+      this.setState({ formValues: soap });
     }
-    this.setState({ formValues: soap });
 
     // Attempt server download and reload information if successful
     downstreamSyncWithServer()
@@ -94,11 +89,9 @@ class SoapScreen extends Component<{}> {
           }
 
           const soap = localData.getSoap(this.props.currentPatientKey, this.state.todayDate);
-          if (!soap) {
-            this.props.setLoading(false);
-            return;
+          if (soap) {
+            this.setState({ formValues: soap });
           }
-          this.setState({ formValues: soap });
 
           this.props.setLoading(false);
         }
@@ -108,7 +101,7 @@ class SoapScreen extends Component<{}> {
           this.props.setErrorMessage(err.message);
           this.props.setLoading(false);
         }
-      })
+      });
   }
 
   componentDidMount() {
@@ -117,6 +110,7 @@ class SoapScreen extends Component<{}> {
 
   submit = () => {
     if(!this.refs.form.validate().isValid()) {
+      this.props.setErrorMessage('Form not correct. Review form.');
       return;
     }
     const form = this.refs.form.getValue();
@@ -138,21 +132,20 @@ class SoapScreen extends Component<{}> {
     // Send updates to server
     serverData.updateSoap(soap)
       .then( () => {
-        if (this.props.loading) {
+        if(this.props.loading) {
           this.props.setLoading(false);
           this.props.setSuccessMessage('Saved');
         }
       })
       .catch( (err) => {
-        if (this.props.loading) {
+        if(this.props.loading) {
+          localData.markPatientNeedToUpload(this.props.patientKey);
+          
           this.props.setLoading(false, true);
           this.props.setErrorMessage(err.message);
+          return;
         }
-      })
-
-    this.props.setSuccessMessage('SOAP updated successfully');
-    this.props.setLoading(false);
-    this.props.isUploading(false);
+      });
   }
 
   onFormChange = (value) => {
@@ -163,9 +156,7 @@ class SoapScreen extends Component<{}> {
 
   render() {
     return (
-      <Container loading={this.state.loading} errorMsg={this.state.errorMsg}
-        successMsg={this.state.successMsg}>
-
+      <Container>
         <Text style={styles.title}>
           Soap
         </Text>
@@ -215,4 +206,4 @@ const mapDispatchToProps = dispatch => ({
   isUploading: val => dispatch(isUploading(val))
 });
 
-export default connect (mapStateToProps, mapDispatchToProps)(SoapScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(SoapScreen);

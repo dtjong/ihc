@@ -1,14 +1,14 @@
 export function formatDate(date) {
-  var monthNames = [
+  let monthNames = [
     'January', 'February', 'March',
     'April', 'May', 'June', 'July',
     'August', 'September', 'October',
     'November', 'December'
   ];
 
-  var day = date.getDate();
-  var monthIndex = date.getMonth();
-  var year = date.getFullYear();
+  let day = date.getDate();
+  let monthIndex = date.getMonth();
+  let year = date.getFullYear();
 
   return day + ' ' + monthNames[monthIndex] + ' ' + year;
 }
@@ -29,4 +29,16 @@ export function stringDate(dateObj) {
   const month = dateObj.getMonth()+1 < 10 ? '0' + (dateObj.getMonth()+1) : dateObj.getMonth()+1;
   const date = dateObj.getDate() < 10 ? '0' + dateObj.getDate() : dateObj.getDate();
   return `${dateObj.getFullYear()}${month}${date}`;
+}
+
+export function getYear(strDate) {
+  return parseInt(strDate.slice(0,4));
+}
+
+export function getMonth(strDate) {
+  return parseInt(strDate.slice(4,6));
+}
+
+export function getDay(strDate) {
+  return parseInt(strDate.slice(6));
 }

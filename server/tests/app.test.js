@@ -124,22 +124,24 @@ describe('Test GetTriage Routes', () => {
   });
 
   test('Should return triage if exists', ()=>{
-    const triage = {name: 'Triage'};
-    mock = sinon.mock(TriageModel)
-      .expects('findOne').withArgs({patientKey: 'keythatexists', date: 'datethatexists'})
-      .yields(null, triage);
+    const triage = {name: 'Triage', date: '20110101'};
+    const patient = {key: 'keythatexists', triages: [triage]};
+    mock = sinon.mock(PatientModel)
+      .expects('findOne')
+      .yields(null, patient);
 
-    return request(app).get('/patient/keythatexists/triage/datethatexists')
+    return request(app).get('/patient/keythatexists/triage/20110101')
       .expect({status: true, triage: triage});
   });
 
   test('should return error if no triage exists', () => {
-    mock = sinon.mock(TriageModel)
-      .expects('findOne').withArgs({patientKey: 'keythatdoesntexist', date: 'datethatexists'})
-      .yields(new Error("Patient with key keythatdoesntexist doesn't exist or patient didn't come in on datethatexists"), null);
+    const patient = {key: 'keythatdoesntexist', triages: []};
+    mock = sinon.mock(PatientModel)
+      .expects('findOne')
+      .yields(null, patient);
 
     return request(app).get('/patient/keythatdoesntexist/triage/datethatexists')
-      .expect({status: false, error: "Patient with key keythatdoesntexist doesn't exist or patient didn't come in on datethatexists"});
+      .expect({status: false, error: "Patient with key keythatdoesntexist does not have a triage for the date datethatexists"});
   });
 });
 

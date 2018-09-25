@@ -2,14 +2,11 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
-  View,
 } from 'react-native';
-import { Col, Grid } from 'react-native-easy-grid';
 import {localData} from '../services/DataService';
-import {formatDate} from '../util/Date';
-import {shortDate} from '../util/Date';
 import Container from '../components/Container';
-import Button from '../components/Button';
+import PatientHistoryTable from '../components/PatientHistoryTable';
+import {downstreamSyncWithServer} from '../util/Sync';
 
 /* TODO:
  * Make changes in behavior for the cases that a soap form is submitted,
@@ -26,30 +23,122 @@ class PatientHistoryScreen extends Component<{}> {
   constructor(props) {
     super(props);
     this.state = {
+      rows: [],
       patient: null,
     };
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
-  loadPatient = () => {
+  /* Merges dates from both soaps and triages */
+  compileDates = (soaps, triages) => {
+    const dates = [];
+    let i = 0;
+    let j = 0;
+
+    while (i < soaps.length && j < triages.length) {
+      if (soaps[i].date < triages[j].date) {
+        dates.push(soaps[i++].date);
+      }
+      else if (soaps[i].date > triages[j].date) {
+        dates.push(triages[j++].date);
+      } else {
+        dates.push(soaps[i].date);
+        i++;
+        j++;
+      }
+    }
+
+    while (i < soaps.length) {
+      dates.push(soaps[i++].date);
+    }
+
+    while (j < triages.length) {
+      dates.push(triages[j++].date);
+    }
+
+    return dates;
+  }
+
+  convertDataToRows = (dates, patient) => {
+    const rows = [];
+    let s = 0;
+    let t = 0;
+
+    for (let i = 0; i < dates.length; i++) {
+      const row = {strDate: dates[i], soap: null, triages: null};
+
+      if (s < patient.soaps.length) {
+        if (dates[i] === patient.soaps[s].date) {
+          row.soap = patient.soaps[s];
+          s++;
+        }
+      }
+      if (t < patient.triages.length) {
+        if (dates[i] === patient.triages[t].date) {
+          row.triages = patient.triages[t];
+          t++;
+        }
+      }
+
+      rows.push(row);
+    }
+
+    return rows;
+  }
+
+  syncAndLoadPatient = () => {
     this.props.setLoading(true);
     this.props.clearMessages();
 
     try {
       const patient = localData.getPatient(this.props.currentPatientKey);
-      this.props.setLoading(false);
-      this.setState({ patient: patient });
+      if (patient) {
+        const dates = this.compileDates(patient.soaps, patient.triages);
+        const rows = this.convertDataToRows(dates, patient);
+        this.setState({ dates: dates, rows: rows });
+      }
+      this.setState({ patient: patient});
     } catch(err) {
       this.props.setLoading(false);
       this.props.setErrorMessage(err.message);
+      return;
+    }
+
+    downstreamSyncWithServer()
+      .then( (failedPatientKeys) => {
+        if (this.props.loading) {
+          if (failedPatientKeys.length > 0) {
+            throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
+          }
+
+          try {
+            const patient = localData.getPatient(this.props.currentPatientKey);
+            this.props.setLoading(false);
+            this.setState({ patient: patient });
+          } catch(err) {
+            this.props.setLoading(false);
+            this.props.setErrorMessage(err.message);
+            return;
+          }
+
+          this.props.setLoading(false);
+        }
+      })
+      .catch( (err) => {
+        if (this.props.loading) {
+          this.props.setErrorMessage(err.message);
+          this.props.setLoading(false);
+        }
+      });
+  }
+
+  onNavigatorEvent(event) {
+    if (event.id === 'willAppear') {
+      this.syncAndLoadPatient();
     }
   }
 
-  componentDidMount() {
-    this.loadPatient();
-  }
-
-  // TODO: make Soap and Triage screen read patient key from redux
-  goToSoap(date) {
+  goToSoap = (date) => {
     this.props.navigator.push({
       screen: 'Ihc.SoapScreen',
       title: 'Back to patient',
@@ -57,7 +146,7 @@ class PatientHistoryScreen extends Component<{}> {
     });
   }
 
-  goToTriage(date) {
+  goToTriage = (date) => {
     this.props.navigator.push({
       screen: 'Ihc.TriageScreen',
       title: 'Back to patient',
@@ -79,63 +168,31 @@ class PatientHistoryScreen extends Component<{}> {
 
     return (
       <Container>
-
         <Text style={styles.title}>
           Previous Visits
         </Text>
 
-        <View style={styles.gridContainer}>
-          <Grid>
-            <Col style={styles.col}>
-              {this.state.patient.soaps.map( (soap, i) =>
-                <Text key={i} style={styles.dateContainer}>{formatDate(new Date(shortDate(soap.date)))}</Text> )}
-            </Col>
-
-            <Col style={styles.col}>
-              {this.state.patient.soaps.map( (soap, i) =>
-                <Button key={i}
-                  onPress={() => this.goToSoap(soap.date)}
-                  text='SOAP' />
-              )}
-            </Col>
-
-            <Col style={styles.col}>
-              {this.state.patient.soaps.map( (soap, i) =>
-                <Button key={i}
-                  onPress={() => this.goToTriage(soap.date)}
-                  text='Triage' />
-              )}
-            </Col>
-          </Grid>
-        </View>
+        <PatientHistoryTable
+          rows={this.state.rows}
+          name={this.props.name}
+          goToSoap={this.goToSoap}
+          goToTriage={this.goToTriage}
+        />
       </Container>
     );
   }
 }
+
 const styles = StyleSheet.create({
-  gridContainer: {
-    flex: 1,
-    maxWidth: '80%',
-    alignItems: 'center',
-  },
-  col: {
-    alignItems: 'center',
-  },
   title: {
     fontSize: 20,
     textAlign: 'center',
     margin: 5,
-  },
-  dateContainer: {
-    width: 150,
-    margin: 10,
-    padding: 8,
-    elevation: 4,
-  },
+  }
 });
 
 // Redux
-import { setLoading, setErrorMessage, clearMessages } from '../reduxActions/containerActions';
+import { setLoading, setSuccessMessage, setErrorMessage, clearMessages } from '../reduxActions/containerActions';
 import { connect } from 'react-redux';
 
 const mapStateToProps = state => ({
@@ -145,8 +202,9 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   setLoading: (val,showRetryButton) => dispatch(setLoading(val, showRetryButton)),
+  setSuccessMessage: val => dispatch(setSuccessMessage(val)),
   setErrorMessage: val => dispatch(setErrorMessage(val)),
-  clearMessages: () => dispatch(clearMessages()),
+  clearMessages: () => dispatch(clearMessages())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PatientHistoryScreen);

@@ -15,7 +15,7 @@
             2
         ],
         "linebreak-style": [
-            "error",
+            "off",
             "unix"
         ],
         "quotes": [
@@ -29,6 +29,9 @@
         "eqeqeq": [
             "error",
             "smart"
+        ],
+        "no-var": [
+          "error"
         ]
     }
 }

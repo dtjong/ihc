@@ -140,11 +140,44 @@ export function getSoap(patientKey, strDate) {
 
 // Server endpoint: put /patient/:key/triage/:date
 export function updateTriage(update) {
+  return fetch(fetchUrl + `/patient/${update.patientKey}/triage/${update.date}`, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      triage: update
+    })
+  })
+    .then(response => response.json())
+    .then(json => {
+      if (!json.status) {
+        throw new Error(json.error);
+      }
+
+      return Promise.resolve(true);
+    })
+    .catch(err => {
+      return Promise.reject(err);
+    });
 }
 
 // Server endpoint: get /patient/:key/triage/:date
 // Returns Triage object if it exists, or undefined if not
 export function getTriage(patientKey, strDate) {
+  return fetch(fetchUrl + '/patient/' + patientKey + '/triage/' + strDate)
+    .then(response => response.json())
+    .then(json => {
+      if (!json.status) {
+        throw new Error(json.error);
+      }
+
+      return Promise.resolve(json.triage);
+    })
+    .catch(err => {
+      return Promise.reject(err);
+    });
 }
 
 // Server endpoint: get /patient/:key
