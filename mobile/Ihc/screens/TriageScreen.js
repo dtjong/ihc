@@ -37,21 +37,21 @@ class TriageScreen extends Component<{}> {
     // The keys in this object should also match the propertyName
     const labTestObjects = {
       glucose: TriageLabsWheel.createLabTestObject('glucose', 'glucose (mg/dL)',
-        ['-', '100+/-', '250+', '500++', '1000+++', '>=2000++++']),
+        ['-', '100(+/-)', '250(+)', '500(++)', '1000(+++)', '>=2000(++++)']),
       bilirubin: TriageLabsWheel.createLabTestObject('bilirubin', 'bilirubin (mg/dL)',
-        ['-', '1+', '2++', '4+++']),
-      ketone: TriageLabsWheel.createLabTestObject('ketone', 'ketone (mg/dL)', ['-', '5+/-', '15+']),
+        ['-', '1(+)', '2(++)', '4(+++)']),
+      ketone: TriageLabsWheel.createLabTestObject('ketone', 'ketone (mg/dL)', ['-', '5(+/-)', '15(+)']),
       specificGravity: TriageLabsWheel.createLabTestObject('specificGravity', 'specific gravity',
         ['1.000', '1.005', '1.010', '1.015', '1.020', '1.025', '1.030']),
       blood: TriageLabsWheel.createLabTestObject('blood', 'blood',
         ['-', '+/-', '+', '5-10', `50 Ery/${MU_UNICODE}L`]),
       ph: TriageLabsWheel.createLabTestObject('ph', 'pH', ['5.0', '6.0', '6.5', '7.0', '7.5', '8.0', '9.0']),
-      protein: TriageLabsWheel.createLabTestObject('protein', 'protein (mg/dL)', ['-', '5+/-', '15+']),
+      protein: TriageLabsWheel.createLabTestObject('protein', 'protein (mg/dL)', ['-', '5(+/-)', '15(+)']),
       uroglobin: TriageLabsWheel.createLabTestObject('uroglobin', 'uroglobin (mg/dL)',
         ['0.2', '1', '2', '4', '8', '12']),
       nitrites: TriageLabsWheel.createLabTestObject('nitrites', 'nitrites', ['-', '+']),
       leukocytes: TriageLabsWheel.createLabTestObject('leukocytes', `leukocytes (Leu/${MU_UNICODE}L)`,
-        ['-', '15 +/-', '70+', '125++', '500+++'])
+        ['-', '15 (+/-)', '70(+)', '125(++)', '500(+++)'])
     };
 
     this.state = {
