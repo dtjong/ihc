@@ -4,6 +4,11 @@ export default class Medication {
     return {drugName, dosage, quantity, units};
   }
 
+  static extractFromForm(form) {
+    const medication = Object.assign({}, form);
+    return;
+  }
+
 }
 
 Medication.schema = {
@@ -11,7 +16,6 @@ Medication.schema = {
   properties: {
     //TODO: maybe have a category property (i.e. painkillers, antibiotics, dietary supplements, etc)
     //      mainly so that you can search for all drugs in a certain category
-    medicationKey: 'string',
     drugName: 'string',
     quantity: 'int',
     dosage: 'int',

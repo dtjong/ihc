@@ -5,70 +5,60 @@ import {
   View
 } from 'react-native';
 import { Col, Row, Grid } from 'react-native-easy-grid';
-import {shortDate} from '../util/Date';
 import NewMedicationModal from './NewMedicationModal';
 import UpdateMedicationModal from './UpdateMedicationModal';
 import Button from './Button';
-import Medication from '../models/Medication'
+import Medication from '../models/Medication';
 
 export default class MedicationInventory extends Component<{}> {
   /*
    * Expects in props:
    *  {
    *    rows: [Medication],
-   *    saveModal1: function
-   *    saveModal2: function
+   *    saveEditModal: function
+   *    saveNewModal: function
    *  }
    */
   constructor(props) {
     super(props);
     this.tableHeaders = ['Drug Name', 'Quantity', 'Dosage', 'Units', 'Notes'];
     this.rowNum = 0;
-    // showModal1 is the modal for new medication
-    // showModal2 is the modal to edit medication
+    // showNewModal is the modal for new medication
+    // showEditModal is the modal to edit medication
     // name is the name of the medication
     // medicationKey is the key of the medication we are editing in the Modal
-    // medicationProps is an array of the medication properties
-    this.state = {showModal1: false, showModal2: false, name: null, medicationKey: null, medicationProps: null, newMedication:null};
+    // medicationProperties is an array of the medication properties
+    this.state = {showNewModal: false, showEditModal: false, name: null, medicationKey: null, medicationProperties: null, newMedication:null};
   }
 
 
   // Modal to add new medication
-  openModal1 = () => {
-    this.setState({showModal1: true});
+  openNewModal = () => {
+    this.setState({showNewModal: true});
   }
-  closeModal1 = () => {
-    this.setState({showModal1: false, newMedication: null});
+  closeNewModal = () => {
+    this.setState({showNewModal: false, newMedication: null});
   }
 
   addMedication = (newMedication) => {
-    this.setState({newMedication: newMedication})
+    this.setState({newMedication: newMedication});
   }
 
 
   // Modal to edit existing medication
-  openModal2 = (name, medicationKey, medicationProps) => {
-    this.setState({showModal2: true, name: name, medicationKey: medicationKey, medicationProps: medicationProps});
+  openEditModal = (name, medicationKey, medicationProperties) => {
+    this.setState({showEditModal: true, name: name, medicationKey: medicationKey, medicationProperties: medicationProperties});
+  }
+  closeEditModal = () => {
+    this.setState({showEditModal: false, name: null, medicationKey: null, medicationProperties: null});
   }
 
-  closeModal2 = () => {
-    this.setState({showModal2: false, name: null, medicationKey: null, medicationProps: null});
+  updateMedication = (newmedicationProperties) => {
+    this.setState({medicationProperties: newmedicationProperties});
   }
 
-  updateMedication = (newMedicationProps) => {
-    this.setState({medicationProps: newMedicationProps});
-  }
-
+  // Renders each column in a row
   renderCol = (element, keyFn, index) => {
-  
-    /*return (
-      <Col style={styles.otherCol} size={2} key={keyFn(index)}>
-        <Button style={styles.notes}
-          onPress={() => this.openModal2(name, medicationKey)}
-          textStyle={styles.notesText}
-          text={element} />
-      </Col>
-    );*/
     return (
       <Col style={styles.otherCol} size={2} key={keyFn(index)}>
         <Text>{element}</Text>
@@ -77,23 +67,27 @@ export default class MedicationInventory extends Component<{}> {
   }
 
   renderRow = (data, keyFn) => {
-    /*let medData = Object.keys(data.properties).map(i => data.properties[i]);
-    let medicationKey = medData.shift()    
+    //puts the properties of medication into an array
+    let medData = Object.keys(data.properties).map(i => data.properties[i]);
+    //pops the medicationKey from array
+    let medicationKey = medData.shift();    
     
+    // Renders each property
     let cols = medData.map( (e,i) => {
-      // Pass the patient key and name
-      // to the render column fn to be passed to Update Modal
       return this.renderCol(e,keyFn,i);
     });
     
-    medData.push(medicationKey)
+    // Puts the medicationKey back into array
+    medData.push(medicationKey);
 
     return (
-      <Row key={`row${this.rowNum++}`} style={styles.rowContainer}>
-      //onPress={() => this.openModal2(medData[0], medicationKey, medData)}>
+
+      // Entire row is clickable to open a modal to edit
+      <Row key={`row${this.rowNum++}`} style={styles.rowContainer}
+      onPress={() => this.openEditModal(medData[0], medicationKey, medData)}>
         {cols}
       </Row>
-    );*/
+    );
   }
 
   renderHeader(data, keyFn) {
@@ -116,18 +110,18 @@ export default class MedicationInventory extends Component<{}> {
       <View style={styles.container}>
 
         <NewMedicationModal
-          showModal={this.state.showModal1}
-          closeModal={this.closeModal1}
+          showModal={this.state.showNewModal}
+          closeModal={this.closeNewModal}
           addMedication={this.addMedication}
           saveModal={() => this.props.saveModal1(newMedication)}
         />
 
         <UpdateMedicationModal
-          showModal={this.state.showModal2}
-          closeModal={this.closeModal2}
-          saveModal={() => this.props.saveModal2(this.state.medicationKey, this.state.medicationProps)}
+          showModal={this.state.showEditModal}
+          closeModal={this.closeEditModal}
+          saveModal={() => this.props.saveModal2(this.state.medicationKey, this.state.medicationProperties)}
           updateMedication={this.updateMedication}
-          medicationProps={this.state.medicationProps}
+          medicationProperties={this.state.medicationProperties}
         />
 
         <Grid>
@@ -136,7 +130,7 @@ export default class MedicationInventory extends Component<{}> {
         </Grid>
 
         <Button style={styles.buttonContainer}
-          onPress={this.openModal1}
+          onPress={this.openNewModal}
           text='Add Medication' />
       </View>
     );
@@ -152,16 +146,6 @@ export const styles = StyleSheet.create({
     alignSelf: 'stretch',
     minHeight: 32
   },
-  timestampCol: {
-    maxWidth: 60,
-    borderWidth: 1
-  },
-  notesCol: {
-    borderWidth: 1,
-  },
-  birthdayCol: {
-    borderWidth: 1,
-  },
   otherCol: {
     borderWidth: 1
   },
@@ -174,17 +158,6 @@ export const styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
-  },
-  notes: {
-    height: '100%',
-    width: '100%',
-    backgroundColor: '#bebebe',
-    borderRadius: 0,
-    margin: 0
-  },
-  notesText: {
-    fontWeight: 'normal',
-    color: '#111'
   },
   buttonContainer: {
     width: 150,

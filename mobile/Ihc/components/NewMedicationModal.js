@@ -26,8 +26,6 @@ export default class NewMedicationModal extends Component<{}> {
     this.medication = {
       name: 'Medication',
       properties: {
-        //TODO: maybe have a category property (i.e. painkillers, antibiotics, dietary supplements, etc)
-        //      mainly so that you can search for all drugs in a certain category
         medicationKey: 'string',
         drugName: '',
         quantity: 0,
@@ -35,7 +33,7 @@ export default class NewMedicationModal extends Component<{}> {
         units: '',
         comments: '' //Consider keeping track of multiple comments (array of strings)
       }
-    }
+    };
   }
 
   updateName(drugName) {
