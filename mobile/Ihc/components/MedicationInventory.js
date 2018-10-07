@@ -25,18 +25,18 @@ export default class MedicationInventory extends Component<{}> {
     // medicationToEdit is the medication that will be edited
     this.state = {showModal: false, 
       medicationToEdit: {
-        drugName: 'new',
-        quantity: 1,
+        drugName: '',
+        quantity: 0,
         dosage: 0,
-        units: 'new',
-        comments: 'notstuff' //Consider keeping track of multiple comments (array of strings)
+        units: '',
+        comments: '' //Consider keeping track of multiple comments (array of strings)
       }
     };
   }
 
 
   openEditModal = (medicationToEdit) => {
-    this.setState({medicationToEdit: medicationToEdit}, () => {this.setState({showModal: true});
+    this.setState({medicationToEdit: medicationToEdit, showModal: true});
     });
   }
   openAddModal = () => {
@@ -56,7 +56,7 @@ export default class MedicationInventory extends Component<{}> {
         drugName: '',
         quantity: 0,
         dosage: 0,
-        units: 'new',
+        units: '',
         comments: '' 
       }
     });
@@ -85,33 +85,9 @@ export default class MedicationInventory extends Component<{}> {
     return arr;
   }
 
-  findMedication = (medicationProperties) => {
-    for(let i=0; i < this.props.rows.length; i++){
-      let ifSame = true;
-      let medication = this.props.rows[i];
-      ifSame = ifSame && (medication.drugName === medicationProperties[0]);
-      ifSame = ifSame && (medication.quantity === medicationProperties[1]);
-      ifSame = ifSame && (medication.dosage === medicationProperties[2]);
-      ifSame = ifSame && (medication.units === medicationProperties[3]);
-      ifSame = ifSame && (medication.comments === medicationProperties[4]);
-      if(ifSame) {
-        return medication;
-      }
-    }
-    return {
-      drugName: '',
-      quantity: 0,
-      dosage: 0,
-      units: '',
-      comments: ''
-    };
-  }
-
-  renderRow = (data, keyFn) => {
+  renderRow = (medication, keyFn) => {
     //puts the properties of medication into an array
-    let medData = this.extractMedicationElements(data);    
-    
-    let medication = this.findMedication(medData);
+    let medData = this.extractMedicationElements(medication);    
 
     // Renders each property
     let cols = medData.map( (e,i) => {
