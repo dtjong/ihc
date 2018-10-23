@@ -29,9 +29,11 @@ export default class MedicationInventory extends Component<{}> {
     const oldKey = oldMedication.key;
     this.setState({ showModal: true, oldKey: oldKey});
   }
+
   openAddModal = () => {
     this.setState({ showModal: true, oldKey: null });
   }
+
   closeModal = () => {
     this.setState({ showModal: false });
   }
