@@ -14,6 +14,10 @@ export default class MedicationInventory extends Component<{}> {
    * Expects in props:
    *  {
    *    rows: [Medication],
+<<<<<<< HEAD
+=======
+
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
    *    saveModal: function
    *  }
    */
@@ -21,6 +25,10 @@ export default class MedicationInventory extends Component<{}> {
     super(props);
     this.tableHeaders = ['Drug Name', 'Quantity', 'Dosage', 'Units', 'Notes'];
     this.rowNum = 0;
+<<<<<<< HEAD
+=======
+
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
     // showModal is the modal to update medication
     // medicationToEdit is the medication that will be edited
     this.state = {showModal: false, 
@@ -38,6 +46,10 @@ export default class MedicationInventory extends Component<{}> {
   openEditModal = (medicationToEdit) => {
     this.setState({medicationToEdit: medicationToEdit, showModal: true});
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
   openAddModal = () => {
     this.setState({showModal: true, 
       medicationToEdit: {
@@ -49,6 +61,10 @@ export default class MedicationInventory extends Component<{}> {
       }
     });
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
   closeModal = () => {
     this.setState({showModal: false, 
       medicationToEdit: {
@@ -130,25 +146,39 @@ export default class MedicationInventory extends Component<{}> {
         />
 
         <Button style={styles.buttonContainer}
+<<<<<<< HEAD
           onPress={this.openAddModal}
           text='Add Medication' />
 
         <Text style={styles.title}>Medication Inventory{"\n"}</Text>
 
+=======
+          onPress={() => this.openAddModal()}
+          text='Add Medication' />
+
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
         <Grid>
           {this.renderHeader(this.tableHeaders, (i) => `header${i}`)}
           {this.props.rows.map( row => this.renderRow(row, (i) => `row${i}`) )}
         </Grid>
+<<<<<<< HEAD
 
+=======
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
       </View>
     );
   }
 }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+<<<<<<< HEAD
    headerContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -168,6 +198,16 @@ export const styles = StyleSheet.create({
     minHeight: 25
   },
 
+=======
+  rowContainer: {
+    flex: 1,
+    alignSelf: 'stretch',
+    minHeight: 32
+  },
+  otherCol: {
+    borderWidth: 1
+  },
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
   headerRow: {
     backgroundColor: '#dbdbdb',
     borderWidth: 1,
@@ -177,6 +217,7 @@ export const styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
+<<<<<<< HEAD
     width: 130,
   },
   buttonContainer: {
@@ -185,5 +226,11 @@ export const styles = StyleSheet.create({
     left: 550, 
     width: 200,
     height: 30,
+=======
+  },
+  buttonContainer: {
+    width: 150,
+    height: 40,
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
   },
 });

@@ -5,9 +5,12 @@ import {
   Text,
   View
 } from 'react-native';
+<<<<<<< HEAD
 let t = require('tcomb-form-native');
 let Form = t.form.Form;
 
+=======
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
 import {localData, serverData} from '../services/DataService';
 import MedicationInventory  from '../components/MedicationInventory';
 import Medication from '../models/Medication';
@@ -33,6 +36,7 @@ class MedicationInventoryScreen extends Component<{}> {
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
+<<<<<<< HEAD
   MedicationInventoryForm = t.struct({
     drugName: t.String, // drug name
     quantity: t.int,
@@ -61,6 +65,8 @@ class MedicationInventoryScreen extends Component<{}> {
     }
   }
 
+=======
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
   // TODO
   saveModal = (medication) => {
     let statusObj = {};
@@ -78,18 +84,30 @@ class MedicationInventoryScreen extends Component<{}> {
   }
 
   // TODO
+<<<<<<< HEAD
   // Sync up tablet first with server before grabbing medications
+=======
+  // Sync up tablet first with server before grabbing statuses
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
   syncAndLoadMedications = () => {
     this.props.setLoading(true);
     //this.props.isUploading(false);
     this.props.clearMessages();
     this.props.setLoading(false);
+<<<<<<< HEAD
     // TODO
+=======
+    /// TODO
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
   }
 
 
   render() {
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
     //TODO update rows
     return (
       <Container>

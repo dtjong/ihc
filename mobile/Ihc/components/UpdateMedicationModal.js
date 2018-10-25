@@ -6,9 +6,12 @@ import {
   Modal,
   View
 } from 'react-native';
+<<<<<<< HEAD
 let t = require('tcomb-form-native');
 let Form = t.form.Form;
 
+=======
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
 import Button from './Button';
 import Medication from '../models/Medication';
 
@@ -29,6 +32,7 @@ export default class UpdateMedicationModal extends Component<{}> {
   constructor(props) {
     super(props);
   }
+<<<<<<< HEAD
   
   MedicationInventoryForm = t.struct({
     drugName: t.String, // drug name
@@ -57,6 +61,8 @@ export default class UpdateMedicationModal extends Component<{}> {
       },
     }
   }
+=======
+>>>>>>> e20195c4dd3d452c52ba20e6cb220f44f642d1d8
 
   updateName(drugName) {
     this.props.medicationToEdit.drugName = drugName;

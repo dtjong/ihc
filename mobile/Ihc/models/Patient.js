@@ -100,11 +100,11 @@ export default class Patient {
   static getInstance(lastUpdated = new Date().getTime(),
     key = 'firstname&father&mother&20000101', firstName = 'firstname',
     fatherName = 'father', motherName = 'mother', birthday = '20000101',
-    gender = 1, phone = null, motherHeight = 100, fatherHeight = 100,
-    drugUpdates = [], soaps = [], triages = [], statuses = []) {
+    gender = 1, phone = null, drugUpdates = [], soaps = [], triages = [],
+    statuses = []) {
     return {
-      key, firstName, fatherName, motherName, birthday, gender, phone, motherHeight,
-      fatherHeight, drugUpdates, soaps, triages, statuses, lastUpdated
+      key, firstName, fatherName, motherName, birthday, gender, phone,
+      drugUpdates, soaps, triages, statuses, lastUpdated
     };
   }
 }
@@ -120,8 +120,6 @@ Patient.schema = {
     birthday: 'string',
     gender: 'int', // 1 = boy, 2 = girl, 0 = undefined
     phone: 'string?',
-    motherHeight: 'double?',
-    fatherHeight: 'double?',
     drugUpdates: 'DrugUpdate[]',
     soaps: 'Soap[]',
     triages: 'Triage[]',
