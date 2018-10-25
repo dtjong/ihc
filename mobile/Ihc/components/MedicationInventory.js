@@ -37,7 +37,6 @@ export default class MedicationInventory extends Component<{}> {
 
   openEditModal = (medicationToEdit) => {
     this.setState({medicationToEdit: medicationToEdit, showModal: true});
-    });
   }
   openAddModal = () => {
     this.setState({showModal: true, 
@@ -131,8 +130,10 @@ export default class MedicationInventory extends Component<{}> {
         />
 
         <Button style={styles.buttonContainer}
-          onPress={() => this.openAddModal()}
+          onPress={this.openAddModal}
           text='Add Medication' />
+
+        <Text style={styles.title}>Medication Inventory{"\n"}</Text>
 
         <Grid>
           {this.renderHeader(this.tableHeaders, (i) => `header${i}`)}
@@ -148,14 +149,25 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+   headerContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 25,
+    textAlign: 'center',
+},
   rowContainer: {
     flex: 1,
     alignSelf: 'stretch',
-    minHeight: 32
+    minHeight: 32,
   },
   otherCol: {
-    borderWidth: 1
+    borderWidth: 1,
+    minWidth: 150,
+    minHeight: 25
   },
+
   headerRow: {
     backgroundColor: '#dbdbdb',
     borderWidth: 1,
@@ -165,9 +177,13 @@ export const styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
+    width: 130,
   },
   buttonContainer: {
-    width: 150,
-    height: 40,
+    position: 'relative', 
+    top: 38, 
+    left: 550, 
+    width: 200,
+    height: 30,
   },
 });

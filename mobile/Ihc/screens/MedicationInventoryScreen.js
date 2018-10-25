@@ -5,6 +5,9 @@ import {
   Text,
   View
 } from 'react-native';
+let t = require('tcomb-form-native');
+let Form = t.form.Form;
+
 import {localData, serverData} from '../services/DataService';
 import MedicationInventory  from '../components/MedicationInventory';
 import Medication from '../models/Medication';
@@ -30,6 +33,34 @@ class MedicationInventoryScreen extends Component<{}> {
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
+  MedicationInventoryForm = t.struct({
+    drugName: t.String, // drug name
+    quantity: t.int,
+    dosage: t.int,
+    units: t.String,
+    comments: t.maybe(t.String)
+  });
+
+  formOptions = {
+    fields: {
+      drugName: {
+        editable: true,
+      },
+      quantity: {
+        multiline: false,
+      },
+      dosage: {
+        multiline: false,
+      },
+      units: {
+        multiline: false,
+      },
+      comments: {
+        multiline: true,
+      },
+    }
+  }
+
   // TODO
   saveModal = (medication) => {
     let statusObj = {};
@@ -47,13 +78,13 @@ class MedicationInventoryScreen extends Component<{}> {
   }
 
   // TODO
-  // Sync up tablet first with server before grabbing statuses
+  // Sync up tablet first with server before grabbing medications
   syncAndLoadMedications = () => {
     this.props.setLoading(true);
     //this.props.isUploading(false);
     this.props.clearMessages();
     this.props.setLoading(false);
-    /// TODO
+    // TODO
   }
 
 
