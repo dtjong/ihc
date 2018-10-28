@@ -5,7 +5,6 @@ import {
   Text,
   View
 } from 'react-native';
-
 import {localData, serverData} from '../services/DataService';
 import MedicationInventory  from '../components/MedicationInventory';
 import Container from '../components/Container';
@@ -30,6 +29,33 @@ class MedicationInventoryScreen extends Component<{}> {
     };
 
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+  }
+  MedicationInventoryForm = t.struct({
+    drugName: t.String, // drug name
+    quantity: t.int,
+    dosage: t.int,
+    units: t.String,
+    comments: t.maybe(t.String)
+  });
+
+  formOptions = {
+    fields: {
+      drugName: {
+        editable: true,
+      },
+      quantity: {
+        multiline: false,
+      },
+      dosage: {
+        multiline: false,
+      },
+      units: {
+        multiline: false,
+      },
+      comments: {
+        multiline: true,
+      },
+    }
   }
 
   convertMedicationsToRows(medications) {
@@ -145,7 +171,7 @@ class MedicationInventoryScreen extends Component<{}> {
         }
       });
   }
-
+  
   render() {
     //TODO update rows
     return (

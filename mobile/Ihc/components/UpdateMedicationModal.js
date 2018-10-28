@@ -6,7 +6,6 @@ import {
 } from 'react-native';
 let t = require('tcomb-form-native');
 let Form = t.form.Form;
-
 import Button from './Button';
 import Medication from '../models/Medication';
 
@@ -25,6 +24,34 @@ export default class UpdateMedicationModal extends Component<{}> {
   constructor(props) {
     super(props);
     this.state = {formValues: {} };
+  }
+  
+  MedicationInventoryForm = t.struct({
+    drugName: t.String, // drug name
+    quantity: t.int,
+    dosage: t.int,
+    units: t.String,
+    comments: t.maybe(t.String)
+  });
+
+  formOptions = {
+    fields: {
+      drugName: {
+        editable: true,
+      },
+      quantity: {
+        multiline: false,
+      },
+      dosage: {
+        multiline: false,
+      },
+      units: {
+        multiline: false,
+      },
+      comments: {
+        multiline: true,
+      },
+    }
   }
 
   Medication = t.struct({
