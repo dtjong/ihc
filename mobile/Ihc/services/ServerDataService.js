@@ -265,6 +265,7 @@ export function createMedication(newMedication) {
       return Promise.reject(err);
     });
 }
+
 // Server endpoint: get /medication-inventory/:name
 export function getMedications(name) {
   return fetch(fetchUrl + '/medication-inventory/' + name)
@@ -279,9 +280,11 @@ export function getMedications(name) {
       return Promise.reject(err);
     });
 }
+
 // Server endpoint: put /medication-inventory/:name/update/:date
-export function updateMedication(name, update) {
-  return fetch(fetchUrl + '/medication-inventory/' + name + '/update', {
+// NOTE: separate update and create medication functions in order to check for pre-existing(create) and non-existing(update)
+export function updateMedication(oldKey, update) {
+  return fetch(fetchUrl + '/medication-inventory/' + oldKey + '/update', {
     method: 'PUT',
     headers: {
       Accept: 'application/json',
@@ -299,9 +302,10 @@ export function updateMedication(name, update) {
       return Promise.reject(err);
     });
 }
+
 // Server endpoint: put /medication-inventory/:name/delete/:date
-export function deleteMedication(name) {
-  return fetch(fetchUrl + '/medication-inventory/' + name + '/delete', {
+export function deleteMedication(key) {
+  return fetch(fetchUrl + '/medication-inventory/' + key + '/delete', {
     method: 'PUT',
     headers: {
       Accept: 'application/json',
@@ -315,6 +319,20 @@ export function deleteMedication(name) {
       return Promise.resolve(true);
     })
     .catch(err => {
+      return Promise.reject(err);
+    });
+}
+// Server endpoint: get /medications/:timestamp
+export function getUpdatedMedications(lastSynced) {
+  return fetch(fetchUrl + '/medications/' + lastSynced)
+    .then(response => response.json())
+    .then(json => {
+      if(json.error) {
+        throw new Error(json.error);
+      }
+      const medications = json.medications;
+      return Promise.resolve(medications);
+    }).catch(err => {
       return Promise.reject(err);
     });
 }
