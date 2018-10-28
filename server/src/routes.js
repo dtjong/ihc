@@ -55,6 +55,10 @@ router.put('/patient/:key/drugUpdate/:date', PatientController.UpdateDrugUpdate)
 // return all the statuses for the given date
 router.get('/patients/statuses/:date', PatientController.GetStatuses);
 
+//returns an array of medications that have been updated since the lastUpdated
+//timestamp. If all medications are wanted, then pass a timestamp of 0
+router.get('/medications/:lastUpdated', PatientController.GetUpdatedMedications);
+
 //adds a new medication to the inventory
 router.post('/medication-inventory', PatientController.CreateMedication);
 
@@ -62,9 +66,9 @@ router.post('/medication-inventory', PatientController.CreateMedication);
 router.get('/medication-inventory/:name', PatientController.GetMedications);
 
 //updates the information for an existing medication
-router.put('/medication-inventory/:name/update', PatientController.UpdateMedication);
+router.put('/medication-inventory/:key/update', PatientController.UpdateMedication);
 
 //deletes the information for an existing medication
-router.put('/medication-inventory/:name/delete', PatientController.DeleteMedication);
+router.put('/medication-inventory/:key/delete', PatientController.DeleteMedication);
 
 module.exports = router;

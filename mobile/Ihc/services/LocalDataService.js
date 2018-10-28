@@ -219,9 +219,12 @@ export function getTriage(patientKey, strDate) {
 }
 
 // Update/Create a medication
-export function updateMedication(update) {
+export function updateMedication(oldKey, update) {
   const medication = realm.objects('Medication')
-    .filtered('name = "' + update.name + '" AND dosage = "' + update.dosage + '"')['0'];
+    .filtered('key = "' + oldKey + '"')['0'];
+
+  const timestamp = new Date().getTime();
+  update.lastUpdated = timestamp;
 
   realm.write( () => {
     //Medication already exists (update)
@@ -230,16 +233,32 @@ export function updateMedication(update) {
       properties.forEach( p => {
         medication[p] = update[p];
       });
-      return;
+      medication['key'] = Medication.makeKey(update);
+      return true;
     }
     //Medication does not exist (create)
+    update['key'] = Medication.makeKey(update);
     realm.create('Medication', update);
+    return true;
   });
+  return false;
+}
+
+// Returns the medication with the given name, dosage, and units; undefined if none found
+export function getMedication(drugName, dosage, units) {
+  const medication = realm.objects('Medication').filtered('drugName = "' + drugName +
+    '" AND dosage = "' + dosage + '" AND units = "' + units + '"');
+  return medication;
 }
 
 // Returns an array of all medications with the given name; undefined if none found
 export function getMedications(drugName) {
-  const medications = realm.objects('Medication').filtered('name = "' + drugName + '"');
+  const medications = Object.values(realm.objects('Medication').filtered('drugName = "' + drugName + '"'));
+  return medications;
+}
+
+export function getAllMedications() {
+  const medications = Object.values(realm.objects('Medication'));
   return medications;
 }
 
@@ -310,6 +329,38 @@ export function markPatientsUploaded() {
    }
  */
 
+export function handleDownloadedMedications(medications) {
+  const fails = new Set();
+
+  medications.forEach( incomingMedication => {
+    const existingMedication = realm.objects('Medication')
+      .filtered('key = "' + incomingMedication + '"')['0'];
+
+    // Medication received does not exist yet
+    if(!existingMedication) {
+      realm.write(() => {
+        realm.create('Medication', incomingMedication);
+      });
+      return;
+    }
+
+    if (incomingMedication.lastUpdated < existingMedication.lastUpdated) {
+      throw new Error('Received a medication that is out-of-date. Did you upload updates yet?');
+    }
+
+    // Actually update the medication
+    if(!updateMedication(incomingMedication))
+      fails.add(existingMedication.key);
+
+    // Update that medication's updated timestamp
+    realm.write(() => {
+      // If medication finished updating successfully
+      if(!fails.has(incomingMedication.key)) {
+        existingMedication.lastUpdated = incomingMedication.lastUpdated;
+      }
+    });
+  });
+}
 /**
  * Returns array of patientKeys that failed to download.
  * No key is added if incomingPatient is ignored because it is older

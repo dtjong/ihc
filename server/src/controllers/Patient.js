@@ -491,23 +491,32 @@ const PatientController = {
   },
   /* body: medication object */
   UpdateMedication: function(req, res) {
-    MedicationModel.findOne({drugName: req.params.name}, function(err, drug) {
+    MedicationModel.findOne({key: req.params.key}, function(err, drug) {
       if (!drug) {
-        err = new Error(`A medication with the name ${req.params.name} does not exist`);
+        err = new Error(`A medication with the key ${req.params.key} does not exist`);
       }
       if (err) {
         res.json({status: false, error: err.message});
         return;
       }
 
+      if(drug.lastUpdated > req.body.medication.lastUpdated) {
+        res.json({
+          status: false,
+          error: 'Medication sent is not up-to-date. Sync required.'
+        });
+        return;
+      }
+
       for (let p in req.body.medication) {
         drug[p] = req.body.medication[p];
       }
+      drug['key'] = MedicationModel.makeKey(req.body.medication);
 
       //saves it, callback function to handle error
-      drug.save(function(e) {
-        if(e) {
-          res.json({status: false, error: e.message});
+      drug.save(function(err) {
+        if(err) {
+          res.json({status: false, error: err.message});
           return;
         }
         res.json({status: true});
@@ -516,9 +525,9 @@ const PatientController = {
     });
   },
   DeleteMedication: function(req, res) {
-    MedicationModel.deleteMany({drugName: req.params.name}, function(err, drug) {
+    MedicationModel.deleteMany({key: req.params.key}, function(err, drug) {
       if(!drug) {
-        err = new Error(`A medication with the name ${req.params.name} does not exist`);
+        err = new Error(`A medication with the key ${req.params.key} does not exist`);
       }
       if (err) {
         res.json({status: false, error: err.message});
@@ -526,6 +535,22 @@ const PatientController = {
       }
       res.json({status: true});
       return;
+    });
+  },
+  GetUpdatedMedications: function(req, res){
+    const timestamp = parseInt(req.params.lastUpdated);
+    // couldn't convert properly
+    if(isNaN(timestamp)) {
+      res.json({status:false, error: 'Error converting lastUpdated to int'});
+      return;
+    }
+
+    MedicationModel.find({ lastUpdated: {$gt: timestamp} },function(err, medicationsList){
+      if(err){
+        res.json({status:false, error: err.message});
+        return;
+      }
+      res.json({status: true, medications: medicationsList});
     });
   }
 };
