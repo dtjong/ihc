@@ -4,71 +4,54 @@ import {
   Text,
   View
 } from 'react-native';
+
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import UpdateMedicationModal from './UpdateMedicationModal';
 import Button from './Button';
-import Medication from '../models/Medication';
 
 export default class MedicationInventory extends Component<{}> {
   /*
    * Expects in props:
    *  {
    *    rows: [Medication],
-
-   *    saveModal: function
+   *    createMedication: function,
+   *    updateMedication: function
    *  }
    */
   constructor(props) {
     super(props);
     this.tableHeaders = ['Drug Name', 'Quantity', 'Dosage', 'Units', 'Notes'];
     this.rowNum = 0;
-
-    // showModal is the modal to update medication
-    // medicationToEdit is the medication that will be edited
-    this.state = {showModal: false, 
-      medicationToEdit: {
-        drugName: '',
-        quantity: 0,
-        dosage: 0,
-        units: '',
-        comments: '' //Consider keeping track of multiple comments (array of strings)
-      }
-    };
+    this.state = { showModal: false, oldKey: null};
   }
 
+<<<<<<< HEAD
 
   openEditModal = (medicationToEdit) => {
     this.setState({medicationToEdit: medicationToEdit, showModal: true});
 
     };
   
+=======
+  openEditModal = (oldMedication) => {
+    const oldKey = oldMedication.key;
+    this.setState({ showModal: true, oldKey: oldKey});
+  }
+>>>>>>> 4ae4493ae7d0a9bccc3a6fbe8b48c4563410793c
 
   openAddModal = () => {
-    this.setState({showModal: true, 
-      medicationToEdit: {
-        drugName: '',
-        quantity: 0,
-        dosage: 0,
-        units: '',
-        comments: '' 
-      }
-    });
+    this.setState({ showModal: true, oldKey: null });
   }
 
   closeModal = () => {
-    this.setState({showModal: false, 
-      medicationToEdit: {
-        drugName: '',
-        quantity: 0,
-        dosage: 0,
-        units: '',
-        comments: '' 
-      }
-    });
+    this.setState({ showModal: false });
   }
-
-  updateMedication = (newMedication) => {
-    this.setState({medicationToEdit: newMedication});
+  saveModal = (newMedication) => {
+    if (this.state.oldKey == null) {
+      this.props.createMedication(newMedication);
+    } else {
+      this.props.updateMedication(this.state.oldKey, newMedication);
+    }
   }
 
   // Renders each column in a row
@@ -92,13 +75,13 @@ export default class MedicationInventory extends Component<{}> {
 
   renderRow = (medication, keyFn) => {
     //puts the properties of medication into an array
-    let medData = this.extractMedicationElements(medication);    
+    let medData = this.extractMedicationElements(medication);
 
     // Renders each property
     let cols = medData.map( (e,i) => {
       return this.renderCol(e,keyFn,i);
     });
-    
+
     return (
       // Entire row is clickable to open a modal to edit
       <Row key={`row${this.rowNum++}`} style={styles.rowContainer}
@@ -130,14 +113,14 @@ export default class MedicationInventory extends Component<{}> {
         <UpdateMedicationModal
           showModal={this.state.showModal}
           closeModal={this.closeModal}
-          saveModal={() => this.props.saveModal(this.state.medicationToEdit)}
-          updateMedication={this.updateMedication}
-          medicationToEdit={this.state.medicationToEdit}
+          saveModal={this.saveModal}
         />
 
         <Button style={styles.buttonContainer}
-          onPress={() => this.openAddModal()}
+          onPress={this.openAddModal}
           text='Add Medication' />
+
+        <Text style={styles.title}>Medication Inventory{"\n"}</Text>
 
         <Grid>
           {this.renderHeader(this.tableHeaders, (i) => `header${i}`)}
@@ -147,18 +130,27 @@ export default class MedicationInventory extends Component<{}> {
     );
   }
 }
-
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+   headerContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 25,
+    textAlign: 'center',
+},
   rowContainer: {
     flex: 1,
     alignSelf: 'stretch',
-    minHeight: 32
+    minHeight: 32,
   },
   otherCol: {
-    borderWidth: 1
+    borderWidth: 1,
+    minWidth: 150,
+    minHeight: 25
   },
   headerRow: {
     backgroundColor: '#dbdbdb',
@@ -169,9 +161,13 @@ export const styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
+    width: 130,
   },
   buttonContainer: {
-    width: 150,
-    height: 40,
+    position: 'relative', 
+    top: 38, 
+    left: 550, 
+    width: 200,
+    height: 30,
   },
 });

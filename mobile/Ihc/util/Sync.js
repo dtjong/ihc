@@ -11,3 +11,12 @@ export function downstreamSyncWithServer() {
       return {failedPatientKeys: failedPatientKeys};
     });
 }
+export function downloadMedications() {
+  const lastSynced = localData.lastSynced();
+
+  return serverData.getUpdatedMedications(lastSynced)
+    .then((medications) => {
+      const failedMedicationKeys = localData.handleDownloadedMedications(medications);
+      return {failedMedicationKeys: failedMedicationKeys};
+    });
+}

@@ -7,34 +7,66 @@ import {
 } from 'react-native';
 import {localData, serverData} from '../services/DataService';
 import MedicationInventory  from '../components/MedicationInventory';
-import Medication from '../models/Medication';
 import Container from '../components/Container';
 import {stringDate} from '../util/Date';
-import {downstreamSyncWithServer} from '../util/Sync';
+import {downloadMedications} from '../util/Sync';
 
 class MedicationInventoryScreen extends Component<{}> {
   /*
+   * Redux props:
+	 * loading: boolean
+   *
    * Props:
-	 * 
+   * todayDate (optional, if doesn't exist, then assume date is for today,
+   *   can be used for gathering old traige data from history)
    */
   constructor(props) {
     super(props);
-
+    const todayDate = this.props.todayDate || stringDate(new Date());
     this.state = {
-      loading: false,
-      showRetryButton: false,
-      todayDate: stringDate(new Date()),
-      upstreamSyncing: false, // Should be set before server calls to declare what kind of syncing
+      todayDate: todayDate,
+      rows: []
     };
-    
+
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
+  MedicationInventoryForm = t.struct({
+    drugName: t.String, // drug name
+    quantity: t.int,
+    dosage: t.int,
+    units: t.String,
+    comments: t.maybe(t.String)
+  });
 
-  // TODO
-  saveModal = (medication) => {
-    let statusObj = {};
-    this.props.setLoading(true);
-    this.props.isUploading(true);
+  formOptions = {
+    fields: {
+      drugName: {
+        editable: true,
+      },
+      quantity: {
+        multiline: false,
+      },
+      dosage: {
+        multiline: false,
+      },
+      units: {
+        multiline: false,
+      },
+      comments: {
+        multiline: true,
+      },
+    }
+  }
+
+  convertMedicationsToRows(medications) {
+    const columnOrder = ['drugName', 'quantity', 'dosage', 'units', 'comments'];
+
+    // TODO: sort medications alphabetically and by category
+    // Sort medications by quantity for now
+    medications.sort( (medication1, medication2) => medication1.quantity - medication2.quantity );
+
+    const toReturn = medications.map((obj) => columnOrder.map( (key) => obj[key] ));
+    return toReturn;
   }
 
   // Reload table after new medication updates
@@ -46,20 +78,101 @@ class MedicationInventoryScreen extends Component<{}> {
     }
   }
 
-  // TODO
-  // Sync up tablet first with server before grabbing statuses
+  // Sync up tablet with server
   syncAndLoadMedications = () => {
     this.props.setLoading(true);
-    //this.props.isUploading(false);
+    this.props.isUploading(false);
     this.props.clearMessages();
-    this.props.setLoading(false);
-    /// TODO
+
+    // Load existing Medication info if it exists
+    const medications = localData.getAllMedications();
+    const medicationRows = this.convertMedicationsToRows(medications);
+    this.setState({ rows: medicationRows });
+
+    // Attempt server download and reload information if successful
+    downloadMedications()
+      .then((failedMedicationKeys) => {
+        if (this.props.loading) {
+          if (failedMedicationKeys.length > 0) {
+            throw new Error(`${failedMedicationKeys.length} medications didn't properly sync.`);
+          }
+
+          const medications = localData.getAllMedications();
+          const medicationRows = this.convertMedicationsToRows(medications);
+          this.setState({ rows: medicationRows });
+
+          this.props.setLoading(false);
+        }
+      })
+      .catch( (err) => {
+        if (this.props.loading) {
+          this.props.setErrorMessage(err.message);
+          this.props.setLoading(false);
+        }
+      });
   }
 
+  createMedication = (newMedication) => {
+    try {
+      localData.updateMedication(null, newMedication);
+    } catch(e) {
+      this.props.setErrorMessage(e.message);
+      return;
+    }
+    this.props.setLoading(true);
+    this.props.isUploading(true);
 
+    serverData.createMedication(newMedication)
+      .then( () => {
+        if(this.props.loading) {
+          // if successful, then reload screen (which closes modal too)
+          this.syncAndLoadMedications();
+
+          this.props.setLoading(false);
+          this.props.setSuccessMessage('Saved successfully');
+        }
+      })
+      .catch( (err) => {
+        if(this.props.loading) {
+          //TODO: localData.markMedicationNeedToUpload(key);
+
+          this.props.setLoading(false, true);
+          this.props.setErrorMessage(err.message);
+        }
+      });
+  }
+
+  updateMedication = (oldKey, newMedication) => {
+    try {
+      localData.updateMedication(oldKey, newMedication);
+    } catch(e) {
+      this.props.setErrorMessage(e.message);
+      return;
+    }
+    this.props.setLoading(true);
+    this.props.isUploading(true);
+
+    serverData.updateMedication(oldKey, newMedication)
+      .then( () => {
+        if(this.props.loading) {
+          // if successful, then reload screen (which closes modal too)
+          this.syncAndLoadMedications();
+
+          this.props.setLoading(false);
+          this.props.setSuccessMessage('Saved successfully');
+        }
+      })
+      .catch( (err) => {
+        if(this.props.loading) {
+          //TODO: localData.markMedicationNeedToUpload(key);
+
+          this.props.setLoading(false, true);
+          this.props.setErrorMessage(err.message);
+        }
+      });
+  }
+  
   render() {
-
-
     //TODO update rows
     return (
       <Container>
@@ -70,12 +183,13 @@ class MedicationInventoryScreen extends Component<{}> {
 
         <ScrollView contentContainerStyle={styles.tableContainer} horizontal>
           <MedicationInventory
-            rows={[]}
-            saveModal={this.saveModal}
+            rows={this.state.rows}
+            createMedication={this.createMedication}
+            updateMedication={this.updateMedication}
           />
         </ScrollView>
 
-        
+
       </Container>
     );
   }
@@ -91,7 +205,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   tableContainer: {
-    flex: 0,
+    width: '100%',
   },
 });
 
