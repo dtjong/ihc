@@ -21,6 +21,13 @@ const realm = new Realm({
   deleteRealmIfMigrationNeeded: true, // TODO: delete when done with dev
 });
 
+export function deleteAllMedications() {
+  realm.write(() => {
+    let allMedications = realm.objects('Medication');
+    realm.delete(allMedications);
+  });
+}
+
 export function createPatient(patient) {
   const timestamp = new Date().getTime();
   const patientObjs = realm.objects('Patient').filtered('key = "' + patient.key + '"');
@@ -220,10 +227,10 @@ export function getTriage(patientKey, strDate) {
 
 // Update/Create a medication
 export function updateMedication(oldKey, update) {
+  const timestamp = new Date().getTime();
   const medication = realm.objects('Medication')
     .filtered('key = "' + oldKey + '"')['0'];
 
-  const timestamp = new Date().getTime();
   update.lastUpdated = timestamp;
 
   realm.write( () => {
@@ -301,12 +308,26 @@ export function getMedicationsToUpload(all = false) {
 
 export function patientsLastSynced() {
   let settings = realm.objects('Settings')['0'];
-  return settings ? settings.patientsLastSynced : 0;
+  if (settings) {
+    if (settings.patientsLastSynced)
+      return settings.patientsLastSynced;
+    else
+      return 0;
+  } else {
+    return 0;
+  }
 }
 
 export function medicationsLastSynced() {
   let settings = realm.objects('Settings')['0'];
-  return settings ? settings.medicationsLastSynced : 0;
+  if (settings) {
+    if (settings.medicationsLastSynced)
+      return settings.medicationsLastSynced;
+    else
+      return 0;
+  } else {
+    return 0;
+  }
 }
 
 // When updates or creates fail to propogate to the server-side, then mark the
@@ -357,32 +378,34 @@ export function handleDownloadedMedications(medications) {
   const fails = new Set();
 
   medications.forEach( incomingMedication => {
+    console.warn(incomingMedication);
     const existingMedication = realm.objects('Medication')
       .filtered('key = "' + incomingMedication.key + '"')['0'];
+    console.warn(existingMedication);
 
     // Medication received does not exist yet
     if(!existingMedication) {
       realm.write(() => {
         realm.create('Medication', incomingMedication);
       });
-      return;
     }
-
-    if (incomingMedication.lastUpdated < existingMedication.lastUpdated) {
-      throw new Error('Received a medication that is out-of-date. Did you upload updates yet?');
-    }
-
-    // Actually update the medication
-    if(!updateMedication(existingMedication.key, incomingMedication))
-      fails.add(existingMedication.key);
-
-    // Update that medication's updated timestamp
-    realm.write(() => {
-      // If medication finished updating successfully
-      if(!fails.has(incomingMedication.key)) {
-        existingMedication.lastUpdated = incomingMedication.lastUpdated;
+    else {
+      if (incomingMedication.lastUpdated < existingMedication.lastUpdated) {
+        throw new Error('Received a medication that is out-of-date. Did you upload updates yet?');
       }
-    });
+
+      // Actually update the medication
+      if(!updateMedication(existingMedication.key, incomingMedication))
+        fails.add(existingMedication.key);
+
+      // Update that medication's updated timestamp
+      realm.write(() => {
+        // If medication finished updating successfully
+        if(!fails.has(incomingMedication.key)) {
+          existingMedication.lastUpdated = incomingMedication.lastUpdated;
+        }
+      });
+    }
   });
 
   if(fails.size) {
@@ -393,7 +416,7 @@ export function handleDownloadedMedications(medications) {
   const settings = realm.objects('Settings')['0'];
   realm.write(() => {
     if(!settings) {
-      realm.create('Settings', {medicationsLastSynced: new Date().getTime()});
+      realm.create('Settings', {medicationsLastSynced: new Date().getTime(), patientsLastSynced: 0});
       return;
     }
     settings.medicationsLastSynced = new Date().getTime();
@@ -471,7 +494,7 @@ export function handleDownloadedPatients(patients) {
   const settings = realm.objects('Settings')['0'];
   realm.write(() => {
     if(!settings) {
-      realm.create('Settings', {patientsLastSynced: new Date().getTime()});
+      realm.create('Settings', {patientsLastSynced: new Date().getTime(), medicationsLastSynced: 0});
       return;
     }
     settings.patientsLastSynced = new Date().getTime();
