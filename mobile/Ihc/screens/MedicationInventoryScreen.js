@@ -66,7 +66,6 @@ class MedicationInventoryScreen extends Component<{}> {
     // Load existing Medication info if it exists
     const medications = localData.getAllMedications();
     const medicationRows = this.convertMedicationsToRows(medications);
-    //console.warn(medicationRows);
     this.setState({ rows: medications });
 
     // Attempt server download and reload information if successful

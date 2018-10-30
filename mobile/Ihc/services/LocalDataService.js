@@ -21,13 +21,6 @@ const realm = new Realm({
   deleteRealmIfMigrationNeeded: true, // TODO: delete when done with dev
 });
 
-export function deleteAllMedications() {
-  realm.write(() => {
-    let allMedications = realm.objects('Medication');
-    realm.delete(allMedications);
-  });
-}
-
 export function createPatient(patient) {
   const timestamp = new Date().getTime();
   const patientObjs = realm.objects('Patient').filtered('key = "' + patient.key + '"');
@@ -378,10 +371,8 @@ export function handleDownloadedMedications(medications) {
   const fails = new Set();
 
   medications.forEach( incomingMedication => {
-    console.warn(incomingMedication);
     const existingMedication = realm.objects('Medication')
       .filtered('key = "' + incomingMedication.key + '"')['0'];
-    console.warn(existingMedication);
 
     // Medication received does not exist yet
     if(!existingMedication) {
@@ -392,6 +383,11 @@ export function handleDownloadedMedications(medications) {
     else {
       if (incomingMedication.lastUpdated < existingMedication.lastUpdated) {
         throw new Error('Received a medication that is out-of-date. Did you upload updates yet?');
+      }
+
+      // The case where MedicationInventoryScreen is refreshing
+      if (incomingMedication.lastUpdated == existingMedication.lastUpdated) {
+        return;
       }
 
       // Actually update the medication
