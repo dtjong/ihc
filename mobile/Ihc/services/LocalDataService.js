@@ -233,11 +233,11 @@ export function updateMedication(oldKey, update) {
       properties.forEach( p => {
         medication[p] = update[p];
       });
-      medication['key'] = Medication.makeKey(update);
+      medication.key = Medication.makeKey(update);
       return true;
     }
     //Medication does not exist (create)
-    update['key'] = Medication.makeKey(update);
+    update.key = Medication.makeKey(update);
     realm.create('Medication', update);
     return true;
   });
@@ -292,9 +292,21 @@ export function getPatientsToUpload(all = false) {
   return Object.values(realm.objects('Patient').filtered('needToUpload = true'));
 }
 
-export function lastSynced() {
+export function getMedicationsToUpload(all = false) {
+  if(all) {
+    return Object.values(realm.objects('Medication'));
+  }
+  return Object.values(realm.objects('Medication').filtered('needToUpload = true'));
+}
+
+export function patientsLastSynced() {
   let settings = realm.objects('Settings')['0'];
-  return settings ? settings.lastSynced : 0;
+  return settings ? settings.patientsLastSynced : 0;
+}
+
+export function medicationsLastSynced() {
+  let settings = realm.objects('Settings')['0'];
+  return settings ? settings.medicationsLastSynced : 0;
 }
 
 // When updates or creates fail to propogate to the server-side, then mark the
@@ -310,6 +322,17 @@ export function markPatientNeedToUpload(patientKey) {
   });
 }
 
+export function markMedicationNeedToUpload(key) {
+  const medication = realm.objects('Medication').filtered(`key="${key}"`)[0];
+  if(!medication) {
+    throw new Error('Medication does not exist with key ' + key);
+  }
+
+  realm.write(() => {
+    medication.needToUpload = true;
+  });
+}
+
 // After uploading, then these patients don't have to be marked as needing to
 // upload
 export function markPatientsUploaded() {
@@ -321,20 +344,21 @@ export function markPatientsUploaded() {
   });
 }
 
-// TODO UPDATE RETURN VAL maybe be object?
-/* {
-    ignoredPatientKeys: [],
-    <something else to be returned for failed individual forms?>: []
-    countSuccessfullPatients: int
-   }
- */
+export function markMedicationsUploaded() {
+  const medications = Object.values(realm.objects('Medication').filtered('needToUpload = true'));
+  realm.write(() => {
+    medications.forEach(medication => {
+      medication.needToUpload = false;
+    });
+  });
+}
 
 export function handleDownloadedMedications(medications) {
   const fails = new Set();
 
   medications.forEach( incomingMedication => {
     const existingMedication = realm.objects('Medication')
-      .filtered('key = "' + incomingMedication + '"')['0'];
+      .filtered('key = "' + incomingMedication.key + '"')['0'];
 
     // Medication received does not exist yet
     if(!existingMedication) {
@@ -349,7 +373,7 @@ export function handleDownloadedMedications(medications) {
     }
 
     // Actually update the medication
-    if(!updateMedication(incomingMedication))
+    if(!updateMedication(existingMedication.key, incomingMedication))
       fails.add(existingMedication.key);
 
     // Update that medication's updated timestamp
@@ -360,7 +384,31 @@ export function handleDownloadedMedications(medications) {
       }
     });
   });
+
+  if(fails.size) {
+    return Array.from(fails);
+  }
+
+  // If finished updating everything successfully, then update synced info
+  const settings = realm.objects('Settings')['0'];
+  realm.write(() => {
+    if(!settings) {
+      realm.create('Settings', {medicationsLastSynced: new Date().getTime()});
+      return;
+    }
+    settings.medicationsLastSynced = new Date().getTime();
+  });
+  return [];
 }
+
+// TODO UPDATE RETURN VAL maybe be object?
+/* {
+    ignoredPatientKeys: [],
+    <something else to be returned for failed individual forms?>: []
+    countSuccessfullPatients: int
+   }
+ */
+
 /**
  * Returns array of patientKeys that failed to download.
  * No key is added if incomingPatient is ignored because it is older
@@ -423,10 +471,10 @@ export function handleDownloadedPatients(patients) {
   const settings = realm.objects('Settings')['0'];
   realm.write(() => {
     if(!settings) {
-      realm.create('Settings', {lastSynced: new Date().getTime()});
+      realm.create('Settings', {patientsLastSynced: new Date().getTime()});
       return;
     }
-    settings.lastSynced = new Date().getTime();
+    settings.patientsLastSynced = new Date().getTime();
   });
   return [];
 }

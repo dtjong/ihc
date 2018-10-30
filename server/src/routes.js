@@ -59,6 +59,10 @@ router.get('/patients/statuses/:date', PatientController.GetStatuses);
 //timestamp. If all medications are wanted, then pass a timestamp of 0
 router.get('/medications/:lastUpdated', PatientController.GetUpdatedMedications);
 
+// receive medications from the tablet and save them to the server, or update the
+// existing server-side objects if they already exist
+router.put('/medications', PatientController.UpdateMedications);
+
 //adds a new medication to the inventory
 router.post('/medication-inventory', PatientController.CreateMedication);
 
