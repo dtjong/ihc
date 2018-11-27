@@ -68,6 +68,7 @@ class MedicationInventoryScreen extends Component<{}> {
     const medicationRows = this.convertMedicationsToRows(medications);
     this.setState({ rows: medications });
 
+    localData.deleteLocalDatabase();
     // Attempt server download and reload information if successful
     downloadMedications()
       .then((failedMedicationKeys) => {
@@ -81,6 +82,7 @@ class MedicationInventoryScreen extends Component<{}> {
           this.setState({ rows: medications });
 
           this.props.setLoading(false);
+          this.props.setSuccessMessage(`Synced successfully`);
         }
       })
       .catch( (err) => {
@@ -161,26 +163,7 @@ class MedicationInventoryScreen extends Component<{}> {
       .then(() => {
         if(this.props.loading) {
           localData.markMedicationsUploaded();
-
-          this.props.isUploading(false);
-
-          downloadMedications()
-            .then((failedMedicationKeys) => {
-              if(this.props.loading) {
-                if(failedMedicationKeys.length > 0) {
-                  throw new Error(`${failedMedicationKeys.length} medications failed to download. Try again`);
-                }
-
-                this.props.setLoading(false);
-                this.props.setSuccessMessage(`Synced successfully`);
-              }
-            })
-            .catch(err => {
-              if(this.props.loading) {
-                this.props.setLoading(false);
-                this.props.setErrorMessage(err.message);
-              }
-            });
+          this.syncAndLoadMedications();
         }
       })
       .catch(err => {
