@@ -55,7 +55,6 @@ class MedicationInventoryScreen extends Component<{}> {
     const medications = localData.getAllMedications();
     this.setState({ rows: medications });
 
-    localData.deleteLocalDatabase();
     // Attempt server download and reload information if successful
     downloadMedications()
       .then((failedMedicationKeys) => {
