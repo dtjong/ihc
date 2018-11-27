@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -37,17 +36,6 @@ class MedicationInventoryScreen extends Component<{}> {
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
-  convertMedicationsToRows(medications) {
-    const columnOrder = ['drugName', 'quantity', 'dosage', 'units', 'comments'];
-
-    // TODO: sort medications alphabetically and by category
-    // Sort medications by quantity for now
-    medications.sort( (medication1, medication2) => medication1.quantity - medication2.quantity );
-
-    const toReturn = medications.map((obj) => columnOrder.map( (key) => obj[key] ));
-    return toReturn;
-  }
-
   // Reload table after new medication updates
   // Replaces componentDidMount() because this will be called around the same
   // time
@@ -65,7 +53,6 @@ class MedicationInventoryScreen extends Component<{}> {
 
     // Load existing Medication info if it exists
     const medications = localData.getAllMedications();
-    const medicationRows = this.convertMedicationsToRows(medications);
     this.setState({ rows: medications });
 
     localData.deleteLocalDatabase();
@@ -78,11 +65,10 @@ class MedicationInventoryScreen extends Component<{}> {
           }
 
           const medications = localData.getAllMedications();
-          const medicationRows = this.convertMedicationsToRows(medications);
           this.setState({ rows: medications });
 
           this.props.setLoading(false);
-          this.props.setSuccessMessage(`Synced successfully`);
+          this.props.setSuccessMessage('Synced successfully');
         }
       })
       .catch( (err) => {

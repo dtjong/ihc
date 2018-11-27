@@ -113,10 +113,7 @@ const MedicationController = {
           errors.push('Medication sent is not up-to-date. Sync required.');
         }
 
-        // TODO: Iterate through forms and update individually if lastUpdated
-        // works out, instead of a blanket set() call
         oldMedication.set(medication);
-        //saves it, callback function to handle error
         oldMedication.save(function(e) {
           if(e) {
             errors.push(e);
