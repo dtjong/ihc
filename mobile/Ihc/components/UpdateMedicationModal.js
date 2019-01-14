@@ -35,26 +35,6 @@ export default class UpdateMedicationModal extends Component<{}> {
     comments: t.maybe(t.String)
   });
 
-  formOptions = {
-    fields: {
-      drugName: {
-        multiline: false,
-      },
-      quantity: {
-        multiline: false,
-      },
-      dosage: {
-        multiline: false,
-      },
-      units: {
-        multiline: false,
-      },
-      comments: {
-        multiline: true,
-      },
-    }
-  }
-
   onFormChange = (value) => {
     this.setState({
       formValues: value,
@@ -83,7 +63,7 @@ export default class UpdateMedicationModal extends Component<{}> {
             <Form ref="form"
               type={this.Medication}
               value={this.state.formValues}
-              options={this.formOptions}
+              options={this.props.formOptions}
               onChange={this.onFormChange} />
             <View style={styles.modalFooter}>
               <Button text='Cancel'

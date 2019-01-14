@@ -21,6 +21,12 @@ const realm = new Realm({
   deleteRealmIfMigrationNeeded: true, // TODO: delete when done with dev
 });
 
+export function deleteLocalDatabase() {
+  realm.write(() => {
+    realm.deleteAll();
+  });
+}
+
 export function createPatient(patient) {
   const timestamp = new Date().getTime();
   const patientObjs = realm.objects('Patient').filtered('key = "' + patient.key + '"');
@@ -238,9 +244,9 @@ export function createMedication(medication) {
 }
 
 // Update a medication
-export function updateMedication(oldKey, update) {
+export function updateMedication(key, update) {
   const existingMedication = realm.objects('Medication')
-    .filtered('key = "' + oldKey + '"')['0'];
+    .filtered('key = "' + key + '"')['0'];
 
   if (!existingMedication) {
     throw new Error('Medication does not exist');
@@ -249,9 +255,10 @@ export function updateMedication(oldKey, update) {
   realm.write( () => {
     const properties = Object.keys(Medication.schema.properties);
     properties.forEach( p => {
-      existingMedication[p] = update[p];
+      if (p !== 'drugName' && p !== 'dosage' && p !== 'units' && p !== 'key') {
+        existingMedication[p] = update[p];
+      }
     });
-    existingMedication.key = Medication.makeKey(update);
     return existingMedication;
   });
 }

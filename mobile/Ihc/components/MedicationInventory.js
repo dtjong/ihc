@@ -18,30 +18,75 @@ export default class MedicationInventory extends Component<{}> {
    *    updateMedication: function
    *  }
    */
+
   constructor(props) {
     super(props);
     this.tableHeaders = ['Drug Name', 'Quantity', 'Dosage', 'Units', 'Notes'];
     this.rowNum = 0;
-    this.state = { showModal: false, oldKey: null};
+
+    addModalFormOptions = {
+      fields: {
+        drugName: {
+          multiline: false,
+        },
+        quantity: {
+          multiline: false,
+        },
+        dosage: {
+          multiline: false,
+        },
+        units: {
+          multiline: false,
+        },
+        comments: {
+          multiline: true,
+        },
+      }
+    };
+
+    editModalFormOptions = {
+      fields: {
+        drugName: {
+          editable: false,
+          multiline: false,
+        },
+        quantity: {
+          multiline: false,
+        },
+        dosage: {
+          editable: false,
+          multiline: false,
+        },
+        units: {
+          editable: false,
+          multiline: false,
+        },
+        comments: {
+          multiline: true,
+        },
+      }
+    };
+
+    this.state = { showModal: false, medicationKey: null, formOptions: addModalFormOptions };
   }
 
-  openEditModal = (oldMedication) => {
-    const oldKey = oldMedication.key;
-    this.setState({ showModal: true, oldKey: oldKey});
+  openEditModal = (medication) => {
+    const medicationKey = medication.key;
+    this.setState({ showModal: true, medicationKey: medicationKey, formOptions: editModalFormOptions });
   }
 
   openAddModal = () => {
-    this.setState({ showModal: true, oldKey: null });
+    this.setState({ showModal: true, medicationKey: null, formOptions: addModalFormOptions });
   }
 
   closeModal = () => {
-    this.setState({ showModal: false });
+    this.setState({ showModal: false, formOptions: addModalFormOptions });
   }
   saveModal = (newMedication) => {
-    if (this.state.oldKey == null) {
+    if (this.state.medicationKey == null) {
       this.props.createMedication(newMedication);
     } else {
-      this.props.updateMedication(this.state.oldKey, newMedication);
+      this.props.updateMedication(this.state.medicationKey, newMedication);
     }
   }
 
@@ -103,6 +148,7 @@ export default class MedicationInventory extends Component<{}> {
 
         <UpdateMedicationModal
           showModal={this.state.showModal}
+          formOptions={this.state.formOptions}
           closeModal={this.closeModal}
           saveModal={this.saveModal}
         />

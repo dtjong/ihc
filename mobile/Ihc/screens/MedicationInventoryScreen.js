@@ -100,7 +100,7 @@ class MedicationInventoryScreen extends Component<{}> {
       })
       .catch( (err) => {
         if(this.props.loading) {
-          //TODO: localData.markMedicationNeedToUpload(key);
+          //localData.markMedicationNeedToUpload(key);
 
           this.props.setLoading(false, true);
           this.props.setErrorMessage(err.message);
@@ -108,9 +108,9 @@ class MedicationInventoryScreen extends Component<{}> {
       });
   }
 
-  updateMedication = (oldKey, newMedication) => {
+  updateMedication = (key, newMedication) => {
     try {
-      localData.updateMedication(oldKey, newMedication);
+      localData.updateMedication(key, newMedication);
     } catch(e) {
       this.props.setErrorMessage(e.message);
       return;
@@ -118,7 +118,7 @@ class MedicationInventoryScreen extends Component<{}> {
     this.props.setLoading(true);
     this.props.isUploading(true);
 
-    serverData.updateMedication(oldKey, newMedication)
+    serverData.updateMedication(key, newMedication)
       .then( () => {
         if(this.props.loading) {
           // if successful, then reload screen (which closes modal too)
@@ -130,7 +130,7 @@ class MedicationInventoryScreen extends Component<{}> {
       })
       .catch( (err) => {
         if(this.props.loading) {
-          localData.markMedicationNeedToUpload(oldKey);
+          localData.markMedicationNeedToUpload(key);
 
           this.props.setLoading(false, true);
           this.props.setErrorMessage(err.message);

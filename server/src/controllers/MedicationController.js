@@ -57,7 +57,9 @@ const MedicationController = {
       }
 
       for (let p in req.body.medication) {
-        drug[p] = req.body.medication[p];
+        if (p !== 'drugName' && p !== 'dosage' && p !== 'units' && p !== 'key') {
+          drug[p] = req.body.medication[p];
+        }
       }
 
       //saves it, callback function to handle error
@@ -113,7 +115,10 @@ const MedicationController = {
           errors.push('Medication sent is not up-to-date. Sync required.');
         }
 
+        // TODO: Iterate through forms and update individually if lastUpdated
+        // works out, instead of a blanket set() call
         oldMedication.set(medication);
+        //saves it, callback function to handle error
         oldMedication.save(function(e) {
           if(e) {
             errors.push(e);
