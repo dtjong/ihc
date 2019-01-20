@@ -26,6 +26,21 @@ export default class UpdateMedicationModal extends Component<{}> {
     super(props);
   }
 
+  Units = t.enums({
+    kg: 'kg',
+    g: 'g',
+    mg: 'mg',
+    ml: 'ml'
+  });
+
+  Medication = t.struct({
+    drugName: t.String,
+    quantity: t.Number,
+    dosage: t.Number,
+    units: this.Units,
+    comments: t.maybe(t.String)
+  });
+
   onFormChange = (value) => {
     this.props.updateFormValues(value);
   }
@@ -51,7 +66,7 @@ export default class UpdateMedicationModal extends Component<{}> {
           <View style={styles.modal}>
             <View style={styles.form}>
               <Form ref="form"
-                type={this.props.formType}
+                type={this.Medication}
                 value={this.props.formValues}
                 options={this.props.formOptions}
                 onChange={this.onFormChange} />

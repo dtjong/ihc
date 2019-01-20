@@ -26,7 +26,7 @@ export default class MedicationInventory extends Component<{}> {
     this.rowNum = 0;
 
     const formValues = {drugName: null, quantity: null, dosage: null, units: null, comments: null};
-    this.state = { showModal: false, medicationKey: null, formOptions: this.addModalFormOptions, formType: this.addMedication, formValues: formValues};
+    this.state = { showModal: false, medicationKey: null, formOptions: this.addModalFormOptions, formValues: formValues};
   }
 
   addModalFormOptions = {
@@ -54,42 +54,19 @@ export default class MedicationInventory extends Component<{}> {
     }
   };
 
-  Units = t.enums({
-    kg: 'kg',
-    g: 'g',
-    mg: 'mg',
-    ml: 'ml'
-  });
-
-  addMedication = t.struct({
-    drugName: t.String,
-    quantity: t.Number,
-    dosage: t.Number,
-    units: this.Units,
-    comments: t.maybe(t.String)
-  });
-
-  editMedication = t.struct({
-    drugName: t.maybe(t.String),
-    quantity: t.maybe(t.Number),
-    dosage: t.maybe(t.Number),
-    units: t.maybe(this.Units),
-    comments: t.maybe(t.String)
-  });
-
   openEditModal = (medication) => {
     const medicationKey = medication.key;
-    const formValues = this.getMedicationValues(medication);
-    this.setState({ showModal: true, medicationKey: medicationKey, formOptions: this.editModalFormOptions, formType: this.editMedication, formValues: formValues });
+    const formValues = this.getFormValuesFromMedication(medication);
+    this.setState({ showModal: true, medicationKey: medicationKey, formOptions: this.editModalFormOptions, formValues: formValues });
   }
 
   openAddModal = () => {
     const formValues = {drugName: null, quantity: null, dosage: null, units: null, comments: null};
-    this.setState({ showModal: true, medicationKey: null, formOptions: this.addModalFormOptions, formType: this.addMedication, formValues: formValues});
+    this.setState({ showModal: true, medicationKey: null, formOptions: this.addModalFormOptions, formValues: formValues });
   }
 
   closeModal = () => {
-    this.setState({ showModal: false, formOptions: this.addModalFormOptions, formType: this.addMedication});
+    this.setState({ showModal: false, formOptions: this.addModalFormOptions });
   }
   saveModal = (newMedication) => {
     if (this.state.medicationKey == null) {
@@ -99,7 +76,7 @@ export default class MedicationInventory extends Component<{}> {
     }
   }
 
-  getMedicationValues(medication) {
+  getFormValuesFromMedication(medication) {
     let drugName = medication.drugName;
     let quantity = medication.quantity;
     let dosage = medication.dosage;
@@ -171,7 +148,6 @@ export default class MedicationInventory extends Component<{}> {
         <UpdateMedicationModal
           showModal={this.state.showModal}
           formOptions={this.state.formOptions}
-          formType={this.state.formType}
           formValues={this.state.formValues}
           closeModal={this.closeModal}
           saveModal={this.saveModal}
