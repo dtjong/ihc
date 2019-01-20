@@ -24,6 +24,7 @@ export default class UpdateMedicationModal extends Component<{}> {
    */
   constructor(props) {
     super(props);
+    this.state = {formValues: {} };
   }
 
   onFormChange = (value) => {
