@@ -24,21 +24,10 @@ export default class UpdateMedicationModal extends Component<{}> {
    */
   constructor(props) {
     super(props);
-    this.state = {formValues: {} };
   }
 
-  Medication = t.struct({
-    drugName: t.String,
-    quantity: t.Number,
-    dosage: t.Number,
-    units: t.String,
-    comments: t.maybe(t.String)
-  });
-
   onFormChange = (value) => {
-    this.setState({
-      formValues: value,
-    });
+    this.props.updateFormValues(value);
   }
 
   submit = () => {
@@ -60,18 +49,20 @@ export default class UpdateMedicationModal extends Component<{}> {
         onRequestClose={this.props.closeModal} >
         <View style={styles.modalContainer}>
           <View style={styles.modal}>
-            <Form ref="form"
-              type={this.Medication}
-              value={this.state.formValues}
-              options={this.props.formOptions}
-              onChange={this.onFormChange} />
-            <View style={styles.modalFooter}>
-              <Button text='Cancel'
-                style={styles.buttonContainer}
-                onPress={this.props.closeModal} />
-              <Button text='Save'
-                style={styles.buttonContainer}
-                onPress={this.submit} />
+            <View style={styles.form}>
+              <Form ref="form"
+                type={this.props.formType}
+                value={this.props.formValues}
+                options={this.props.formOptions}
+                onChange={this.onFormChange} />
+              <View style={styles.modalFooter}>
+                <Button text='Cancel'
+                  style={styles.buttonContainer}
+                  onPress={this.props.closeModal} />
+                <Button text='Save'
+                  style={styles.buttonContainer}
+                  onPress={this.submit} />
+              </View>
             </View>
           </View>
         </View>
@@ -106,5 +97,8 @@ export const styles = StyleSheet.create({
   buttonContainer: {
     width: 150,
     height: 40,
+  },
+  form: {
+    width: '80%',
   }
 });

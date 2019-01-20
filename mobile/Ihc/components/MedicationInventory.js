@@ -8,6 +8,7 @@ import {
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import UpdateMedicationModal from './UpdateMedicationModal';
 import Button from './Button';
+let t = require('tcomb-form-native');
 
 export default class MedicationInventory extends Component<{}> {
   /*
@@ -24,63 +25,71 @@ export default class MedicationInventory extends Component<{}> {
     this.tableHeaders = ['Drug Name', 'Quantity', 'Dosage', 'Units', 'Notes'];
     this.rowNum = 0;
 
-    addModalFormOptions = {
-      fields: {
-        drugName: {
-          multiline: false,
-        },
-        quantity: {
-          multiline: false,
-        },
-        dosage: {
-          multiline: false,
-        },
-        units: {
-          multiline: false,
-        },
-        comments: {
-          multiline: true,
-        },
-      }
-    };
-
-    editModalFormOptions = {
-      fields: {
-        drugName: {
-          editable: false,
-          multiline: false,
-        },
-        quantity: {
-          multiline: false,
-        },
-        dosage: {
-          editable: false,
-          multiline: false,
-        },
-        units: {
-          editable: false,
-          multiline: false,
-        },
-        comments: {
-          multiline: true,
-        },
-      }
-    };
-
-    this.state = { showModal: false, medicationKey: null, formOptions: addModalFormOptions };
+    const formValues = {drugName: null, quantity: null, dosage: null, units: null, comments: null};
+    this.state = { showModal: false, medicationKey: null, formOptions: this.addModalFormOptions, formType: this.addMedication, formValues: formValues};
   }
+
+  addModalFormOptions = {
+    fields: {
+      comments: {
+        multiline: true,
+      },
+    }
+  };
+
+  editModalFormOptions = {
+    fields: {
+      drugName: {
+        editable: false,
+      },
+      dosage: {
+        editable: false,
+      },
+      units: {
+        editable: false, //TODO: units dropdown menu is not disabled
+      },
+      comments: {
+        multiline: true,
+      },
+    }
+  };
+
+  Units = t.enums({
+    kg: 'kg',
+    g: 'g',
+    mg: 'mg',
+    ml: 'ml'
+  });
+
+  addMedication = t.struct({
+    drugName: t.String,
+    quantity: t.Number,
+    dosage: t.Number,
+    units: this.Units,
+    comments: t.maybe(t.String)
+  });
+
+  editMedication = t.struct({
+    drugName: t.maybe(t.String),
+    quantity: t.maybe(t.Number),
+    dosage: t.maybe(t.Number),
+    units: t.maybe(this.Units),
+    comments: t.maybe(t.String)
+  });
 
   openEditModal = (medication) => {
     const medicationKey = medication.key;
-    this.setState({ showModal: true, medicationKey: medicationKey, formOptions: editModalFormOptions });
+    const formValues = this.getMedicationValues(medication);
+    this.setState({ showModal: true, medicationKey: medicationKey, formOptions: this.editModalFormOptions, formType: this.editMedication, formValues: formValues });
   }
 
   openAddModal = () => {
-    this.setState({ showModal: true, medicationKey: null, formOptions: addModalFormOptions });
+    const formValues = {drugName: null, quantity: null, dosage: null, units: null, comments: null};
+    this.setState({ showModal: true, medicationKey: null, formOptions: this.addModalFormOptions, formType: this.addMedication, formValues: formValues});
   }
 
   closeModal = () => {
-    this.setState({ showModal: false, formOptions: addModalFormOptions });
+    this.setState({ showModal: false, formOptions: this.addModalFormOptions, formType: this.addMedication});
   }
   saveModal = (newMedication) => {
     if (this.state.medicationKey == null) {
@@ -88,6 +97,19 @@ export default class MedicationInventory extends Component<{}> {
     } else {
       this.props.updateMedication(this.state.medicationKey, newMedication);
     }
+  }
+
+  getMedicationValues(medication) {
+    let drugName = medication.drugName;
+    let quantity = medication.quantity;
+    let dosage = medication.dosage;
+    let units = medication.units;
+    let comments = medication.comments;
+    return {drugName: drugName, quantity: quantity, dosage: dosage, units: units, comments: comments};
+  }
+
+  updateFormValues = (values) => {
+    this.setState({formValues: values});
   }
 
   // Renders each column in a row
@@ -149,8 +171,11 @@ export default class MedicationInventory extends Component<{}> {
         <UpdateMedicationModal
           showModal={this.state.showModal}
           formOptions={this.state.formOptions}
+          formType={this.state.formType}
+          formValues={this.state.formValues}
           closeModal={this.closeModal}
           saveModal={this.saveModal}
+          updateFormValues={this.updateFormValues}
         />
 
         <Button style={styles.buttonContainer}
