@@ -138,6 +138,35 @@ class MedicationInventoryScreen extends Component<{}> {
       });
   }
 
+  deleteMedication = (key) => {
+    try {
+      localData.deleteMedication(key);
+    } catch(e) {
+      this.props.setErrorMessage(e.message);
+      return;
+    }
+    this.props.setLoading(true);
+    this.props.isUploading(true);
+
+    serverData.deleteMedication(key)
+      .then( () => {
+        if(this.props.loading) {
+          // if successful, then reload screen (which closes modal too)
+          this.syncAndLoadMedications();
+          this.props.setLoading(false);
+          this.props.setSuccessMessage('Saved successfully');
+        }
+      })
+      .catch( (err) => {
+        if(this.props.loading) {
+          //localData.markMedicationNeedToUpload(key);
+
+          this.props.setLoading(false, true);
+          this.props.setErrorMessage(err.message);
+        }
+      });
+  }
+
   sync = () => {
     this.props.setLoading(true);
     this.props.isUploading(true);
@@ -173,6 +202,7 @@ class MedicationInventoryScreen extends Component<{}> {
             rows={this.state.rows}
             createMedication={this.createMedication}
             updateMedication={this.updateMedication}
+            deleteMedication={this.deleteMedication}
           />
         </ScrollView>
 

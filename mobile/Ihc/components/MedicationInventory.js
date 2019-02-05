@@ -8,7 +8,6 @@ import {
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import UpdateMedicationModal from './UpdateMedicationModal';
 import Button from './Button';
-let t = require('tcomb-form-native');
 
 export default class MedicationInventory extends Component<{}> {
   /*
@@ -16,17 +15,84 @@ export default class MedicationInventory extends Component<{}> {
    *  {
    *    rows: [Medication],
    *    createMedication: function,
-   *    updateMedication: function
+   *    updateMedication: function,
+   *    deleteMedication: function
    *  }
    */
 
   constructor(props) {
     super(props);
-    this.tableHeaders = ['Drug Name', 'Quantity', 'Dosage', 'Units', 'Notes'];
+    this.tableHeaders = ['Drug Name', 'Quantity', 'Dosage', 'Units', 'Notes', ' ']; //blank header for 'x' column
     this.rowNum = 0;
 
     const formValues = {drugName: null, quantity: null, dosage: null, units: null, comments: null};
     this.state = { showModal: false, medicationKey: null, formOptions: this.addModalFormOptions, formValues: formValues};
+  }
+
+  getStyle(index) {
+    switch(index) {
+      case 0:
+        return styles.drugNameCol;
+      case 1:
+      case 2:
+      case 3:
+        return styles.otherCol;
+      case 4:
+        return styles.notesCol;
+      case 5:
+        return styles.emptyCol;
+      default:
+        return styles.otherCol;
+    }
+  }
+
+  getSize(index) {
+    switch(index) {
+      case 0: // drug name
+        return 3;
+      case 1: // quantity
+      case 2: // dosage
+      case 3: // units
+        return 1;
+      case 4: // notes
+        return 3;
+      default:
+        return 1;
+    }
+  }
+
+  getText(index) {
+    switch(index) {
+      case 0: // drug name
+        return styles.drugText;
+      case 1: // quantity
+        return styles.otherText;
+      case 2: // dosage
+        return styles.otherText;
+      case 3: // units
+        return styles.otherText;
+      case 4: // notes
+        return styles.notesText;
+      default:
+        return styles.otherText;
+    }
+  }
+
+  getHeaderText(index) {
+    switch(index) {
+      case 0: // drug name
+        return styles.drugText;
+      case 1: // quantity
+        return styles.otherText;
+      case 2: // dosage
+        return styles.otherText;
+      case 3: // units
+        return styles.otherText;
+      case 4: // notes
+        return styles.notesHeaderText;
+      default:
+        return styles.otherText;
+    }
   }
 
   addModalFormOptions = {
@@ -76,6 +142,11 @@ export default class MedicationInventory extends Component<{}> {
     }
   }
 
+  deleteMedication = (medication) => {
+    const medicationKey = medication.key;
+    this.props.deleteMedication(medicationKey);
+  }
+
   getFormValuesFromMedication(medication) {
     let drugName = medication.drugName;
     let quantity = medication.quantity;
@@ -92,8 +163,8 @@ export default class MedicationInventory extends Component<{}> {
   // Renders each column in a row
   renderCol = (element, keyFn, index) => {
     return (
-      <Col style={styles.otherCol} size={2} key={keyFn(index)}>
-        <Text>{element}</Text>
+      <Col style={this.getStyle(index)} size={this.getSize(index)} key={keyFn(index)}>
+        <Text style={this.getText(index)}>{element}</Text>
       </Col>
     );
   }
@@ -122,14 +193,17 @@ export default class MedicationInventory extends Component<{}> {
       <Row key={`row${this.rowNum++}`} style={styles.rowContainer}
         onPress={() => this.openEditModal(medication)}>
         {cols}
+        <Button style={styles.deleteButton}
+          onPress = {() => this.deleteMedication(medication)}
+          text='x' />
       </Row>
     );
   }
 
   renderHeader(data, keyFn) {
     const cols = data.map( (e,i) => (
-      <Col size={2} style={styles.otherCol} key={keyFn(i)}>
-        <Text style={styles.text}>{e}</Text>
+      <Col size={this.getSize(i)} style={this.getStyle(i)} key={keyFn(i)}>
+        <Text style={this.getHeaderText(i)}>{e}</Text>
       </Col>
     ));
 
@@ -172,12 +246,27 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   rowContainer: {
+    borderWidth: 1,
     flex: 1,
     alignSelf: 'stretch',
-    minHeight: 32
+    flexDirection: 'row',
+    justifyContent: 'center'
+  },
+  notesCol: {
+    borderWidth: 1,
+    minWidth: 330,
   },
   otherCol: {
-    borderWidth: 1
+    borderWidth: 1,
+    maxWidth: 80,
+  },
+  drugNameCol: {
+    borderWidth: 1,
+    minWidth: 170,
+  },
+  emptyCol: {
+    borderWidth: 1,
+    maxWidth: 25,
   },
   headerRow: {
     backgroundColor: '#dbdbdb',
@@ -186,11 +275,28 @@ export const styles = StyleSheet.create({
     alignSelf: 'stretch',
     flexDirection: 'row',
   },
-  text: {
+  drugText: {
     textAlign: 'center',
+    width: 150,
+  },
+  otherText: {
+    textAlign: 'center',
+    width: 70,
+  },
+  notesText: {
+    textAlign: 'left',
+    width: 130,
+  },
+  notesHeaderText: {
+    textAlign: 'right',
+    width: 170,
   },
   buttonContainer: {
     width: 150,
     height: 40,
+  },
+  deleteButton: {
+    width: 20,
+    height: 20,
   },
 });
