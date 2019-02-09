@@ -55,7 +55,22 @@ export default class UpdateMedicationModal extends Component<{}> {
     this.props.saveModal(medication);
   }
 
+  delete = () => {
+    if(!this.refs.form.validate().isValid()) {
+      return;
+    }
+    const form = this.refs.form.getValue();
+    const medication = Medication.extractFromForm(form);
+
+    this.props.deleteMedication(medication);
+  }
+
   render() {
+    let deleteButton;
+    if (this.props.isEditModal()) {
+      deleteButton = <Button text='Delete' style={styles.buttonContainer} onPress={this.delete} />;
+    }
+
     return (
       <Modal
         animationType="fade"
@@ -77,6 +92,7 @@ export default class UpdateMedicationModal extends Component<{}> {
                 <Button text='Save'
                   style={styles.buttonContainer}
                   onPress={this.submit} />
+                {deleteButton}
               </View>
             </View>
           </View>
