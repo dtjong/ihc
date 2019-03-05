@@ -59,7 +59,7 @@ export default class MedicationInventory extends Component<{}> {
     }
   }
 
-  getText(index) {
+  getTextStyle(index) {
     switch(index) {
       case 0: // drug name
         return styles.drugText;
@@ -149,7 +149,7 @@ export default class MedicationInventory extends Component<{}> {
   renderCol = (element, keyFn, index) => {
     return (
       <Col style={this.getStyle(index)} size={this.getSize(index)} key={keyFn(index)}>
-        <Text style={this.getText(index)}>{element}</Text>
+        <Text style={this.getTextStyle(index)}>{element}</Text>
       </Col>
     );
   }
