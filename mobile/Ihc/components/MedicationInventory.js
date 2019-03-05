@@ -8,6 +8,7 @@ import {
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import UpdateMedicationModal from './UpdateMedicationModal';
 import Button from './Button';
+let t = require('tcomb-form-native');
 
 export default class MedicationInventory extends Component<{}> {
   /*
