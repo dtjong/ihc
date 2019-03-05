@@ -21,6 +21,12 @@ const realm = new Realm({
   deleteRealmIfMigrationNeeded: true, // TODO: delete when done with dev
 });
 
+export function deleteLocalDatabase() {
+  realm.write(() => {
+    realm.deleteAll();
+  });
+}
+
 export function createPatient(patient) {
   const timestamp = new Date().getTime();
   const patientObjs = realm.objects('Patient').filtered('key = "' + patient.key + '"');
@@ -218,30 +224,65 @@ export function getTriage(patientKey, strDate) {
   return triage;
 }
 
-// Update/Create a medication
-export function updateMedication(oldKey, update) {
-  const timestamp = new Date().getTime();
-  const medication = realm.objects('Medication')
-    .filtered('key = "' + oldKey + '"')['0'];
 
-  update.lastUpdated = timestamp;
+// Create a medication
+export function createMedication(medication) {
+  const timestamp = new Date().getTime();
+  // just incase object passed in does not already have key initialized
+  medication.key = Medication.makeKey(medication);
+  const existingMedication = realm.objects('Medication')
+    .filtered('key = "' + medication.key + '"')['0'];
+
+  medication.lastUpdated = timestamp;
+
+  if (existingMedication) {
+    throw new Error('Medication already exists');
+  }
 
   realm.write( () => {
-    //Medication already exists (update)
-    if (medication) {
-      const properties = Object.keys(Medication.schema.properties);
-      properties.forEach( p => {
-        medication[p] = update[p];
-      });
-      medication.key = Medication.makeKey(update);
-      return true;
-    }
-    //Medication does not exist (create)
-    update.key = Medication.makeKey(update);
-    realm.create('Medication', update);
-    return true;
+    realm.create('Medication', medication);
+  });
+}
+
+// Update a medication
+export function updateMedication(key, update) {
+  const existingMedication = realm.objects('Medication')
+    .filtered('key = "' + key + '"')['0'];
+
+  if (!existingMedication) {
+    throw new Error('Medication does not exist');
+  }
+
+  realm.write( () => {
+    const properties = Object.keys(Medication.schema.properties);
+    properties.forEach( p => {
+      if (p !== 'drugName' && p !== 'dosage' && p !== 'units' && p !== 'key') {
+        existingMedication[p] = update[p];
+      }
+    });
+    return existingMedication;
+  });
+}
+
+export function deleteMedication(key) {
+  const medication = realm.objects('Medication')
+    .filtered('key = "' + key + '"')['0'];
+
+  if (!medication) {
+    throw new Errors('Medication does not exist');
+  }
+
+  realm.write( () => {
+    realm.delete(medication);
   });
   return false;
+}
+
+// Returns the medication with the given name, dosage, and units; undefined if none found
+export function getMedication(drugName, dosage, units) {
+  const medication = realm.objects('Medication').filtered('drugName = "' + drugName +
+    '" AND dosage = "' + dosage + '" AND units = "' + units + '"');
+  return medication;
 }
 
 // Returns the medication with the given name, dosage, and units; undefined if none found
@@ -382,17 +423,32 @@ export function handleDownloadedMedications(medications) {
     }
     else {
       if (incomingMedication.lastUpdated < existingMedication.lastUpdated) {
+<<<<<<< HEAD
         throw new Error('Received a medication that is out-of-date. Did you upload updates yet?');
       }
 
       // The case where MedicationInventoryScreen is refreshing
       if (incomingMedication.lastUpdated == existingMedication.lastUpdated) {
+=======
+        fails.add(existingMedication.key);
+        throw new Error('Received a medication that is out-of-date. Did you upload updates yet?');
+      }
+
+      // Should not occur but just in case
+      if (incomingMedication.lastUpdated === existingMedication.lastUpdated) {
+>>>>>>> dc0c8ef3103bf1dbec0f1a043cdf1a39d0ab7199
         return;
       }
 
       // Actually update the medication
+<<<<<<< HEAD
       if(!updateMedication(existingMedication.key, incomingMedication))
         fails.add(existingMedication.key);
+=======
+      if (!updateMedication(existingMedication.key, incomingMedication)) {
+        fails.add(existingMedication.key);
+      }
+>>>>>>> dc0c8ef3103bf1dbec0f1a043cdf1a39d0ab7199
 
       // Update that medication's updated timestamp
       realm.write(() => {

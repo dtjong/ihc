@@ -6,6 +6,8 @@ import {
 } from 'react-native';
 let t = require('tcomb-form-native');
 let Form = t.form.Form;
+
+
 import Button from './Button';
 import Medication from '../models/Medication';
 
@@ -34,58 +36,24 @@ export default class UpdateMedicationModal extends Component<{}> {
     comments: t.maybe(t.String)
   });
 
-  formOptions = {
-    fields: {
-      drugName: {
-        editable: true,
-      },
-      quantity: {
-        multiline: false,
-      },
-      dosage: {
-        multiline: false,
-      },
-      units: {
-        multiline: false,
-      },
-      comments: {
-        multiline: true,
-      },
-    }
-  }
+
+  Units = t.enums({
+    kg: 'kg',
+    g: 'g',
+    mg: 'mg',
+    ml: 'ml'
+  });
 
   Medication = t.struct({
     drugName: t.String,
     quantity: t.Number,
     dosage: t.Number,
-    units: t.String,
+    units: this.Units,
     comments: t.maybe(t.String)
   });
 
-  formOptions = {
-    fields: {
-      drugName: {
-        multiline: false,
-      },
-      quantity: {
-        multiline: false,
-      },
-      dosage: {
-        multiline: false,
-      },
-      units: {
-        multiline: false,
-      },
-      comments: {
-        multiline: true,
-      },
-    }
-  }
-
   onFormChange = (value) => {
-    this.setState({
-      formValues: value,
-    });
+    this.props.updateFormValues(value);
   }
 
   submit = () => {
@@ -94,7 +62,6 @@ export default class UpdateMedicationModal extends Component<{}> {
     }
     const form = this.refs.form.getValue();
     const medication = Medication.extractFromForm(form);
-
     this.props.saveModal(medication);
   }
 
@@ -107,18 +74,20 @@ export default class UpdateMedicationModal extends Component<{}> {
         onRequestClose={this.props.closeModal} >
         <View style={styles.modalContainer}>
           <View style={styles.modal}>
-            <Form ref="form"
-              type={this.Medication}
-              value={this.state.formValues}
-              options={this.formOptions}
-              onChange={this.onFormChange} />
-            <View style={styles.modalFooter}>
-              <Button text='Cancel'
-                style={styles.buttonContainer}
-                onPress={this.props.closeModal} />
-              <Button text='Save'
-                style={styles.buttonContainer}
-                onPress={this.submit} />
+            <View style={styles.form}>
+              <Form ref="form"
+                type={this.Medication}
+                value={this.props.formValues}
+                options={this.props.formOptions}
+                onChange={this.onFormChange} />
+              <View style={styles.modalFooter}>
+                <Button text='Cancel'
+                  style={styles.buttonContainer}
+                  onPress={this.props.closeModal} />
+                <Button text='Save'
+                  style={styles.buttonContainer}
+                  onPress={this.submit} />
+              </View>
             </View>
           </View>
         </View>
@@ -153,5 +122,9 @@ export const styles = StyleSheet.create({
   buttonContainer: {
     width: 150,
     height: 40,
+
+  },
+  form: {
+    width: '80%',
   }
 });
