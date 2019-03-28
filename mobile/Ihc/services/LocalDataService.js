@@ -285,13 +285,6 @@ export function getMedication(drugName, dosage, units) {
   return medication;
 }
 
-// Returns the medication with the given name, dosage, and units; undefined if none found
-export function getMedication(drugName, dosage, units) {
-  const medication = realm.objects('Medication').filtered('drugName = "' + drugName +
-    '" AND dosage = "' + dosage + '" AND units = "' + units + '"');
-  return medication;
-}
-
 // Returns an array of all medications with the given name; undefined if none found
 export function getMedications(drugName) {
   const medications = Object.values(realm.objects('Medication').filtered('drugName = "' + drugName + '"'));
@@ -423,32 +416,20 @@ export function handleDownloadedMedications(medications) {
     }
     else {
       if (incomingMedication.lastUpdated < existingMedication.lastUpdated) {
-<<<<<<< HEAD
-        throw new Error('Received a medication that is out-of-date. Did you upload updates yet?');
-      }
 
-      // The case where MedicationInventoryScreen is refreshing
-      if (incomingMedication.lastUpdated == existingMedication.lastUpdated) {
-=======
         fails.add(existingMedication.key);
         throw new Error('Received a medication that is out-of-date. Did you upload updates yet?');
       }
 
       // Should not occur but just in case
       if (incomingMedication.lastUpdated === existingMedication.lastUpdated) {
->>>>>>> dc0c8ef3103bf1dbec0f1a043cdf1a39d0ab7199
         return;
       }
 
       // Actually update the medication
-<<<<<<< HEAD
-      if(!updateMedication(existingMedication.key, incomingMedication))
-        fails.add(existingMedication.key);
-=======
       if (!updateMedication(existingMedication.key, incomingMedication)) {
         fails.add(existingMedication.key);
       }
->>>>>>> dc0c8ef3103bf1dbec0f1a043cdf1a39d0ab7199
 
       // Update that medication's updated timestamp
       realm.write(() => {
