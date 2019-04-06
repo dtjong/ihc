@@ -354,3 +354,29 @@ export function getUpdatedMedications(lastSynced) {
       return Promise.reject(err);
     });
 }
+
+export function checkCredentials(credentials) {
+  return fetch(fetchUrl + '/credentials/check', {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      credentials: credentials
+    })
+  }).then(response => response.json())
+    .then(json => {
+      if(json.error) {
+        throw new Error(json.error);
+      }
+      const status = json.status;
+      if (status) {
+        return Promise.resolve(true);
+      } else {
+        throw new Error('Access Denied');
+      }
+    }).catch(err => {
+      return Promise.reject(err);
+    });
+}

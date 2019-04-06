@@ -78,7 +78,7 @@ router.put('/medication-inventory/:key/update', MedicationController.UpdateMedic
 router.put('/medication-inventory/:key/delete', MedicationController.DeleteMedication);
 
 // checks the credentials to see if user is authorized access
-router.get('/credentials/check', ApplicationController.AuthorizationCheck);
+router.put('/credentials/check', ApplicationController.AuthorizationCheck);
 
 // create new login credentials
 router.put('/credentials/add', ApplicationController.AddCredentials);
