@@ -268,7 +268,7 @@ export function deleteMedication(key) {
     .filtered('key = "' + key + '"')['0'];
 
   if (!medication) {
-    throw new Errors('Medication does not exist');
+    throw new Error('Medication does not exist');
   }
 
   realm.write( () => {
