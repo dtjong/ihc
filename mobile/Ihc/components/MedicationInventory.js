@@ -23,7 +23,7 @@ export default class MedicationInventory extends Component<{}> {
 
   constructor(props) {
     super(props);
-    this.tableHeaders = ['Drug Name', 'Quantity', 'Dosage', 'Units', 'Notes'];
+    this.tableHeaders = ['Drug Name', 'Quantity', 'Dosage', 'Units', 'Notes', ' ']; //blank header for 'x' column
     this.rowNum = 0;
 
     const formValues = {drugName: null, quantity: null, dosage: null, units: null, comments: null};
@@ -179,6 +179,9 @@ export default class MedicationInventory extends Component<{}> {
       <Row key={`row${this.rowNum++}`} style={styles.rowContainer}
         onPress={() => this.openEditModal(medication)}>
         {cols}
+        <Button style={styles.deleteButton}
+          onPress = {() => this.deleteMedication(medication)}
+          text='x' />
       </Row>
     );
   }
@@ -259,5 +262,9 @@ export const styles = StyleSheet.create({
   buttonContainer: {
     width: 150,
     height: 40,
+  },
+  deleteButton: {
+    width: 20,
+    height: 20,
   },
 });
