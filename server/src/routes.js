@@ -2,6 +2,7 @@ import express from 'express';
 
 import PatientController from './controllers/Patient';
 import MedicationController from './controllers/MedicationController';
+import ApplicationController from './controllers/ApplicationController';
 
 const router = express.Router();
 
@@ -89,5 +90,11 @@ router.put('/medication-inventory/:key/update', MedicationController.UpdateMedic
 
 //deletes the information for an existing medication
 router.put('/medication-inventory/:key/delete', MedicationController.DeleteMedication);
+
+// checks the credentials to see if user is authorized access
+router.put('/credentials/check', ApplicationController.AuthorizationCheck);
+
+// create new login credentials
+router.put('/credentials/add', ApplicationController.AddCredentials);
 
 module.exports = router;
