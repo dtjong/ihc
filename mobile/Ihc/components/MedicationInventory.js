@@ -8,10 +8,8 @@ import {
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import UpdateMedicationModal from './UpdateMedicationModal';
 import Button from './Button';
-<<<<<<< HEAD
-=======
 let t = require('tcomb-form-native');
->>>>>>> dc0c8ef3103bf1dbec0f1a043cdf1a39d0ab7199
+
 
 export default class MedicationInventory extends Component<{}> {
   /*
@@ -42,8 +40,6 @@ export default class MedicationInventory extends Component<{}> {
         return styles.otherCol;
       case 4:
         return styles.notesCol;
-      case 5:
-        return styles.emptyCol;
       default:
         return styles.otherCol;
     }
@@ -64,7 +60,7 @@ export default class MedicationInventory extends Component<{}> {
     }
   }
 
-  getText(index) {
+  getTextStyle(index) {
     switch(index) {
       case 0: // drug name
         return styles.drugText;
@@ -76,23 +72,6 @@ export default class MedicationInventory extends Component<{}> {
         return styles.otherText;
       case 4: // notes
         return styles.notesText;
-      default:
-        return styles.otherText;
-    }
-  }
-
-  getHeaderText(index) {
-    switch(index) {
-      case 0: // drug name
-        return styles.drugText;
-      case 1: // quantity
-        return styles.otherText;
-      case 2: // dosage
-        return styles.otherText;
-      case 3: // units
-        return styles.otherText;
-      case 4: // notes
-        return styles.notesHeaderText;
       default:
         return styles.otherText;
     }
@@ -151,6 +130,10 @@ export default class MedicationInventory extends Component<{}> {
     this.props.deleteMedication(medicationKey);
   }
 
+  isEditModal = () => {
+    return this.state.medicationKey !== null;
+  }
+
   getFormValuesFromMedication(medication) {
     let drugName = medication.drugName;
     let quantity = medication.quantity;
@@ -168,7 +151,7 @@ export default class MedicationInventory extends Component<{}> {
   renderCol = (element, keyFn, index) => {
     return (
       <Col style={this.getStyle(index)} size={this.getSize(index)} key={keyFn(index)}>
-        <Text style={this.getText(index)}>{element}</Text>
+        <Text style={this.getTextStyle(index)}>{element}</Text>
       </Col>
     );
   }
@@ -207,7 +190,7 @@ export default class MedicationInventory extends Component<{}> {
   renderHeader(data, keyFn) {
     const cols = data.map( (e,i) => (
       <Col size={this.getSize(i)} style={this.getStyle(i)} key={keyFn(i)}>
-        <Text style={this.getHeaderText(i)}>{e}</Text>
+        <Text style={styles.text}>{e}</Text>
       </Col>
     ));
 
@@ -222,6 +205,9 @@ export default class MedicationInventory extends Component<{}> {
     // Render row for header, then render all the rows
     return (
       <View style={styles.container}>
+        <Button style={styles.buttonContainer}
+          onPress={() => this.openAddModal()}
+          text='Add Medication' />
 
         <UpdateMedicationModal
           showModal={this.state.showModal}
@@ -229,14 +215,10 @@ export default class MedicationInventory extends Component<{}> {
           formValues={this.state.formValues}
           closeModal={this.closeModal}
           saveModal={this.saveModal}
+          isEditModal={this.isEditModal}
+          deleteMedication={this.deleteMedication}
           updateFormValues={this.updateFormValues}
         />
-
-        <Button style={styles.buttonContainer}
-          onPress={this.openAddModal}
-          text='Add Medication' />
-
-        <Text style={styles.title}>Medication Inventory{"\n"}</Text>
 
         <Grid>
           {this.renderHeader(this.tableHeaders, (i) => `header${i}`)}
@@ -267,19 +249,12 @@ export const styles = StyleSheet.create({
   },
   notesCol: {
     borderWidth: 1,
-    minWidth: 330,
   },
   otherCol: {
     borderWidth: 1,
-    maxWidth: 80,
   },
   drugNameCol: {
     borderWidth: 1,
-    minWidth: 170,
-  },
-  emptyCol: {
-    borderWidth: 1,
-    maxWidth: 25,
   },
   headerRow: {
     backgroundColor: '#dbdbdb',
@@ -288,21 +263,9 @@ export const styles = StyleSheet.create({
     alignSelf: 'stretch',
     flexDirection: 'row',
   },
-  drugText: {
-    textAlign: 'center',
-    width: 150,
-  },
   otherText: {
     textAlign: 'center',
     width: 70,
-  },
-  notesText: {
-    textAlign: 'left',
-    width: 130,
-  },
-  notesHeaderText: {
-    textAlign: 'right',
-    width: 170,
   },
   buttonContainer: {
     position: 'relative', 
