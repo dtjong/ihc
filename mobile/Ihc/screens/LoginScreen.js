@@ -46,7 +46,7 @@ class LoginScreen extends Component<{}> {
     this.props.setLoading(true);
     this.props.clearMessages();
 
-  serverData.checkCredentials(credentials)
+    serverData.checkCredentials(credentials)
       .then( () => {
         if(this.props.loading) {
           this.props.setLoading(false);
