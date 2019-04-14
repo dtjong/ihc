@@ -23,7 +23,7 @@ export default class MedicationInventory extends Component<{}> {
 
   constructor(props) {
     super(props);
-    this.tableHeaders = ['Drug Name', 'Quantity', 'Dosage', 'Units', 'Notes']; //blank header for 'x' column
+    this.tableHeaders = ['Drug Name', 'Quantity', 'Dosage', 'Units', 'Notes'];
     this.rowNum = 0;
 
     const formValues = {drugName: null, quantity: null, dosage: null, units: null, comments: null};
