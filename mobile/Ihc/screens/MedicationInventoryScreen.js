@@ -26,11 +26,9 @@ class MedicationInventoryScreen extends Component<{}> {
   constructor(props) {
     super(props);
     const todayDate = this.props.todayDate || stringDate(new Date());
-    const tempMedication = Medication.getInstance();
     this.state = {
       todayDate: todayDate,
-      rows: [],
-      rowsTemp: [tempMedication]
+      rows: []
     };
 
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
