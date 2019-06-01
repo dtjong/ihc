@@ -20,16 +20,38 @@ class PatientSelectScreen extends Component<{}> {
 
     this.state = {
       rows: [],
+      patientsAtTriage: 0, // number of patients at the Triage station
+      patientsAtSoap: 0, // number of patients at the SOAP station
+      patientsAtPharmacy: 0, // number of patients at the Pharmacy station
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
   convertStatusesToRows(statuses) {
     const columnOrder = ['name', 'birthday', 'checkinTime', 'triageCompleted',
-      'doctorCompleted', 'pharmacyCompleted', 'notes', 'patientKey'];
+      'soapCompleted', 'pharmacyCompleted', 'doctorCompleted', 'notes', 'patientKey'];
 
     // Sort statuses by checkin time for now
     statuses.sort( (status1, status2) => status1.checkinTime - status2.checkinTime );
+
+    // Update number of patients at each station based on the assumed workflow:
+    // Triage station -> Soap station -> Pharmacy station
+    this.state.patientsAtTriage = 0;
+    this.state.patientsAtSoap = 0;
+    this.state.patientsAtPharmacy = 0;
+    for (status of statuses) {
+      if (status.triageCompleted === null) { // at triage station
+        this.state.patientsAtTriage ++;
+      }
+      else if (status.soapCompleted === null) { // at SOAP station
+        this.state.patientsAtSoap ++;
+      }
+      else if (status.pharmacyCompleted === null) { // at pharmacy station
+        this.state.patientsAtPharmacy ++;
+      } else {
+        continue;
+      }
+    }
 
     const toReturn = statuses.map((obj) => columnOrder.map( (key) => obj[key] ));
     return toReturn;
@@ -82,7 +104,7 @@ class PatientSelectScreen extends Component<{}> {
   // patient is an array containing one row of data from the PatientTable
   // PatientKey stored in index 7
   goToPatient = (patient) => {
-    this.props.setCurrentPatientKey(patient[7]);
+    this.props.setCurrentPatientKey(patient[8]);
     this.props.navigator.push({
       screen: 'Ihc.PatientHomeScreen',
       title: patient.name,
@@ -140,6 +162,16 @@ class PatientSelectScreen extends Component<{}> {
             saveModal={this.saveModal}
           />
         </ScrollView>
+
+        <Text style={styles.title}>
+          Patients at Triage: {this.state.patientsAtTriage}
+        </Text>
+        <Text style={styles.title}>
+          Patients at SOAP: {this.state.patientsAtSoap}
+        </Text>
+        <Text style={styles.title}>
+          Patients at Pharmacy: {this.state.patientsAtPharmacy}
+        </Text>
       </Container>
     );
   }

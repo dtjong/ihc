@@ -25,9 +25,7 @@ export default class UpdateMedicationModal extends Component<{}> {
    */
   constructor(props) {
     super(props);
-    this.state = {formValues: {} };
   }
-
 
   Units = t.enums({
     kg: 'kg',
@@ -54,6 +52,7 @@ export default class UpdateMedicationModal extends Component<{}> {
     }
     const form = this.refs.form.getValue();
     const medication = Medication.extractFromForm(form);
+
     this.props.saveModal(medication);
   }
 
@@ -130,7 +129,6 @@ export const styles = StyleSheet.create({
   buttonContainer: {
     width: 150,
     height: 40,
-
   },
   form: {
     width: '80%',
