@@ -27,14 +27,6 @@ export default class UpdateMedicationModal extends Component<{}> {
     super(props);
     this.state = {formValues: {} };
   }
-  
-  MedicationInventoryForm = t.struct({
-    drugName: t.String, // drug name
-    quantity: t.int,
-    dosage: t.int,
-    units: t.String,
-    comments: t.maybe(t.String)
-  });
 
 
   Units = t.enums({

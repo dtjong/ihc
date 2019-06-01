@@ -27,7 +27,7 @@ if (config.testingServerDataService === 'true' ) {
   // start the app
   Navigation.startSingleScreenApp({
     screen: {
-      screen: 'Ihc.LoginScreen',
+      screen: 'Ihc.newPatientList',
       title: 'Welcome',
       navigatorStyle: {},
       navigatorButtons: {}
