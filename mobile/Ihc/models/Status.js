@@ -29,6 +29,7 @@ Status.schema = {
     date: 'string',
     checkinTime: 'int', // Timestamp, milliseconds
     triageCompleted: 'int?', // timestamp for when completed
+    soapCompleted: 'int?',
     doctorCompleted: 'int?',
     pharmacyCompleted: 'int?',
     medicationCheckmarks: 'MedicationCheckmarks[]',

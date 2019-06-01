@@ -20,8 +20,8 @@ export default class PatientTable extends Component<{}> {
    */
   constructor(props) {
     super(props);
-    this.tableHeaders = ['Name', 'Birthday', 'Checkin', 'Triage', 'Doctor',
-      'Pharmacy', 'Notes'];
+    this.tableHeaders = ['Name', 'Birthday', 'Checkin', 'Triage', 'SOAP',
+      'Pharmacy', 'Doctor', 'Notes'];
     this.rowNum = 0;
     // patientKey is the key of the patient we are editing the notes for in the Modal
     // currNotes is the notes to display in the modal
@@ -37,8 +37,9 @@ export default class PatientTable extends Component<{}> {
       case 3:
       case 4:
       case 5:
-        return styles.timestampCol;
       case 6:
+        return styles.timestampCol;
+      case 7:
         return styles.notesCol;
       default:
         return styles.otherCol;
@@ -51,8 +52,9 @@ export default class PatientTable extends Component<{}> {
         return shortDate(element);
       case 2: // checkin time
       case 3: // triage time
-      case 4: // doctor time
+      case 4: // SOAP time
       case 5: // pharmacy time
+      case 6: // doctor time
         // No time provided
         if(!element) {
           return '';
@@ -71,10 +73,11 @@ export default class PatientTable extends Component<{}> {
         return 1.5;
       case 2: // checkin time
       case 3: // triage time
-      case 4: // doctor time
+      case 4: // SOAP time
       case 5: // pharmacy time
+      case 6: // doctor time
         return 1;
-      case 6: // notes
+      case 7: // notes
         return 3;
       default:
         return 2;
@@ -95,7 +98,7 @@ export default class PatientTable extends Component<{}> {
   }
 
   renderCol = (element, index, keyFn, name, patientKey) => {
-    if (index === 6) {
+    if (index === 7) {
       return (
         <Col style={this.getStyle(index)} size={this.getSize(index)} key={keyFn(index)}>
           <Button style={styles.notes}
@@ -116,13 +119,13 @@ export default class PatientTable extends Component<{}> {
   renderRow = (data, keyFn) => {
     // e is the current element
     let cols = data.map( (e,i) => {
-      if(i === 7)
+      if(i === 8)
         return null; // Patient key col shouldn't render
       // Pass the patient key and name
       // to the render column fn to be passed to Update Modal
-      return this.renderCol(e,i,keyFn, data[0], data[7]);
+      return this.renderCol(e,i,keyFn, data[0], data[8]);
     });
-    cols.splice(7,1); // remove patient key column
+    cols.splice(8,1); // remove patient key column
 
     return (
       <Row key={`row${this.rowNum++}`} style={styles.rowContainer}
@@ -178,7 +181,7 @@ export const styles = StyleSheet.create({
     minHeight: 32
   },
   timestampCol: {
-    maxWidth: 60,
+    maxWidth: 70,
     borderWidth: 1
   },
   notesCol: {
