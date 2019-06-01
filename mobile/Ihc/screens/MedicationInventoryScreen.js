@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -27,11 +26,9 @@ class MedicationInventoryScreen extends Component<{}> {
   constructor(props) {
     super(props);
     const todayDate = this.props.todayDate || stringDate(new Date());
-    const tempMedication = Medication.getInstance();
     this.state = {
       todayDate: todayDate,
-      rows: [],
-      rowsTemp: [tempMedication]
+      rows: []
     };
 
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
@@ -124,7 +121,6 @@ class MedicationInventoryScreen extends Component<{}> {
     this.props.setLoading(true);
     this.props.isUploading(true);
 
-
     serverData.updateMedication(key, newMedication)
       .then( () => {
         if(this.props.loading) {
@@ -176,7 +172,6 @@ class MedicationInventoryScreen extends Component<{}> {
       });
   }
 
-
   sync = () => {
     this.props.setLoading(true);
     this.props.isUploading(true);
@@ -212,13 +207,11 @@ class MedicationInventoryScreen extends Component<{}> {
             rows={this.state.rows}
             createMedication={this.createMedication}
             updateMedication={this.updateMedication}
-
             deleteMedication={this.deleteMedication}
           />
         </ScrollView>
 
         <View style={styles.footer}>
-
           <Button onPress={this.sync}
             text="sync"
             style={styles.button}

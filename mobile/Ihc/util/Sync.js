@@ -20,3 +20,12 @@ export function downloadMedications() {
       return {failedMedicationKeys: failedMedicationKeys};
     });
 }
+export function downloadLabRequests() {
+  const lastSynced = localData.labRequestsLastSynced();
+
+  return serverData.getUpdatedLabRequests(lastSynced)
+    .then((labRequests) => {
+      const failedLabRequestKeys = localData.handleDownloadedLabRequests(labRequests);
+      return {failedLabRequests : failedLabRequestKeys};
+    });
+}

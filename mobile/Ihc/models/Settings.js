@@ -10,6 +10,7 @@ Settings.schema = {
   name: 'Settings',
   properties: {
     'patientsLastSynced': 'int?', // timestamp
-    'medicationsLastSynced': 'int?' //timestamp
+    'medicationsLastSynced': 'int?', //timestamp
+    'labRequestsLastSynced': 'int?' //timestamp
   }
 };

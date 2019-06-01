@@ -13,6 +13,7 @@ import PatientHistoryScreen from './PatientHistoryScreen';
 import TestServerScreen from './TestServerScreen';
 import MedicationInventoryScreen from './MedicationInventoryScreen';
 import LoginScreen from './LoginScreen';
+<<<<<<< HEAD
 import newPatientList from './newPatientList.js';
 import newPatientCheckIn from './newPatientCheckIn';
 
@@ -32,7 +33,6 @@ export function registerScreens(store, Provider) {
   Navigation.registerComponent('Ihc.PatientHistoryScreen', () => PatientHistoryScreen, store, Provider);
   Navigation.registerComponent('Ihc.TestServerScreen', () => TestServerScreen);
   Navigation.registerComponent('Ihc.MedicationInventoryScreen', () => MedicationInventoryScreen, store, Provider);
-
   Navigation.registerComponent('Ihc.LoginScreen', () => LoginScreen, store, Provider);
   Navigation.registerComponent('Ihc.newPatientList', () => newPatientList, store, Provider);
   Navigation.registerComponent('Ihc.newPatientCheckIn', () => newPatientCheckIn, store, Provider);
