@@ -108,7 +108,40 @@ class SoapScreen extends Component<{}> {
     this.syncAndLoadFormValues();
   }
 
+  // Updates the timestamp that displays in the PatientSelectScreen
+  // Doesn't actually save the SOAP form
+  completed = () => {
+    this.props.setLoading(true);
+    let statusObj = {};
+    try {
+      statusObj = localData.updateStatus(this.props.currentPatientKey, this.state.todayDate,
+        'soapCompleted', new Date().getTime());
+    } catch(e) {
+      this.props.setLoading(false);
+      this.props.setErrorMessage(e.message);
+      return;
+    }
+
+    this.props.isUploading(true);
+    serverData.updateStatus(statusObj)
+      .then( () => {
+        // View README: Handle syncing the tablet, point 3 for explanation
+        if(this.props.loading) {
+          this.props.setLoading(false);
+          this.props.setSuccessMessage('SOAP marked as completed, but not yet submitted');
+        }
+      })
+      .catch( (e) => {
+        if(this.props.loading) {
+          localData.markPatientNeedToUpload(this.props.currentPatientKey);
+          this.props.setErrorMessage(e.message);
+          this.props.setLoading(false, true);
+        }
+      });
+  }
+
   submit = () => {
+    //validations 
     if(!this.refs.form.validate().isValid()) {
       this.props.setErrorMessage('Form not correct. Review form.');
       return;
@@ -118,9 +151,11 @@ class SoapScreen extends Component<{}> {
 
     // Update local data first
     this.props.setLoading(true);
+    //dont think isUploading does anything rn
     this.props.isUploading(true);
     this.props.clearMessages();
 
+    //updates local database
     try {
       localData.updateSoap(soap);
     } catch(e) {
@@ -140,7 +175,6 @@ class SoapScreen extends Component<{}> {
       .catch( (err) => {
         if(this.props.loading) {
           localData.markPatientNeedToUpload(this.props.patientKey);
-          
           this.props.setLoading(false, true);
           this.props.setErrorMessage(err.message);
           return;
@@ -169,9 +203,12 @@ class SoapScreen extends Component<{}> {
             onChange={this.onFormChange}
           />
 
+          <Button onPress={this.completed}
+            text='SOAP completed' />
+
           <Button onPress={this.submit}
-            style={styles.updateButton}
             text="Update" />
+
         </View>
       </Container>
     );

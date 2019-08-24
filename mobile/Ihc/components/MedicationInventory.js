@@ -25,7 +25,6 @@ export default class MedicationInventory extends Component<{}> {
     super(props);
     this.tableHeaders = ['Drug Name', 'Quantity', 'Dosage', 'Units', 'Notes'];
     this.rowNum = 0;
-
     const formValues = {drugName: null, quantity: null, dosage: null, units: null, comments: null};
     this.state = { showModal: false, medicationKey: null, formOptions: this.addModalFormOptions, formValues: formValues};
   }
@@ -107,6 +106,7 @@ export default class MedicationInventory extends Component<{}> {
     const formValues = this.getFormValuesFromMedication(medication);
     this.setState({ showModal: true, medicationKey: medicationKey, formOptions: this.editModalFormOptions, formValues: formValues });
   }
+
 
   openAddModal = () => {
     const formValues = {drugName: null, quantity: null, dosage: null, units: null, comments: null};
@@ -224,11 +224,18 @@ export default class MedicationInventory extends Component<{}> {
     );
   }
 }
-
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+   headerContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 25,
+    textAlign: 'center',
+},
   rowContainer: {
     borderWidth: 1,
     flex: 1,
@@ -257,8 +264,11 @@ export const styles = StyleSheet.create({
     width: 70,
   },
   buttonContainer: {
-    width: 150,
-    height: 40,
+    position: 'relative', 
+    top: 38, 
+    left: 550, 
+    width: 200,
+    height: 30,
   },
   deleteButton: {
     width: 20,

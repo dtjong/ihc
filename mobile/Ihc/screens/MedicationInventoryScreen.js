@@ -26,11 +26,9 @@ class MedicationInventoryScreen extends Component<{}> {
   constructor(props) {
     super(props);
     const todayDate = this.props.todayDate || stringDate(new Date());
-    const tempMedication = Medication.getInstance();
     this.state = {
       todayDate: todayDate,
-      rows: [],
-      rowsTemp: [tempMedication]
+      rows: []
     };
 
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
@@ -53,6 +51,7 @@ class MedicationInventoryScreen extends Component<{}> {
 
     // Load existing Medication info if it exists
     const medications = localData.getAllMedications();
+
     this.setState({ rows: medications });
 
     // Attempt server download and reload information if successful
@@ -64,6 +63,7 @@ class MedicationInventoryScreen extends Component<{}> {
           }
 
           const medications = localData.getAllMedications();
+
           this.setState({ rows: medications });
 
           this.props.setLoading(false);
@@ -88,6 +88,7 @@ class MedicationInventoryScreen extends Component<{}> {
     this.props.setLoading(true);
     this.props.isUploading(true);
 
+
     serverData.createMedication(newMedication)
       .then( () => {
         if(this.props.loading) {
@@ -100,6 +101,7 @@ class MedicationInventoryScreen extends Component<{}> {
       })
       .catch( (err) => {
         if(this.props.loading) {
+
           //localData.markMedicationNeedToUpload(key);
 
           this.props.setLoading(false, true);
@@ -107,6 +109,7 @@ class MedicationInventoryScreen extends Component<{}> {
         }
       });
   }
+
 
   updateMedication = (key, newMedication) => {
     try {
@@ -130,6 +133,7 @@ class MedicationInventoryScreen extends Component<{}> {
       })
       .catch( (err) => {
         if(this.props.loading) {
+
           localData.markMedicationNeedToUpload(key);
 
           this.props.setLoading(false, true);
@@ -137,6 +141,7 @@ class MedicationInventoryScreen extends Component<{}> {
         }
       });
   }
+
 
   deleteMedication = (key) => {
     try {

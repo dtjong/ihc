@@ -48,8 +48,6 @@ class SigninScreen extends Component<{}> {
     newPatient: t.Boolean,
     gender: this.Gender,
     phone: t.maybe(t.String),
-    fatherHeight: t.maybe(t.Number),
-    motherHeight: t.maybe(t.Number),
   });
 
   options = {

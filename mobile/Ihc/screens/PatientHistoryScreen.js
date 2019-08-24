@@ -26,6 +26,8 @@ class PatientHistoryScreen extends Component<{}> {
       rows: [],
       patient: null,
     };
+    //onNavEvent for table
+    //calls function below
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
 
@@ -90,6 +92,9 @@ class PatientHistoryScreen extends Component<{}> {
     this.props.setLoading(true);
     this.props.clearMessages();
 
+    //for local database
+    //try just in case for server data not proper displayed
+    //patient has all required info for screen, soaps, triages, patients
     try {
       const patient = localData.getPatient(this.props.currentPatientKey);
       if (patient) {
@@ -104,6 +109,11 @@ class PatientHistoryScreen extends Component<{}> {
       return;
     }
 
+    //in util directory
+    //in sync.js
+    //syncs local with server
+    //returns all patients from server, and gives errors if syncing issues, returns keys of failed patients
+    //not sure why we need keys of failed patients
     downstreamSyncWithServer()
       .then( (failedPatientKeys) => {
         if (this.props.loading) {
@@ -111,11 +121,17 @@ class PatientHistoryScreen extends Component<{}> {
             throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
           }
 
+          //make sure info displayed is correctly displayed
+          //if there were any indisprecamncy
           try {
             const patient = localData.getPatient(this.props.currentPatientKey);
+            //changes value of loading value, later on, when we render, it'll change it
+            //dont know where it rerenders
             this.props.setLoading(false);
             this.setState({ patient: patient });
-          } catch(err) {
+          } 
+            //occur in localDatagetPatient
+            catch(err) {
             this.props.setLoading(false);
             this.props.setErrorMessage(err.message);
             return;
@@ -124,6 +140,7 @@ class PatientHistoryScreen extends Component<{}> {
           this.props.setLoading(false);
         }
       })
+      //for different type of error
       .catch( (err) => {
         if (this.props.loading) {
           this.props.setErrorMessage(err.message);
@@ -133,6 +150,7 @@ class PatientHistoryScreen extends Component<{}> {
   }
 
   onNavigatorEvent(event) {
+    //dont know what event.id is
     if (event.id === 'willAppear') {
       this.syncAndLoadPatient();
     }
@@ -195,11 +213,18 @@ const styles = StyleSheet.create({
 import { setLoading, setSuccessMessage, setErrorMessage, clearMessages } from '../reduxActions/containerActions';
 import { connect } from 'react-redux';
 
+
+//find in reducers
+//access store's properties (central state)
+//maps the states to properties
+//maps them into props, can acces through this.props.loading
 const mapStateToProps = state => ({
   loading: state.loading,
   currentPatientKey: state.currentPatientKey
 });
 
+//when you call this.props.setloading, it'll call the action setloading creator
+//happens first, sets up the creators for actions
 const mapDispatchToProps = dispatch => ({
   setLoading: (val,showRetryButton) => dispatch(setLoading(val, showRetryButton)),
   setSuccessMessage: val => dispatch(setSuccessMessage(val)),

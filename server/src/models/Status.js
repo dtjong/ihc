@@ -10,6 +10,7 @@ const StatusSchema = Schema({
   date: String,
   checkinTime: Number, // timestamp, milliseconds
   triageCompleted: Number, // timestamps for when completed
+  soapCompleted: Number,
   doctorCompleted: Number,
   pharmacyCompleted: Number,
   medicationCheckmarks: [MedicationCheckmarksModel.schema],

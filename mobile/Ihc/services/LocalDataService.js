@@ -13,11 +13,12 @@ import Medication from '../models/Medication';
 import DrugUpdate from '../models/DrugUpdate';
 import Settings from '../models/Settings';
 import MedicationCheckmarks from '../models/MedicationCheckmarks';
+import LabRequest from '../models/LabRequest';
 
 import Realm from 'realm';
 
 const realm = new Realm({
-  schema: [Patient, Status, Soap, Triage, Medication, DrugUpdate, Settings, MedicationCheckmarks],
+  schema: [Patient, Status, Soap, Triage, Medication, DrugUpdate, Settings, MedicationCheckmarks, LabRequest],
   deleteRealmIfMigrationNeeded: true, // TODO: delete when done with dev
 });
 
@@ -224,6 +225,87 @@ export function getTriage(patientKey, strDate) {
   return triage;
 }
 
+// Create LabRequest
+export function enqueueLabRequest(labRequest) {
+  const timestamp = new Date().getTime();
+  // just incase object passed in does not already have key initialized
+  labRequest.key = LabRequest.makeKey(labRequest);
+  const existingLabRequest = realm.objects('LabRequest')
+    .filtered('key = "' + labRequest.key + '"')['0'];
+
+  labRequest.lastUpdate = timestamp;
+
+  if (existingLabRequest) {
+    throw new Error('LabRequest already exists');
+  }
+
+  realm.write( () => {
+    realm.create('LabRequest', labRequest);
+  });
+}
+
+// Delete LabRequest
+export function dequeueLabRequest(key) {
+  const labRequest = realm.objects('LabRequest')
+    .filtered('key = "' + key + '"')['0'];
+
+  if (!labRequest) {
+    throw new Error('LabRequest does not exist');
+  }
+
+  realm.write( () => {
+    realm.delete(labRequest);
+  });
+}
+
+// Update a LabRequest
+export function updateLabRequest(key, update) {
+  const existingLabRequest = realm.objects('LabRequest')
+    .filtered('key = "' + key + '"')['0'];
+
+  if (!existingLabRequest) {
+    throw new Error('LabRequest does not exist');
+  }
+
+  realm.write( () => {
+    const properties = Object.keys(LabRequest.schema.properties);
+    properties.forEach( p => {
+      if (p !== 'patientKey' && p !== 'key') {
+        existingLabRequest[p] = update[p];
+      }
+    });
+    return existingLabRequest;
+  });
+}
+
+export function markLabRequestComplete(key) {
+  const existingLabRequest = realm.objects('LabRequest')
+    .filtered('key = "' + key + '"')['0'];
+
+  if (!existingLabRequest) {
+    throw new Error('LabRequest does not exist');
+  }
+
+  realm.write( () => {
+    existingLabRequest['dateCompleted'] = new Date();
+    return existingLabRequest;
+  });
+}
+
+export function markLabRequestIncomplete(key) {
+  const existingLabRequest = realm.objects('LabRequest')
+    .filtered('key = "' + key + '"')['0'];
+
+  if (!existingLabRequest) {
+    throw new Error('LabRequest does not exist');
+  }
+
+  realm.write( () => {
+    existingLabRequest['dateCompleted'] = null;
+    return existingLabRequest;
+  });
+}
+
 // Create a medication
 export function createMedication(medication) {
   const timestamp = new Date().getTime();
@@ -276,13 +358,6 @@ export function deleteMedication(key) {
   });
 }
 
-// Returns the medication with the given name, dosage, and units; undefined if none found
-export function getMedication(drugName, dosage, units) {
-  const medication = realm.objects('Medication').filtered('drugName = "' + drugName +
-    '" AND dosage = "' + dosage + '" AND units = "' + units + '"');
-  return medication;
-}
-
 // Returns an array of all medications with the given name; undefined if none found
 export function getMedications(drugName) {
   const medications = Object.values(realm.objects('Medication').filtered('drugName = "' + drugName + '"'));
@@ -331,6 +406,13 @@ export function getMedicationsToUpload(all = false) {
   return Object.values(realm.objects('Medication').filtered('needToUpload = true'));
 }
 
+export function getLabRequestsToUpload(all = false) {
+  if(all) {
+    return Object.values(realm.objects('LabRequest'));
+  }
+  return Object.values(realm.objects('LabRequest').filtered('needToUpload = true'));
+}
+
 export function patientsLastSynced() {
   let settings = realm.objects('Settings')['0'];
   if (settings) {
@@ -348,6 +430,18 @@ export function medicationsLastSynced() {
   if (settings) {
     if (settings.medicationsLastSynced)
       return settings.medicationsLastSynced;
+    else
+      return 0;
+  } else {
+    return 0;
+  }
+}
+
+export function labRequestsLastSynced() {
+  let settings = realm.objects('Settings')['0'];
+  if (settings) {
+    if (settings.labRequestsLastSynced)
+      return settings.labRequestsLastSynced;
     else
       return 0;
   } else {
@@ -379,6 +473,17 @@ export function markMedicationNeedToUpload(key) {
   });
 }
 
+export function markLabRequestNeedToUpload(key) {
+  const labRequest = realm.objects('LabRequest').filtered(`key="${key}"`)[0];
+  if(!labRequest) {
+    throw new Error('LabRequest does not exist with key ' + key);
+  }
+
+  realm.write(() => {
+    labRequest.needToUpload = true;
+  });
+}
+
 // After uploading, then these patients don't have to be marked as needing to
 // upload
 export function markPatientsUploaded() {
@@ -397,6 +502,70 @@ export function markMedicationsUploaded() {
       medication.needToUpload = false;
     });
   });
+}
+
+export function markLabRequestsUploaded() {
+  const labRequests = Object.values(realm.objects('LabRequest').filtered('needToUpload = true'));
+  realm.write(() => {
+    labRequests.forEach(labRequest => {
+      labRequest.needToUpload = false;
+    });
+  });
+}
+
+export function handleDownloadedLabRequests(labRequests) {
+  const fails = new Set();
+
+  labRequests.forEach( incomingLabRequest => {
+    const existingLabRequest = realm.objects('LabRequest')
+      .filtered('key = "' + incomingLabRequest.key + '"')['0'];
+
+    // LabRequest received does not exist yet
+    if (!existingLabRequest) {
+      realm.write(() => {
+        realm.create('LabRequest', incomingLabRequest);
+      });
+    }
+    else {
+      if (incomingLabRequest.lastUpdated < existingLabRequest.lastUpdated) {
+        fails.add(existingLabRequest.key);
+        throw new Error('Received a labRequest that is out-of-date. Did you upload updates yet?');
+      }
+
+      // Should not occur but just in case
+      if (incomingLabRequest.lastUpdated === existingLabRequest.lastUpdated) {
+        return;
+      }
+
+      // Actually update the medication
+      if (!updateLabRequest(existingLabRequest.key, incomingLabRequest)) {
+        fails.add(existingLabRequest.key);
+      }
+
+      // Update that medication's updated timestamp
+      realm.write(() => {
+        // If medication finished updating successfully
+        if(!fails.has(incomingLabRequest.key)) {
+          existingLabRequest.lastUpdated = incomingLabRequest.lastUpdated;
+        }
+      });
+    }
+  });
+
+  if(fails.size) {
+    return Array.from(fails);
+  }
+
+  // If finished updating everything successfully, then update synced info
+  const settings = realm.objects('Settings')['0'];
+  realm.write(() => {
+    if(!settings) {
+      realm.create('Settings', {labRequestsLastSynced: new Date().getTime(), patientsLastSynced: 0, medicationsLastSynced: 0});
+      return;
+    }
+    settings.labRequestsLastSynced = new Date().getTime();
+  });
+  return [];
 }
 
 export function handleDownloadedMedications(medications) {
@@ -446,7 +615,7 @@ export function handleDownloadedMedications(medications) {
   const settings = realm.objects('Settings')['0'];
   realm.write(() => {
     if(!settings) {
-      realm.create('Settings', {medicationsLastSynced: new Date().getTime(), patientsLastSynced: 0});
+      realm.create('Settings', {medicationsLastSynced: new Date().getTime(), patientsLastSynced: 0, labRequestsLastSynced: 0});
       return;
     }
     settings.medicationsLastSynced = new Date().getTime();
@@ -524,7 +693,7 @@ export function handleDownloadedPatients(patients) {
   const settings = realm.objects('Settings')['0'];
   realm.write(() => {
     if(!settings) {
-      realm.create('Settings', {patientsLastSynced: new Date().getTime(), medicationsLastSynced: 0});
+      realm.create('Settings', {patientsLastSynced: new Date().getTime(), medicationsLastSynced: 0, labRequestsLastSynced: 0});
       return;
     }
     settings.patientsLastSynced = new Date().getTime();
