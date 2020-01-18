@@ -27,6 +27,7 @@ export default class TriageLabComponent extends Component<{}> {
       <View style={styles.container}>
         <Text style={styles.title}> {this.props.name}</Text>
         <Picker style={styles.pickerStyle}
+          enabled={this.props.enabled}
           selectedValue={this.props.selectedIndex}
           itemStyle={styles.itemStyle}
           onValueChange={this.props.onValueChange}>

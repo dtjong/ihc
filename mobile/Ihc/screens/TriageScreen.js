@@ -2,7 +2,12 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
-  View
+  View,
+  Modal,
+  TouchableHighlight,
+  ScrollView,
+  TextInput,
+  Switch
 } from 'react-native';
 let t = require('tcomb-form-native');
 let Form = t.form.Form;
@@ -179,6 +184,7 @@ class TriageScreen extends Component<{}> {
   // Updates the timestamp that displays in the PatientSelectScreen
   // Doesn't actually save the Triage form
   completed = () => {
+    this.setModalVisible(!this.state.modalVisible);
     this.props.setLoading(true);
     let statusObj = {};
     try {
@@ -261,58 +267,130 @@ class TriageScreen extends Component<{}> {
     this.setState(oldTests);
   }
 
+  // These is for the modal
+  state = {
+    modalVisible: false,
+  };
+
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+  }
+
   render() {
     return (
-      <Container>
+      <View style={styles.triageContainer}>
 
-        <Text style={styles.title}>
-          Triage
-        </Text>
+        <Button
+        onPress={() => {
+          this.setModalVisible(true);
+        }}
+        style={styles.button}
+        text='Add New Form for April 20, 2019' />
 
-        <View style={styles.form}>
-          <Form ref='form'
-            type={this.state.formType}
-            value={this.state.formValues}
-            options={this.options}
-            onChange={this.onFormChange}
-          />
+        <Container>
 
-          {
-            this.state.formValues.urineTestDone ?
-              (
-                <View style={styles.labsContainer}>
-                  <TriageLabsWheel
-                    updateLabResult={(name, result) =>
-                      this.updateLabTests(name, result, this.state.labTestObjects)}
-                    tests = {Object.values(this.state.labTestObjects)}
-                  />
+        <View style={{marginTop: 50}}>
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={this.state.modalVisible}
+            onRequestClose={() => {
+              Alert.alert('Modal has been closed.');
+            }}>
+            <View style={{paddingHorizontal: '10%'}}>
+              <ScrollView>
+                <View>
+                  <Text style={styles.title}>New Triage Form: April 20, 2019</Text>
+
+                  <View style={styles.formContainer}>
+                    <Text style={styles.nameModal}>Firstname Middlename Motherslast Fatherslast</Text>
+                    <Text style={styles.dateModal}>April 20, 1969</Text>
+                  </View>
+                  <View style={styles.separator}></View>
+
+                  <View style={styles.formContainer}>
+                    <View style={{width: '25%', marginRight: '5%', height: 50}}>
+                      <Text style={styles.nameModal}>Chief Complaint</Text>
+                    </View>
+                    <View style={{width: '70%'}}>
+                      <Form ref='form'
+                        type={this.state.formType}
+                        value={this.state.formValues}
+                        options={this.options}
+                        onChange={this.onFormChange}
+                      />
+                      </View>
+
+                  </View>
+
+                  {
+                    this.state.formValues.urineTestDone ?
+                      (
+                        <View style={styles.labsContainer}>
+                          <TriageLabsWheel
+                            updateLabResult={(name, result) =>
+                              this.updateLabTests(name, result, this.state.labTestObjects)}
+                            tests = {Object.values(this.state.labTestObjects)}
+                          />
+                        </View>
+                      ) : null
+                  }
+
+                  <Button onPress={this.completed}
+                    style={{marginVertical: 50,}}
+                    text='Triage completed' />
+
                 </View>
-              ) : null
-          }
-
-          <Button onPress={this.gotoMedications}
-            text='Mark Medications' />
-
-          <Button onPress={this.completed}
-            text='Triage completed' />
-
-          <Button onPress={this.submit}
-            text='Update' />
-
+              </ScrollView>
+            </View>
+          </Modal>
         </View>
-      </Container>
+
+          <View style={styles.form}></View>
+
+        </Container>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  formContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'stretch',
+  },
+  triageContainer: {
+    margin: '1%',
+  },
+  nameModal: {
+    fontSize: 20,
+    color: 'black',
+    fontWeight: 'bold',
+  },
+  dateModal: {
+    fontSize: 20,
+    color: 'black',
+    fontWeight: 'bold',
+    marginLeft: 'auto'
+  },
+  separator: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#D8D8D8',
+    marginTop: 15,
+    marginBottom: 35,
+  },
   form: {
     width: '80%',
+    backgroundColor: 'white',
   },
   title: {
-    fontSize: 20,
+    fontSize: 28,
     textAlign: 'center',
+    color: 'black',
     margin: 10,
+    marginVertical: 40,
+    fontWeight: 'bold',
   },
   labsContainer: {
     flexDirection: 'row',

@@ -53,7 +53,7 @@ export default class Patient {
     return {weights, heights};
   }
 
-  get isMale() {
+  isMale() {
     return this.gender === 1;
   }
 
