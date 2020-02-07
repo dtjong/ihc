@@ -61,14 +61,17 @@ class GrowthChartScreen extends Component<{}> {
     }
 
     let weightData, heightData;
+    console.log("patient key is ", this.props.currentPatientKey);
+    console.log("patient is ", patient);
+    console.log("props is ", this.props);
     if (patient.isMale && patient.isInfant) {
       weightData = this.extractData(infantBoysWeightData);
       heightData = this.extractData(infantBoysHeightData);
-    } 
+    }
     else if (patient.isMale && !patient.isInfant) {
       weightData = this.extractData(boysWeightData);
       heightData = this.extractData(boysHeightData);
-    } 
+    }
     else if (!patient.isMale && patient.isInfant) {
       weightData = this.extractData(infantGirlsWeightData);
       heightData = this.extractData(infantGirlsHeightData);
@@ -77,7 +80,7 @@ class GrowthChartScreen extends Component<{}> {
       weightData = this.extractData(girlsWeightData);
       heightData = this.extractData(girlsHeightData);
     }
-    
+
     const growthChartData = patient.growthChartData;
     weightData.push({ color: 'black', unit: '%', values: growthChartData.weights});
     heightData.push({ color: 'black', unit: '%', values: growthChartData.heights});
@@ -148,7 +151,6 @@ import { setLoading, setErrorMessage } from '../reduxActions/containerActions';
 import { connect } from 'react-redux';
 
 const mapStateToProps = state => ({
-  currentPatientKey: state.currentPatientKey
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -4,13 +4,16 @@ import {localData, serverData} from '../services/DataService';
 // of all the patient keys that failed to download
 export function downstreamSyncWithServer() {
   const lastSynced = localData.patientsLastSynced();
+  console.log("inside downstream");
 
   return serverData.getUpdatedPatients(lastSynced)
     .then((patients) => {
+      console.log("Server Data fetch");
       const failedPatientKeys = localData.handleDownloadedPatients(patients);
       return {failedPatientKeys: failedPatientKeys};
     });
 }
+
 export function downloadMedications() {
   const lastSynced = localData.medicationsLastSynced();
 
