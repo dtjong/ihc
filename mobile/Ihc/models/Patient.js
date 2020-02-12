@@ -89,10 +89,8 @@ export default class Patient {
     patient.needToUpload = false;
     patient.lastUpdated = new Date().getTime();
 
-    if(form.newPatient) {
-      // 1 is male, 2 is female
-      patient.gender = form.gender === 'Male' ? 1 : 2;
-    }
+    patient.gender = form.gender in Gender ? Gender[form.gender] : Gender[Undefined];
+
     return patient;
   }
 
@@ -107,6 +105,12 @@ export default class Patient {
       drugUpdates, soaps, triages, statuses, lastUpdated
     };
   }
+}
+
+Gender = {
+  Undefined: 0,
+  Male: 1,
+  Female: 2
 }
 
 Patient.schema = {
