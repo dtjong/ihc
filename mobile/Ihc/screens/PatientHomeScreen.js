@@ -20,6 +20,7 @@ import { localData, serverData } from '../services/DataService';
 import { stringDate } from '../util/Date';
 import TriageHistory from './TriageHistory';
 import SoapScreen from './SoapScreen';
+import LabScreen from './LabScreen';
 import Container from '../components/Container';
 import GrowthChartScreen from './GrowthChartScreen';
 
@@ -201,6 +202,9 @@ class PatientHomeScreen extends Component {
               label = "Page #3 GC"
               currentPatientKey = { this.state.patientInfo.key }
               />
+            <LabScreen tabLabel = {
+                  { label: "LABS" } }
+              label = "Page #4 LABS" / >
             </ScrollableTabView>
           </View>
         );

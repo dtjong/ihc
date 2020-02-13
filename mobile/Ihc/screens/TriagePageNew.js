@@ -4,7 +4,6 @@ import {
   ScrollView,
   Text,
   View,
-  Modal,
   Alert,
   AppRegistry,
   TextInput,
@@ -89,14 +88,6 @@ class TriagePageNew extends Component{
       unitswitch: false,
       labTestObjects: labTestObjects,
     };
-
-  }
-  /*state = {
-    modalVisible: false,
-  };*/
-
-  setModalVisible(visible) {
-    this.setState({modalVisible: visible});
   }
 
   loadPastTriages = () => {
