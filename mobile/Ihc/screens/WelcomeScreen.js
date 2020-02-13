@@ -10,12 +10,24 @@ import Container from '../components/Container';
 import Button from '../components/Button';
 import { downstreamSyncWithServer } from '../util/Sync';
 import MenuItem from '../components/MenuItem';
+import UnitSwitch from '../components/UnitSwitch'
 
 
 class newWelcomeScreen extends Component {
+
+      
     constructor(props) {
         super(props);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        this.state = {
+            unitSwitchValue: false,
+        }
+    }
+
+
+    toggleUnitSwitch = (value) => {
+        this.setState({ unitSwitchValue: value })
+        console.log('Switch 1 is: ' + value)
     }
 
     onNavigatorEvent(event) {
@@ -98,29 +110,39 @@ class newWelcomeScreen extends Component {
     render() {
         return (
             <Container >
-              <View style = { styles.menuContainer } >
-                <TouchableOpacity onPress = { this.goToSignin }
-                style = { styles.TouchableOpacityStyle } >
-                  <MenuItem itemImage = { require('../images/WelcomeScreen/CheckInPatient.png') }
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress = { this.goToSelectPatient }
-                style = { styles.TouchableOpacityStyle } >
-                  <MenuItem itemImage = { require('../images/WelcomeScreen/PatientList.png') }
-                  />
-                </TouchableOpacity >
-                <TouchableOpacity onPress = { this.goToSignin }
-                style = { styles.TouchableOpacityStyle } >
-                  <MenuItem itemImage = { require('../images/WelcomeScreen/Labs.png') }
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress = { this.goToMedicationInventory }
-                style = { styles.TouchableOpacityStyle } >
-                  <MenuItem itemImage = { require('../images/WelcomeScreen/Pharmacy.png') }
-                  />
-                </TouchableOpacity >
 
-              </View>
+
+                <UnitSwitch
+                    toggleUnitSwitch={this.toggleUnitSwitch}
+                    unitSwitchValue={this.state.unitSwitchValue} />
+                <View style={styles.menuContainer} >
+
+
+
+
+
+                    <TouchableOpacity onPress={this.goToSignin}
+                        style={styles.TouchableOpacityStyle} >
+                        <MenuItem itemImage={require('../images/WelcomeScreen/CheckInPatient.png')}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={this.goToSelectPatient}
+                        style={styles.TouchableOpacityStyle} >
+                        <MenuItem itemImage={require('../images/WelcomeScreen/PatientList.png')}
+                        />
+                    </TouchableOpacity >
+                    <TouchableOpacity onPress={this.goToSignin}
+                        style={styles.TouchableOpacityStyle} >
+                        <MenuItem itemImage={require('../images/WelcomeScreen/Labs.png')}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={this.goToMedicationInventory}
+                        style={styles.TouchableOpacityStyle} >
+                        <MenuItem itemImage={require('../images/WelcomeScreen/Pharmacy.png')}
+                        />
+                    </TouchableOpacity >
+
+                </View>
             </Container >
         );
     }
