@@ -64,6 +64,37 @@ class LabScreen extends Component<{}> {
     this.state = {
       formValues: {date: todayDate},
       todayDate: todayDate,
+      date: stringDate(new Date()),
+      hasInsurance: false,
+      location: 'ihc',
+      timeIn: `${new Date().getTime()}`,
+      timeOut: null,
+      triager: 'Alex',
+      status: "student",
+      history: 'placeholder',
+      pharmacySection: 'placeholder',
+      labsDone: true,
+      isFemale: true,
+      urineTestDone: true,
+      menstruation: 'Last Menstrual Period',
+      pregancy: 'Pregnancies (#)',
+      abortion: 'Abortions (#)',
+      livebirths: 'Live Births (#)',
+      miscarriages: 'Miscarriages (#)',
+      height: '',
+      weight: '',
+      weightswitch: false,
+      rr: '',
+      temp: '',
+      tempswitch: false,
+      o2: '',
+      bp: '',
+      hr: '',
+      allergies: '',
+      medications: '',
+      surgeries: '',
+      immunizations: '',
+      chiefComplaint: '',
       hb: '',
       hba1c: '',
       bgl: 'Blood Glucose Level',
@@ -74,82 +105,170 @@ class LabScreen extends Component<{}> {
     };
   }
 
-  // TODO: Make form fields larger, more like textarea
-  Soap = t.struct({
-    date: t.String,
-    subjective: t.maybe(t.String),
-    objective: t.maybe(t.String),
-    assessment: t.maybe(t.String),
-    plan: t.maybe(t.String),
-    wishlist: t.maybe(t.String),
-    provider: t.String // Doctor's name
-  });
-
-  formOptions = {
-    fields: {
-      date: {
-        editable: false,
-      },
-      subjective: {
-        multiline: true,
-      },
-      objective: {
-        multiline: true,
-      },
-      assessment: {
-        multiline: true,
-      },
-      plan: {
-        multiline: true,
-      },
-      wishlist: {
-        multiline: true,
-      },
+  loadExistingTriage = () => {
+    console.log("Triage page key is  ", this.props.currentPatientKey);
+    let triageObj = localData.getTriage(this.props.currentPatientKey, stringDate(new Date()));
+    if (!triageObj) {
+      this.props.setLoading(false);
+      return;
     }
+    let triage = Object.assign({}, triageObj);
+    let intVals = ['height', 'weight', 'rr', 'temp', 'o2', 'hr'];
+    intVals.forEach( obj => {
+      //if(triage[obj]){
+        triage[obj] = triage[obj].toString();
+      //}
+    });
+
+    this.setState({...triage,
+      labTestObjects: this.getExistingLabTestObjects(triage, this.state.labTestObjects)});
+
   }
 
-  syncAndLoadFormValues = () => {
-    this.props.setLoading(true);
-    this.props.isUploading(false);
-    this.props.clearMessages();
-
-    // Load existing SOAP info if it exists
-    const soap = localData.getSoap(this.props.currentPatientKey, this.state.todayDate);
-    if (soap) {
-      this.setState({ formValues: soap });
+  getExistingLabTestObjects = (triage, labTestObjects) => {
+    const labTestObjectsCopy = Object.assign({}, labTestObjects);
+    // For each test, set the result field of the labTestObject to the proper
+    // index of the options array
+    for(const [testName,test] of Object.entries(labTestObjectsCopy)) {
+      if(!triage[testName]){
+        // If there is no value yet for that test, then skip it
+        continue;
+      }
+      test.result = test.options.indexOf(triage[testName]);
+      if(test.result === -1) {
+        throw new Error(`${test} does not contain string option ${triage[testName]}`);
+      }
     }
-
-    // Attempt server download and reload information if successful
-    downstreamSyncWithServer()
-      .then( ( failedPatientKeys) => {
-        if (this.props.loading) {
-          if (failedPatientKeys.length > 0) {
-            throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
-          }
-
-          const soap = localData.getSoap(this.props.currentPatientKey, this.state.todayDate);
-          if (soap) {
-            this.setState({ formValues: soap });
-          }
-
-          this.props.setLoading(false);
-        }
-      })
-      .catch( (err) => {
-        if (this.props.loading) {
-          this.props.setErrorMessage(err.message);
-          this.props.setLoading(false);
-        }
-      });
-  }
-
-  componentDidMount() {
-    this.syncAndLoadFormValues();
+    return labTestObjectsCopy;
   }
 
   loadPastTriages = () => {
     let patient = localData.getPatient(this.props.currentPatientKey);
     this.setState({patientTriages: patient.triages});
+  }
+
+  componentWillMount = () => {
+    this.loadExistingTriage();
+    this.loadPastTriages();
+  }
+
+  submit = () => {
+    if(!this.state.timeOut){
+      Alert.alert('Confirmation', 'Do you want to mark this Triage complete?',
+        [{text: 'Yes', onPress: () => {
+          this.setState({timeOut: `${new Date().getTime()}`}, () => {
+            this.save();
+            this.markStatus();
+            this.successConfirm();
+          });
+        }},
+        {text: 'No', onPress: () => {
+          console.log('cancel');
+        }}]);
+    }else{
+      this.setState({timeOut: `${new Date().getTime()}`}, () => {
+        this.save();
+        Alert.alert('Updated', 'The Triage has been updated.',
+          [{text: 'Close', onPress: () => {
+            console.log('Close');
+          }}]);
+      });
+    }
+  }
+
+  save = () => {
+    this.props.clearMessages();
+    this.props.setLoading(true);
+    let formVals = Object.assign({}, this.state);
+    delete formVals.patientTriages;
+    const triage = Triage.extractFromForm(formVals, this.props.currentPatientKey, this.state.labTestObjects);
+    try {
+      localData.updateTriage(triage);
+      this.props.setSuccessMessage("Saved Successfully");
+      this.props.setLoading(false);
+    } catch(e) {
+      this.props.setErrorMessage(e.message);
+      this.props.setLoading(false);
+      return;
+    }
+
+    try {
+      serverData.updateTriage(triage)
+        .then( () => {
+          console.log('updated server successfully');
+          if (this.props.loading) {
+            this.props.setLoading(false);
+            this.props.setSuccessMessage('Triage updated successfully');
+          }
+        })
+        .catch( (e) => {
+          console.log('error in server', e);
+          if (this.props.loading) {
+            localData.markPatientNeedToUpload(this.props.currentPatientKey);
+            this.props.setLoading(false, true);
+            this.props.setErrorMessage(e.message);
+          }
+        });
+    } catch(e) {
+      console.log('error in local', e);
+      this.props.setErrorMessage(e.message);
+      this.props.setLoading(false);
+      return;
+    }
+  }
+
+  markStatus = () => {
+    this.props.setLoading(true);
+    let statusObj = {};
+    try {
+      statusObj = localData.updateStatus(this.props.currentPatientKey, stringDate(new Date()),
+        'triageCompleted', new Date().getTime());
+      console.log('marked complete locally');
+    } catch(e) {
+      console.log('issue in local ');
+      this.props.setLoading(false);
+      this.props.setErrorMessage(e.message);
+      return;
+    }
+
+    this.props.isUploading(true);
+    serverData.updateStatus(statusObj)
+      .then( () => {
+        console.log('marked complete in server');
+        // View README: Handle syncing the tablet, point 3 for explanation
+        if(this.props.loading) {
+          this.props.setLoading(false);
+          this.props.setSuccessMessage('Triage marked as completed, but not yet submitted');
+        }
+      })
+      .catch( (e) => {
+        console.log('issue in server');
+        if(this.props.loading) {
+          localData.markPatientNeedToUpload(this.props.currentPatientKey);
+          this.props.setErrorMessage(e.message);
+          this.props.setLoading(false, true);
+        }
+      });
+  }
+
+  showSave = () => {
+    try {
+      this.save();
+      Alert.alert('Saved', 'Your Changes have been saved',
+        [{text: 'Close', onPress: () => {
+          console.log('Saved');
+        }}]);
+    }catch(e){
+
+    }
+  }
+
+  successConfirm = () => {
+    Alert.alert('Success', 'Triage is marked completed', [
+      {text: 'Close', onPress: () => {
+        console.log('Close');
+      }}
+    ]);
   }
 
   // Updates the timestamp that displays in the PatientSelectScreen
@@ -166,7 +285,7 @@ class LabScreen extends Component<{}> {
       <Container>
         <View style={styles.triagescreen}>
         <View style={styles.triagesection}>
-          <Text style={styles.subtitle}>Labs</Text>
+          <Text style={styles.title}>Labs </Text>
           <View style={styles.inputsection}>
             <Text style={{fontSize: 18, marginTop:12}}>Hb</Text>
             <Text style={{fontSize: 18, marginTop:25}}>HbA1c</Text>
@@ -210,6 +329,16 @@ class LabScreen extends Component<{}> {
             tests = {Object.values(this.state.labTestObjects)}
           />
         </View>
+              {this.props.canModify ?
+                <View>
+                  <Button onPress={this.showSave}
+                    style={{marginVertical: 20,}}
+                    text='Save' />
+                  <Button onPress={this.submit}
+                    style={{marginVertical: 20,}}
+                    text='Submit' />
+                </View>: null
+              }
         </View>
       </Container>
     );
@@ -308,7 +437,6 @@ import { connect } from 'react-redux';
 
 const mapStateToProps = state => ({
   loading: state.loading,
-  currentPatientKey: state.currentPatientKey
 });
 
 const mapDispatchToProps = dispatch => ({
