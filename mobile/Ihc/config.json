@@ -1,6 +1,7 @@
 {
   "fakeLocalDataService" : "false",
-  "fakeServerDataService" : "false",
+  "fakeServerDataService" : "true",
+  "testingServerDataService" : "false",
   "fetchUrl" : "http://192.168.1.118:8000",
 
 }

@@ -4,7 +4,6 @@ import {
   ScrollView,
   Text,
   View,
-  Modal,
   Alert,
   AppRegistry,
   TextInput,
@@ -89,14 +88,6 @@ class TriagePageNew extends Component{
       unitswitch: false,
       labTestObjects: labTestObjects,
     };
-
-  }
-  /*state = {
-    modalVisible: false,
-  };*/
-
-  setModalVisible(visible) {
-    this.setState({modalVisible: visible});
   }
 
   loadPastTriages = () => {
@@ -270,7 +261,7 @@ class TriagePageNew extends Component{
   }
 
   submit = () => {
-    if(!this.state.timeOut){
+    if(!this.state.timeOut) {
       Alert.alert('Confirmation', 'Do you want to mark this Triage complete?',
         [{text: 'Yes', onPress: () => {
           this.setState({timeOut: `${new Date().getTime()}`}, () => {
@@ -282,7 +273,7 @@ class TriagePageNew extends Component{
         {text: 'No', onPress: () => {
           console.log('cancel');
         }}]);
-    }else{
+    } else {
       this.setState({timeOut: `${new Date().getTime()}`}, () => {
         this.save();
         Alert.alert('Updated', 'The Triage has been updated.',
@@ -491,51 +482,7 @@ class TriagePageNew extends Component{
                   </View>
                 </View>
 
-                <View style={styles.triagesection}>
-                  <Text style={styles.subtitle}>Labs</Text>
-                    <View style={styles.inputsection}>
-                      <Text style={{fontSize: 18, marginTop:12}}>Hb</Text>
-                      <Text style={{fontSize: 18, marginTop:25}}>HbA1c</Text>
-                      <Text style={{fontSize: 18, marginTop:25}}>Blood Glucose Level</Text>
-                    </View>
-                  <View style={styles.inputsection}>
-                    <TextInput
-                    style={styles.input, {width: 300}}
-                      onChangeText={(hb) => this.setState({hb})}
-                      value={this.state.hb}
-                      />
-                    <TextInput
-                    style={styles.input, {width: 300}}
-                      onChangeText={(hba1c) => this.setState({hba1c})}
-                      value={this.state.hba1c}
-                      />
-                    <TextInput
-                    style={styles.input, {width: 300}}
-                      onChangeText={(bloodglucose) => this.setState({bloodglucose})}
-                      value={this.state.bloodglucose}
-                    />
-                  </View>
 
-                  <View style={styles.inputsection, {flexDirection:'row', marginLeft: '17%', marginTop: 10}}>
-                    <Text style={{fontSize:20}}>Fasting?</Text>
-                    <CheckBox checked={this.state.fasting}/>
-                  </View>
-                  <View style={styles.inputsection, {flexDirection:'row', marginLeft: '10%', marginTop: 11}}>
-                    <Text style={{fontSize:20}}>Pregnant?</Text>
-                    <CheckBox checked={this.state.fasting}/>
-                  </View>
-
-                </View>
-
-                <View style={styles.triagesection}>
-                  <Text style={styles.subtitle, {marginBottom: 30, fontSize: 20, color:'#0055FF'}}>Urine Test</Text>
-                  <TriageLabsWheel
-                    enabled={true}
-                    updateLabResult={(name, result) =>
-                      this.updateLabTests(name, result, this.state.labTestObjects)}
-                    tests = {Object.values(this.state.labTestObjects)}
-                  />
-                </View>
               </View>
               : null}
 
