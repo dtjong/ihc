@@ -20,6 +20,7 @@ import { localData, serverData } from '../services/DataService';
 import { stringDate } from '../util/Date';
 import TriageHistory from './TriageHistory';
 import SoapScreen from './SoapScreen';
+import LabScreen from './LabScreen';
 import Container from '../components/Container';
 import GrowthChartScreen from './GrowthChartScreen';
 
@@ -182,25 +183,29 @@ class PatientHomeScreen extends Component {
               }
               onScroll = {
                   (x) => this._scrollX.setValue(x) } >
-            <TriagePageNew currentPatientKey = { this.state.patientInfo.key }
+            <TriagePageNew 
+              currentPatientKey = { this.state.patientInfo.key }
               gender = { this.state.patientInfo.gender }
               goToTriage = { a => this.goToTriage(a) }
               label = "Page #1 Hot"
               canModify = { this.props.canModify }
-              tabLabel = {
-                  { label: triageLabel } }
+              tabLabel = { { label: triageLabel } }
               status = { this.props.status }
               showHistory = { this.props.showHistory }
               showForm = { this.props.showForm }
             />
-            <SoapScreen tabLabel = {
-                  { label: "SOAP" } }
+            <SoapScreen 
+              tabLabel = { { label: "SOAP" } }
               label = "Page #2 SOAP" / >
-              <GrowthChartScreen tabLabel = {
-                  { label: "GROWTH CHART" } }
+            <GrowthChartScreen 
+              tabLabel = { { label: "GROWTH CHART" } }
               label = "Page #3 GC"
+              currentPatientKey = { this.state.patientInfo.key } />
+            <LabScreen 
+              tabLabel = { { label: "LABS" } }
+              canModify = { this.props.canModify }
               currentPatientKey = { this.state.patientInfo.key }
-              />
+              label = "Page #4 LABS" / >
             </ScrollableTabView>
           </View>
         );
