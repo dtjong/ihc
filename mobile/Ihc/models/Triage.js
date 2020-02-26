@@ -10,9 +10,6 @@ export default class Triage {
     if(gender === 1 && form.labsDone) { // male
       return MaleTriageLabs;
     }
-    if(gender === 1 && form.labsDone) { // male
-      return MaleTriageLabs;
-    }
     if(gender === 1 && !form.labsDone) { // male
       return MaleTriage1;
     }

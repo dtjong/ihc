@@ -285,7 +285,7 @@ class LabScreen extends Component<{}> {
       <Container>
         <View style={styles.triagescreen}>
         <View style={styles.triagesection}>
-          <Text style={styles.title}>Labs </Text>
+          <Text style={styles.subtitle}>Labs </Text>
           <View style={styles.inputsection}>
             <Text style={{fontSize: 18, marginTop:12}}>Hb</Text>
             <Text style={{fontSize: 18, marginTop:25}}>HbA1c</Text>
@@ -296,16 +296,19 @@ class LabScreen extends Component<{}> {
               style={styles.input, {width: 300}}
               onChangeText={(hb) => this.setState({hb})}
               value={this.state.hb}
+              editable={this.props.canModify}
             />
             <TextInput
               style={styles.input, {width: 300}}
               onChangeText={(hba1c) => this.setState({hba1c})}
               value={this.state.hba1c}
+              editable={this.props.canModify}
             />
             <TextInput
               style={styles.input, {width: 300}}
               onChangeText={(bloodglucose) => this.setState({bloodglucose})}
               value={this.state.bloodglucose}
+              editable={this.props.canModify}
             />
           </View>
 
@@ -315,7 +318,7 @@ class LabScreen extends Component<{}> {
           </View>
           <View style={styles.inputsection, {flexDirection:'row', marginLeft: '10%', marginTop: 11}}>
             <Text style={{fontSize:20}}>Pregnant?</Text>
-            <CheckBox checked={this.state.fasting}/>
+            <CheckBox checked={this.state.pregnant}/>
           </View>
 
         </View>
