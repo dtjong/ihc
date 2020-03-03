@@ -296,19 +296,16 @@ class LabScreen extends Component<{}> {
               style={styles.input, {width: 300}}
               onChangeText={(hb) => this.setState({hb})}
               value={this.state.hb}
-              editable={this.props.canModify}
             />
             <TextInput
               style={styles.input, {width: 300}}
               onChangeText={(hba1c) => this.setState({hba1c})}
               value={this.state.hba1c}
-              editable={this.props.canModify}
             />
             <TextInput
               style={styles.input, {width: 300}}
               onChangeText={(bloodglucose) => this.setState({bloodglucose})}
               value={this.state.bloodglucose}
-              editable={this.props.canModify}
             />
           </View>
 
