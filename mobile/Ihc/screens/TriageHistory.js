@@ -260,14 +260,14 @@ class TriagePageNew extends Component{
                   <TextInput
                     style={styles.input, {width: 300}}
                     onChangeText={(height) => this.setState({height})}
-                    value={this.state.height}
+                    value={this.state.heightswitch ? "" + (parseFloat(this.state.height) / 2.54) : this.state.height}
                     keyboardType={'numeric'}
                     editable={false}
                     />
                   <TextInput
                     style={styles.input, {width: 300}}
                     onChangeText={(weight) => this.setState({weight})}
-                    value={this.state.weight}
+                    value={this.state.weightswitch ? "" + (parseFloat(this.state.weight) * 2.204) :  this.state.weight}
                     keyboardType={'numeric'}
                     editable={false}
                     />
@@ -281,16 +281,16 @@ class TriagePageNew extends Component{
                   <TextInput
                     style={styles.input, {width: 300}}
                     onChangeText={(temp) => this.setState({temp})}
-                    value={this.state.temp}
+                    value={this.state.tempswitch ? "" + (9.0 * (parseFloat(this.state.temp)) / 5.0 + 32) : this.state.temp}
                     keyboardType={'numeric'}
                     editable={false}
                     />
                 </View>
                 <View style={styles.inputunitsection}>
-                  <Text style={styles.units}>{this.state.heightswitch?'cm':'in'}</Text>
-                  <Text style={styles.units}>{this.state.weightswitch?'kg':'lb'}</Text>
+                  <Text style={styles.units}>{this.state.heightswitch?'in':'cm'}</Text>
+                  <Text style={styles.units}>{this.state.weightswitch?'lb':'kg'}</Text>
                   <Text style={styles.units}>{this.state.unitswitch?'unit1':'unit2'}</Text>
-                  <Text style={styles.units}>{this.state.tempswitch?'C':'F'}</Text>
+                  <Text style={styles.units}>{this.state.tempswitch?'F':'C'}</Text>
                 </View>
                 <View style={styles.inputsection, {marginLeft: 0}}>
                   <Switch
