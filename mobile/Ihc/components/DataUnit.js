@@ -1,67 +1,64 @@
-import React, { Component, useImperativeHandle } from 'react';
-import { Text, StyleSheet } from 'react-native';
+import React, { View, Component } from 'react';
+import { Text } from 'react-native';
 
 class DataUnit extends Component<{}> {
 
     constructor(props) {
-        super(props);
+        super(props); 
+        this.state = {
+            measurement: props.measurement,
+            units: props.units
+        }
+        window.x = this;
     }
 
-    static convertVolume(dataUnit, impToMetric) {
-        if (impToMetric && !dataUnit.isMetric) {
-            dataUnit.measurement = dataUnit.measurement * 473.16;
-            dataUnit.units = MetricUnits.Milliliters;
-        }
-        if (!impToMetric && dataUnit.isMetric) {
-            dataUnit.measurement = dataUnit.measurement / 473.16;
-            dataUnit.units = ImpUnits.Pint;
-        }
+    ImpUnits = {
+        feet: "ft",
+        pounds: "lbs",
+        fahrenheit: "F"
+    };
+    
+    MetricUnits = {
+        centimeters: "cm",
+        kilograms: "kg",
+        celsius: "C"
+    };  
 
-        return dataUnit;
+    convert() {
+        switch(this.state.units) {
+            case ImpUnits.feet:
+                this.state.units = MetricUnits.centimeters;
+                this.state.measurement *= 30.48;
+                break;
+            case ImpUnits.pounds:
+                this.state.units = MetricUnits.kilograms;
+                this.state.measurement *= 0.453592;
+                break;
+            case ImpUnits.fahrenheit:
+                this.state.units = MetricUnits.celsius;
+                this.state.measurement = (this.state.measurement - 32) * 5 / 9;
+                break;
+            case MetricUnits.centimeters:
+                this.state.units = ImpUnits.feet;
+                this.state.measurement *= 0.0328084;
+                break;
+            case MetricUnits.kilograms:
+                this.state.units = ImpUnits.pounds;
+                this.state.measurement *= 2.20462;
+                break;
+            case MetricUnits.celsius:
+                this.state.units = ImpUnits.fahrenheit;
+                this.state.measurement = (this.state.measurement * 5 / 9) + 32;
+                break;
+        }
     }
 
-    static convertLength(dataUnit, impToMetric) {
-        if (impToMetric && !dataUnit.isMetric) {
-            dataUnit.measurement = dataUnit.measurement * 0.305;
-            dataUnit.units = MetricUnits.Meters;
-        }
-        if (!impToMetric && dataUnit.isMetric) {
-            dataUnit.measurement = dataUnit.measurement / 0.305;
-            dataUnit.units = ImpUnits.Feet;
-        }
-
-        return dataUnit;
+    render() {
+        return(
+            <View>
+                <Text> {this.state.measurement} {this.state.units}</Text>
+            </View>
+        )
     }
 
-    static convertWeight(dataUnit, impToMetric) {
-        if (impToMetric && !dataUnit.isMetric) {
-            dataUnit.measurement = dataUnit.measurement * 0.436;
-            dataUnit.units = MetricUnits.Kilograms;
-        }
-        if (!impToMetric && dataUnit.isMetric) {
-            dataUnit.measurement = dataUnit.measurement / 0.436;
-            dataUnit.units = ImpUnits.Pounds;
-        }
-
-        return dataUnit;
-    }
 }
-
-ImpUnits = {
-    Pint: 0,
-    Feet: 1,
-    Pounds: 2
-};
-
-MetricUnits = {
-    Milliliters: 3,
-    Meters: 4,
-    Kilograms: 5
-};
-
-DataUnit.schema = {
-    name = 'DataUnit',
-    measurement = 'double',
-    units = 'int',
-    isMetric = 'bool'
-};
