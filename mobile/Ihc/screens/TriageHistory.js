@@ -474,8 +474,8 @@ class TriagePageNew extends Component{
                     />
                   <TextInput
                   style={styles.input, {width: 300}}
-                    onChangeText={(bloodglucose) => this.setState({bloodglucose})}
-                    value={this.state.bloodglucose}
+                    onChangeText={(bgl) => this.setState({bgl})}
+                    value={this.state.bgl}
                     editable={false}
                   />
                 </View>
