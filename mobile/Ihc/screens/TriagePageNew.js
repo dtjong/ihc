@@ -489,9 +489,6 @@ class TriagePageNew extends Component{
 
               {this.props.canModify ?
                 <View>
-                  <Button onPress={this.showSave}
-                    style={{marginVertical: 20,}}
-                    text='Save' />
                   <Button onPress={this.submit}
                     style={{marginVertical: 20,}}
                     text='Submit' />

@@ -311,11 +311,11 @@ class LabScreen extends Component<{}> {
 
           <View style={styles.inputsection, {flexDirection:'row', marginLeft: '17%', marginTop: 10}}>
             <Text style={{fontSize:20}}>Fasting?</Text>
-            <CheckBox checked={this.state.fasting}/>
+            <CheckBox value={this.state.fasting} onValueChange={() => this.setState({fasting: !this.state.fasting})}/>
           </View>
           <View style={styles.inputsection, {flexDirection:'row', marginLeft: '10%', marginTop: 11}}>
             <Text style={{fontSize:20}}>Pregnant?</Text>
-            <CheckBox checked={this.state.pregnant}/>
+            <CheckBox value={this.state.pregnant} onValueChange={() => this.setState({pregnant: !this.state.pregnant})}/>
           </View>
 
         </View>
@@ -331,9 +331,6 @@ class LabScreen extends Component<{}> {
         </View>
               {this.props.canModify ?
                 <View>
-                  <Button onPress={this.showSave}
-                    style={{marginVertical: 20,}}
-                    text='Save' />
                   <Button onPress={this.submit}
                     style={{marginVertical: 20,}}
                     text='Submit' />

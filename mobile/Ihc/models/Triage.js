@@ -78,6 +78,7 @@ export default class Triage {
       liveBirths: 'string?',
       abortions: 'string?',
       miscarriages: 'string?',
+      pregnant: 'bool?',
       //---END IF---
       labsDone: 'bool',
       //---IF LABS DONE---
@@ -136,6 +137,7 @@ Triage.schema = {
     liveBirths: 'string?',
     abortions: 'string?',
     miscarriages: 'string?',
+    pregnant: 'bool?',
     //---END IF---
     labsDone: 'bool',
     //---IF LABS DONE---

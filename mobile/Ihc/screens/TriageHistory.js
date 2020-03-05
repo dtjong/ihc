@@ -482,11 +482,11 @@ class TriagePageNew extends Component{
 
                 <View style={styles.inputsection, {flexDirection:'row', marginLeft: '17%', marginTop: 10}}>
                   <Text style={{fontSize:20}}>Fasting?</Text>
-                  <CheckBox/>
+                  <CheckBox value={this.state.fasting} disabled={true}/>
                 </View>
                 <View style={styles.inputsection, {flexDirection:'row', marginLeft: '10%', marginTop: 11}}>
                   <Text style={{fontSize:20}}>Pregnant?</Text>
-                  <CheckBox/>
+                  <CheckBox value={this.state.pregnant} disabled={true}/>
                 </View>
 
               </View>
