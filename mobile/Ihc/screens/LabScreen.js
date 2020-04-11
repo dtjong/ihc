@@ -28,10 +28,15 @@ import TriageLabsWheel from '../components/TriageLabsWheel';
 import TriageHistory from './TriageHistory';
 
 const MU_UNICODE = '\u03bc';
+const Hb = "Hb";
+const HbA1c = "HbA1c";
+const BloodGlucoseLevel = "Blood Glucose Level";
+const Urine = "Urine";
 const tests = [
-  "Hb",
-  "HbA1c",
-  "Blood Glucose Level"
+  Hb,
+  HbA1c,
+  BloodGlucoseLevel,
+  Urine
 ];
 
 class LabScreen extends Component<{}> {
@@ -107,6 +112,7 @@ class LabScreen extends Component<{}> {
       fasting: false,
       pregnant: false,
       unitswitch: false,
+      showing: this.props.showing ? this.props.showing : tests,
       labTestObjects: labTestObjects,
     };
   }
@@ -160,9 +166,10 @@ class LabScreen extends Component<{}> {
 
   submit = () => {
     if(!this.state.timeOut){
-      Alert.alert('Confirmation', 'Do you want to mark this Triage complete?',
+      Alert.alert('Confirmation', 'Do you want to mark this lab complete?',
         [{text: 'Yes', onPress: () => {
           this.setState({timeOut: `${new Date().getTime()}`}, () => {
+            localData.markLabRequestComplete(this.props.labRequestKey);
             this.save();
             this.markStatus();
             this.successConfirm();
@@ -174,7 +181,8 @@ class LabScreen extends Component<{}> {
     }else{
       this.setState({timeOut: `${new Date().getTime()}`}, () => {
         this.save();
-        Alert.alert('Updated', 'The Triage has been updated.',
+        localData.markLabRequestComplete(this.props.labRequestKey);
+        Alert.alert('Updated', 'The lab results have been updated.',
           [{text: 'Close', onPress: () => {
             console.log('Close');
           }}]);
@@ -219,6 +227,7 @@ class LabScreen extends Component<{}> {
     this.props.clearMessages();
     this.props.setLoading(true);
     let formVals = Object.assign({}, this.state);
+    console.log(formVals);
     delete formVals.patientTriages;
     const triage = Triage.extractFromForm(formVals, this.props.currentPatientKey, this.state.labTestObjects);
     try {
@@ -326,69 +335,91 @@ class LabScreen extends Component<{}> {
         <View style={styles.triagesection}>
           <Text style={styles.subtitle}>Labs </Text>
           <View style={styles.inputsection}>
-            <Text style={{fontSize: 18, marginTop:12}}>Hb</Text>
-            <Text style={{fontSize: 18, marginTop:25}}>HbA1c</Text>
-            <Text style={{fontSize: 18, marginTop:25}}>Blood Glucose Level</Text>
-          </View>
-          <View style={styles.inputsection}>
-            <TextInput
-              style={styles.input, {width: 300}}
-              onChangeText={(hb) => this.setState({hb})}
-              value={this.state.hb}
-            />
-            <TextInput
-              style={styles.input, {width: 300}}
-              onChangeText={(hba1c) => this.setState({hba1c})}
-              value={this.state.hba1c}
-            />
-            <TextInput
-              style={styles.input, {width: 300}}
-              onChangeText={(bgl) => this.setState({bgl})}
-              value={this.state.bgl}
-            />
-          </View>
-
-          <View style={styles.inputsection, {flexDirection:'row', marginLeft: '17%', marginTop: 10}}>
-            <Text style={{fontSize:20}}>Fasting?</Text>
-            <CheckBox value={this.state.fasting} onValueChange={() => this.setState({fasting: !this.state.fasting})}/>
-          </View>
-          <View style={styles.inputsection, {flexDirection:'row', marginLeft: '10%', marginTop: 11}}>
-            <Text style={{fontSize:20}}>Pregnant?</Text>
-            <CheckBox value={this.state.pregnant} onValueChange={() => this.setState({pregnant: !this.state.pregnant})}/>
-          </View>
-
-        </View>
-
-        <View style={styles.triagesection}>
-          <Text style={styles.subtitle, {marginBottom: 30, fontSize: 20, color:'#0055FF'}}>Urine Test</Text>
-          <TriageLabsWheel
-            enabled={true}
-            updateLabResult={(name, result) =>
-                this.updateLabTests(name, result, this.state.labTestObjects)}
-            tests = {Object.values(this.state.labTestObjects)}
-          />
-        </View>
-              {this.props.canModify ?
-                <View>
-                  <Button onPress={this.submit}
-                    style={{marginVertical: 20,}}
-                    text='Submit' />
-                </View>: null
-              }
-          <View>
             {
-              // Request test buttons
-              tests.map((test, i) => {
-                return(
-                  <Button onPress={() => this.requestLabTest(test)}
-                    style={{marginVertical: 20,}}
-                    text= {`Request ${test} lab test`}
-                    key={i} />
-                );
-              })
+              this.state.showing.find(elem => elem == Hb) ?
+                <Text style={{fontSize: 18, marginTop:12}}>{Hb}</Text>
+                : null
+            }
+            {
+              this.state.showing.find(elem => elem == HbA1c) ?
+                <Text style={{fontSize: 18, marginTop:25}}>{HbA1c}</Text>
+                : null
+            }
+            {
+              this.state.showing.find(elem => elem == BloodGlucoseLevel) ?
+                <Text style={{fontSize: 18, marginTop:25}}>{BloodGlucoseLevel}</Text>
+                : null
             }
           </View>
+          <View style={styles.inputsection}>
+            {
+              this.state.showing.find(elem => elem == Hb) ?
+                <TextInput
+                  style={styles.input, {width: 300}}
+                  onChangeText={(hb) => this.setState({hb})}
+                  value={this.state.hb}
+                />
+                : null
+            }
+            {
+              this.state.showing.find(elem => elem == HbA1c) ?
+                <TextInput
+                  style={styles.input, {width: 300}}
+                  onChangeText={(hba1c) => this.setState({hba1c})}
+                  value={this.state.hba1c}
+                />
+                : null
+            }
+            {
+              this.state.showing.find(elem => elem == BloodGlucoseLevel) ?
+                <TextInput
+                  style={styles.input, {width: 300}}
+                  onChangeText={(bgl) => this.setState({bgl})}
+                  value={this.state.bgl}
+                />
+                : null
+            }
+          </View>
+
+
         </View>
+
+        {
+          this.state.showing.find(elem => elem == Urine) ?
+          <View style={styles.triagesection}>
+            <Text style={styles.subtitle, {marginBottom: 30, fontSize: 20, color:'#0055FF'}}>Urine Test</Text>
+            <TriageLabsWheel
+              enabled={true}
+              updateLabResult={(name, result) =>
+                  this.updateLabTests(name, result, this.state.labTestObjects)}
+              tests = {Object.values(this.state.labTestObjects)}
+            />
+          </View>
+          : <View></View>
+        }
+                {true?
+                  <View>
+                    <Button onPress={this.submit}
+                      style={{marginVertical: 20,}}
+                      text='Submit' />
+                  </View>: null
+                }
+            <View>
+              {
+                this.props.doctorView ? 
+                // Request test buttons
+                tests.map((test, i) => {
+                  return(
+                    <Button onPress={() => this.requestLabTest(test)}
+                      style={{marginVertical: 20,}}
+                      text= {`Request ${test} lab test`}
+                      key={i} />
+                  );
+                })
+                : null
+              }
+            </View>
+          </View>
       </Container>
     );
   }

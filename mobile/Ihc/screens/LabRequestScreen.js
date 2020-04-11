@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import {
     AppRegistry,
     StyleSheet,
+    CheckBox,
     Text,
+    Alert,
     View,
     SafeAreaView,
     FlatList
@@ -22,7 +24,8 @@ class LabRequestScreen extends Component {
         this.state = {
             firstQuery: '',
             labRequests: [],
-            isFetching: false
+            isFetching: false,
+            showingTodo: true
         };
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     }
@@ -78,17 +81,42 @@ class LabRequestScreen extends Component {
         return (patient[num] ? "Complete" : "");
     }
 
-
-
-    goToPatient = ({ patientKey, name }) => {
+    goToLabrequest = ({patientKey, testType, key}) => {
+        this.props.navigator.push({
+            id: 'goToLabrequest',
+            screen: 'Ihc.LabFilloutScreen',
+            title: 'Labs',
+            passProps: {
+                patientKey: patientKey,
+                labRequestKey: key,
+                testName: testType,
+                canModify: true,
+                showForm: true
+            }
+        });
     }
 
     filterPatients = () => {
     }
 
-    deleteRequest = (key) => {
-        localData.dequeueLabRequest(key);
-        this.syncAndLoadLabRequests();
+    deleteRequest = (item) => {
+        Alert.alert('Confirm Delete Request', 
+            `Are you sure you want to cancel the ${item.testType} 
+            test for ${Patient.fullName(localData.getPatient(item.patientKey))}?`,
+            [
+                {
+                    text: 'Yes', 
+                    onPress: () => {
+                        localData.dequeueLabRequest(item.key);
+                        this.syncAndLoadLabRequests();
+                    }
+                }, 
+                {
+                    text: 'No', 
+                    onPress: () => {}
+                }
+            ]
+        );
     }
 
     render() {
@@ -96,15 +124,21 @@ class LabRequestScreen extends Component {
               <View style = {
                   { height: '100%', width: '100%' }}>
               <View>
-                <Searchbar placeholder = "Search"
-                onChangeText = {
-                    query => {
-                        this.setState({ firstQuery: query }, () => this.filterPatients());
-                    }
-                }
-                value = { this.state.firstQuery }
-                style = { styles.search }
-                />
+                  {
+                //<Searchbar placeholder = "Search"
+                //onChangeText = {
+                    //query => {
+                        //this.setState({ firstQuery: query }, () => this.filterPatients());
+                    //}
+                //}
+                //value = { this.state.firstQuery }
+                //style = { styles.search }
+                ///>
+                  }
+              <View style={styles.inputsection, {flexDirection:'row', marginLeft: '17%', marginTop: 10}}>
+                <Text style={{fontSize:20}}>Show Completed?</Text>
+                <CheckBox value={!this.state.showingTodo} onValueChange={() => this.setState({showingTodo: !this.state.showingTodo})}/>
+              </View>
               </View>
 
               <View>
@@ -120,16 +154,21 @@ class LabRequestScreen extends Component {
                   Date Requested
                 </DataTable.Title>
                 <DataTable.Title>
+                  Completed
+                </DataTable.Title>
+                <DataTable.Title>
                 </DataTable.Title>
               </DataTable.Header>
 
               <SafeAreaView>
-                <FlatList data = { this.state.labRequests }
+                  <FlatList data = { this.state.showingTodo ? 
+                      this.state.labRequests.filter(request => request.dateCompleted == '') 
+                      :this.state.labRequests.filter(request => request.dateCompleted != '') }
                 renderItem = {
                     ({ item }) => {
                         return ( <DataTable.Row key = { item.key }
                             onPress = {
-                                () => this.goToPatient(item)
+                                () => this.goToLabrequest(item)
                             }>
                               <DataTable.Cell >
                                 { Patient.fullName(localData.getPatient(item.patientKey)) }
@@ -140,9 +179,12 @@ class LabRequestScreen extends Component {
                               <DataTable.Cell >
                                 { item.dateRequested }
                               </DataTable.Cell>
+                              <DataTable.Cell >
+                                  { item.dateCompleted != '' ? "Yes" : "No" }
+                              </DataTable.Cell>
                               <DataTable.Cell style = { styles.button }
                               onPress = {
-                                  () => this.deleteRequest(item.key)
+                                  () => this.deleteRequest(item)
                               }>
                               <Text style = {
                                   { color: 'white', fontSize: 20 }
