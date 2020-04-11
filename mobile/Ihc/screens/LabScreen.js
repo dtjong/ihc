@@ -22,11 +22,17 @@ import Button from '../components/Button';
 import {downstreamSyncWithServer} from '../util/Sync';
 import { Col, Grid } from 'react-native-easy-grid';
 import Triage from '../models/Triage';
+import LabRequest from '../models/LabRequest';
 import { DataTable } from 'react-native-paper';
 import TriageLabsWheel from '../components/TriageLabsWheel';
 import TriageHistory from './TriageHistory';
 
 const MU_UNICODE = '\u03bc';
+const tests = [
+  "Hb",
+  "HbA1c",
+  "Blood Glucose Level"
+];
 
 class LabScreen extends Component<{}> {
   /*
@@ -173,6 +179,39 @@ class LabScreen extends Component<{}> {
             console.log('Close');
           }}]);
       });
+    }
+  }
+
+  requestLabTest = (testName) => {
+    var labRequest = {
+      key: '',
+      patientKey: this.props.currentPatientKey,
+      testType: testName,
+      dateRequested: new Date().getMonth() + "/" + new Date().getDay() + "/" + new Date().getFullYear(),
+      dateCompleted: '',
+      lastUpdated: 0
+    }
+    try {
+      localData.enqueueLabRequest(labRequest);
+      Alert.alert('Lab request sent', `${testName} lab request has been sent`,
+            [{text: 'Close', onPress: () => {
+              console.log('Close');
+            }}]);
+    } catch(e) {
+      try {
+      var key = LabRequest.makeKey(labRequest);
+      localData.updateLabRequest(key, labRequest);
+        Alert.alert('Lab request updated', `${testName} lab request has been updated`,
+              [{text: 'Close', onPress: () => {
+                console.log('Close');
+              }}]);
+      } catch(e) {
+        this.props.setErrorMessage(e.message);
+        Alert.alert('Error', e.message,
+              [{text: 'Close', onPress: () => {
+                console.log('Close');
+              }}]);
+      }
     }
   }
 
@@ -336,6 +375,19 @@ class LabScreen extends Component<{}> {
                     text='Submit' />
                 </View>: null
               }
+          <View>
+            {
+              // Request test buttons
+              tests.map((test, i) => {
+                return(
+                  <Button onPress={() => this.requestLabTest(test)}
+                    style={{marginVertical: 20,}}
+                    text= {`Request ${test} lab test`}
+                    key={i} />
+                );
+              })
+            }
+          </View>
         </View>
       </Container>
     );

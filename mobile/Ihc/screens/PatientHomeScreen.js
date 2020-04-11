@@ -210,7 +210,7 @@ class PatientHomeScreen extends Component {
                 currentPatientKey = { this.state.patientInfo.key } />
               <LabScreen 
                 tabLabel = { { label: "LABS" } }
-                canModify = { this.props.canModify }
+                canModify = { false }
                 currentPatientKey = { this.state.patientInfo.key }
                 label = "Page #4 LABS" / >
             </ScrollableTabView>
