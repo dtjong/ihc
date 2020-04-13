@@ -287,7 +287,7 @@ export function markLabRequestComplete(key) {
   }
 
   realm.write( () => {
-    existingLabRequest['dateCompleted'] = new Date();
+    existingLabRequest['dateCompleted'] = new Date().getMonth() + "/" + new Date().getDay() + "/" + new Date().getFullYear();
     return existingLabRequest;
   });
 }
