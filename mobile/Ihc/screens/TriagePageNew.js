@@ -67,6 +67,7 @@ class TriagePageNew extends Component{
       livebirths: 'Live Births (#)',
       miscarriages: 'Miscarriages (#)',
       height: '',
+      heightswitch: false,
       weight: '',
       weightswitch: false,
       rr: '',
@@ -143,6 +144,10 @@ class TriagePageNew extends Component{
       //state changes according to switch
       //which will result in re-render the text
    }
+
+   heightSwitch = (value) => {
+    this.setState({heightswitch: value})
+  }
 
   weightSwitch = (value) => {
     this.setState({weightswitch: value})
@@ -323,8 +328,8 @@ class TriagePageNew extends Component{
                   <View style={styles.inputsection}>
                     <Text style={{fontSize: 18, marginTop:12}}>Height</Text>
                     <Text style={{fontSize: 18, marginTop:25}}>Weight</Text>
-                    <Text style={{fontSize: 18, marginTop:25}}>Respiration Rate</Text>
                     <Text style={{fontSize: 18, marginTop:25}}>Temperature</Text>
+                    <Text style={{fontSize: 18, marginTop:25}}>Respiration Rate</Text>
                   </View>
                   <View style={styles.inputsection}>
                     <TextInput
@@ -343,24 +348,43 @@ class TriagePageNew extends Component{
                       />
                     <TextInput
                       style={styles.input, {width: 300}}
-                      onChangeText={(rr) => this.setState({rr})}
-                      value={this.state.rr}
-                      keyboardType={'numeric'}
-                      editable={this.props.canModify}
-                      />
-                    <TextInput
-                      style={styles.input, {width: 300}}
                       onChangeText={(temp) => this.setState({temp})}
                       value={this.state.temp}
                       keyboardType={'numeric'}
                       editable={this.props.canModify}
                       />
+                    <TextInput
+                      style={styles.input, {width: 300}}
+                      onChangeText={(rr) => this.setState({rr})}
+                      value={this.state.rr}
+                      keyboardType={'numeric'}
+                      editable={this.props.canModify}
+                      />
                   </View>
+                  <View style={styles.inputsection, {marginLeft: 0}}>
+                  <Switch
+                    style={{marginTop: 22}}
+                    onValueChange = {this.heightSwitch}
+                    value = {this.state.heightswitch}/>
+                  <Switch
+                    style={{marginTop: 22}}
+                    onValueChange = {this.weightSwitch}
+                    value = {this.state.weightswitch}/>
+                  {/*<Switch
+                    style={{marginTop: 22}}
+                    onValueChange = {this.unitSwitch}
+                    disabled = {true}
+                  value = {this.state.unitswitch}/>*/}
+                  <Switch
+                    style={{marginTop: 22}}
+                    onValueChange = {this.tempSwitch}
+                    value = {this.state.tempswitch}/>
+                </View>
                   <View style={styles.inputunitsection}>
-                    <Text style={styles.units}>cm</Text>
-                    <Text style={styles.units}>{this.state.weightswitch?'kg':'lb'}</Text>
-                    <Text style={styles.units}>{this.state.unitswitch?'unit1':'unit2'}</Text>
-                    <Text style={styles.units}>{this.state.tempswitch?'C':'F'}</Text>
+                    <Text style={styles.units}>{this.state.heightswitch?'in':'cm'}</Text>
+                    <Text style={styles.units}>{this.state.weightswitch?'lb':'kg'}</Text>
+                    <Text style={styles.units}>{this.state.tempswitch?'F':'C'}</Text>
+                    <Text style={styles.units}>{'breaths/min'}</Text>
                   </View>
 
                   <View style={styles.inputsection}>
@@ -372,23 +396,26 @@ class TriagePageNew extends Component{
                     <TextInput
                       style={styles.input, {width: 300}}
                       onChangeText={(o2) => this.setState({o2})}
+                      keyboardType={'numeric'}
                       value={this.state.o2}
                       />
                     <TextInput
                       style={styles.input, {width: 300}}
                       onChangeText={(bp) => this.setState({bp})}
+                      keyboardType={'numeric'}
                       value={this.state.bp}
                       />
                     <TextInput
                       style={styles.input, {width: 300}}
                       onChangeText={(hr) => this.setState({hr})}
+                      keyboardType={'numeric'}
                       value={this.state.hr}
                       />
                   </View>
                   <View style={styles.inputunitsection}>
-                    <Text style={styles.units}>{this.state.unitswitch?'unit1':'unit2'}</Text>
-                    <Text style={styles.units}>{this.state.unitswitch?'unit1':'unit2'}</Text>
-                    <Text style={styles.units}>{this.state.unitswitch?'unit1':'unit2'}</Text>
+                    <Text style={styles.units}>{'%'}</Text>
+                    <Text style={styles.units}>{'mmHg'}</Text>
+                    <Text style={styles.units}>{'bpm'}</Text>
                   </View>
 
                 </View>)
