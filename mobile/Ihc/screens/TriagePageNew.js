@@ -182,8 +182,7 @@ class TriagePageNew extends Component{
     }
   }
 
-  save = () => {
-
+  setMetricUnits = () => {
     if (this.state.heightswitch) {
       try {
         this.setState({height : "" + (parseFloat(this.state.height) * 2.54)})
@@ -208,6 +207,12 @@ class TriagePageNew extends Component{
       }
       this.setState({tempswitch : false})
     }
+
+  }
+
+  save = () => {
+    
+    this.setMetricUnits();
     this.props.clearMessages();
     this.props.setLoading(true);
     let formVals = Object.assign({}, this.state);
@@ -291,6 +296,7 @@ class TriagePageNew extends Component{
   }
 
   submit = () => {
+    this.setMetricUnits();
     if(!this.state.timeOut) {
       Alert.alert('Confirmation', 'Do you want to mark this Triage complete?',
         [{text: 'Yes', onPress: () => {
