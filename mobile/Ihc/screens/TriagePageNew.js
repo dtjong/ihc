@@ -183,6 +183,31 @@ class TriagePageNew extends Component{
   }
 
   save = () => {
+
+    if (this.state.heightswitch) {
+      try {
+        this.setState({height : "" + (parseFloat(this.state.height) * 2.54)})
+      } catch(e) {
+        this.setState({height : '0'})
+      }
+      this.setState({heightswitch : false})
+    } 
+    if (this.state.weightswitch) {
+      try {
+        this.setState({weight : "" + (parseFloat(this.state.weight) / 2.205)})
+      } catch(e) {
+        this.setState({weight : '0'})
+      }
+      this.setState({weightswitch : false})
+    }
+    if (this.state.tempswitch) {
+      try {
+        this.setState({temp : "" + (5/9 * (parseFloat(this.state.temp) - 32))})
+      } catch(e) {
+        this.setState({temp : '0'})
+      }
+      this.setState({tempswitch : false})
+    }
     this.props.clearMessages();
     this.props.setLoading(true);
     let formVals = Object.assign({}, this.state);
@@ -301,6 +326,7 @@ class TriagePageNew extends Component{
     }
   }
 
+
   render() {
     const date = new Date();
     const dateString = this.props.todayDateString || date.toDateString();
@@ -361,6 +387,13 @@ class TriagePageNew extends Component{
                       editable={this.props.canModify}
                       />
                   </View>
+                  <View style={styles.inputunitsection}>
+                    <Text style={styles.units}>{this.state.heightswitch?'in':'cm'}</Text>
+                    <Text style={styles.units}>{this.state.weightswitch?'lb':'kg'}</Text>
+                    <Text style={styles.units}>{this.state.tempswitch?'F':'C'}</Text>
+                    <Text style={styles.units}>{'breaths/min'}</Text>
+                  </View>
+                  
                   <View style={styles.inputsection, {marginLeft: 0}}>
                   <Switch
                     style={{marginTop: 22}}
@@ -380,12 +413,6 @@ class TriagePageNew extends Component{
                     onValueChange = {this.tempSwitch}
                     value = {this.state.tempswitch}/>
                 </View>
-                  <View style={styles.inputunitsection}>
-                    <Text style={styles.units}>{this.state.heightswitch?'in':'cm'}</Text>
-                    <Text style={styles.units}>{this.state.weightswitch?'lb':'kg'}</Text>
-                    <Text style={styles.units}>{this.state.tempswitch?'F':'C'}</Text>
-                    <Text style={styles.units}>{'breaths/min'}</Text>
-                  </View>
 
                   <View style={styles.inputsection}>
                     <Text style={{fontSize: 18, marginTop:12}}>Oxygen Level</Text>
