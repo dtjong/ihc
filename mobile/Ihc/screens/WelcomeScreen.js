@@ -74,25 +74,10 @@ class newWelcomeScreen extends Component {
         }
     }
 
-
-    goToSignin = () => {
+    goToScreen = (screenName, title) => {
         this.props.navigator.push({
-            screen: 'Ihc.PatientCheckIn',
-            title: 'Patient Check In',
-        });
-    }
-
-    goToSelectPatient = () => {
-        this.props.navigator.push({
-            screen: 'Ihc.PatientList',
-            title: 'Select patient'
-        });
-    }
-
-    goToMedicationInventory = () => {
-        this.props.navigator.push({
-            screen: 'Ihc.MedicationInventoryScreen',
-            title: 'Medication Inventory'
+            screen: screenName,
+            title: title,
         });
     }
 
@@ -148,31 +133,29 @@ class newWelcomeScreen extends Component {
     render() {
         return (
             <Container >
+              <View style = { styles.menuContainer } >
+                <TouchableOpacity onPress = { () => this.goToScreen("Ihc.PatientCheckIn", "Patient Check In") }
+                style = { styles.TouchableOpacityStyle } >
+                  <MenuItem itemImage = { require('../images/WelcomeScreen/CheckInPatient.png') }
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity onPress = { () => this.goToScreen("Ihc.PatientList", "Select Patient") }
+                style = { styles.TouchableOpacityStyle } >
+                  <MenuItem itemImage = { require('../images/WelcomeScreen/PatientList.png') }
+                  />
+                </TouchableOpacity >
+                <TouchableOpacity onPress = { () => this.goToScreen("Ihc.LabRequestScreen", "Lab Requests") }
+                style = { styles.TouchableOpacityStyle } >
+                  <MenuItem itemImage = { require('../images/WelcomeScreen/Labs.png') }
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity onPress = { () => this.goToScreen("Ihc.MedicationInventoryScreen", "Medication Inventory") }
+                style = { styles.TouchableOpacityStyle } >
+                  <MenuItem itemImage = { require('../images/WelcomeScreen/Pharmacy.png') }
+                  />
+                </TouchableOpacity >
 
-                <View style={styles.menuContainer} >
-
-                    <TouchableOpacity onPress={this.goToSignin}
-                        style={styles.TouchableOpacityStyle} >
-                        <MenuItem itemImage={require('../images/WelcomeScreen/CheckInPatient.png')}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={this.goToSelectPatient}
-                        style={styles.TouchableOpacityStyle} >
-                        <MenuItem itemImage={require('../images/WelcomeScreen/PatientList.png')}
-                        />
-                    </TouchableOpacity >
-                    <TouchableOpacity onPress={this.goToSignin}
-                        style={styles.TouchableOpacityStyle} >
-                        <MenuItem itemImage={require('../images/WelcomeScreen/Labs.png')}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={this.goToMedicationInventory}
-                        style={styles.TouchableOpacityStyle} >
-                        <MenuItem itemImage={require('../images/WelcomeScreen/Pharmacy.png')}
-                        />
-                    </TouchableOpacity >
-
-                </View>
+              </View>
             </Container >
         );
     }
