@@ -81,6 +81,51 @@ export function signinPatient(patientForm) {
   return statusObj;
 }
 
+
+
+
+
+
+
+
+
+
+
+/*
+export function signoutPatient(patientForm) {
+  const key = patientForm.patientKey;
+  const patientObjs = realm.objects('Patient').filtered('key = "' + key + '"');
+  const patient = patientObjs['0'];
+
+  if(!patient) {
+    throw new Error('Patient doesn\'t exist' + key);
+  }
+
+  if(Object.keys(patientObjs).length > 1) {
+    throw new Error('More than one patient with key' + patientForm.key);
+  }
+  const timestamp = new Date().getTime();
+  const statusObj = Status.newStatus(patientForm, true);
+  statusObj.lastUpdated = timestamp;
+
+  realm.write(() => {
+    patient.statuses.push(statusObj);
+  });
+
+  return statusObj;
+
+}
+
+*/
+
+
+
+
+
+
+
+
+
 export function getStatus(patientKey, strDate) {
   const statusObj = realm.objects('Status').filtered(`patientKey="${patientKey}" AND date="${strDate}"`)[0];
   if(!statusObj) {

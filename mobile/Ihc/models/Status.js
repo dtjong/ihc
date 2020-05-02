@@ -18,7 +18,24 @@ export default class Status {
     };
     return obj;
   }
+/*
+  static newStatus(patient, checkout) {
+    const obj = {
+      patientKey: patient.patientKey,
+      name: Patient.fullName(patient),
+      birthday: patient.birthday,
+      date: stringDate(new Date()),
+      medicationCheckmarks: [],
+      checkinTime: new Date().getTime(),
+      lastUpdated: new Date().getTime(),
+      checkedOut: checkout
+    };
+    return obj;
+  }
+  */
 }
+
+
 
 Status.schema = {
   name: 'Status',
