@@ -476,19 +476,19 @@ class TriagePageNew extends Component{
                     />
                   <TextInput
                   style={styles.input, {width: 300}}
-                    onChangeText={(bgl) => this.setState({bgl})}
-                    value={this.state.bgl}
+                    onChangeText={(bloodglucose) => this.setState({bloodglucose})}
+                    value={this.state.bloodglucose}
                     editable={false}
                   />
                 </View>
 
                 <View style={styles.inputsection, {flexDirection:'row', marginLeft: '17%', marginTop: 10}}>
                   <Text style={{fontSize:20}}>Fasting?</Text>
-                  <CheckBox value={this.state.fasting} disabled={true}/>
+                  <CheckBox/>
                 </View>
                 <View style={styles.inputsection, {flexDirection:'row', marginLeft: '10%', marginTop: 11}}>
                   <Text style={{fontSize:20}}>Pregnant?</Text>
-                  <CheckBox value={this.state.pregnant} disabled={true}/>
+                  <CheckBox/>
                 </View>
 
               </View>

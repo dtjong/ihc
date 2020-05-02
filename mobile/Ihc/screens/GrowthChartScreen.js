@@ -79,7 +79,6 @@ class GrowthChartScreen extends Component<{}> {
     else if (!patient.isMale && !patient.isInfant) {
       weightData = this.extractData(girlsWeightData);
       heightData = this.extractData(girlsHeightData);
-
     }
 
     const growthChartData = patient.growthChartData;

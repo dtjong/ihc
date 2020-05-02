@@ -10,6 +10,9 @@ export default class Triage {
     if(gender === 1 && form.labsDone) { // male
       return MaleTriageLabs;
     }
+    if(gender === 1 && form.labsDone) { // male
+      return MaleTriageLabs;
+    }
     if(gender === 1 && !form.labsDone) { // male
       return MaleTriage1;
     }
@@ -78,13 +81,10 @@ export default class Triage {
       liveBirths: 'string?',
       abortions: 'string?',
       miscarriages: 'string?',
-      pregnant: 'bool?',
       //---END IF---
       labsDone: 'bool',
       //---IF LABS DONE---
       bgl: 'string?',
-      hba1c: 'string?',
-      hb: 'string?',
       a1c: 'string?',
       fasting: 'bool?',
       pregnancyTest: 'string?',
@@ -139,13 +139,10 @@ Triage.schema = {
     liveBirths: 'string?',
     abortions: 'string?',
     miscarriages: 'string?',
-    pregnant: 'bool?',
     //---END IF---
     labsDone: 'bool',
     //---IF LABS DONE---
     bgl: 'string?',
-    hba1c: 'string?',
-    hb: 'string?',
     a1c: 'string?',
     fasting: 'bool?',
     pregnancyTest: 'string?',
@@ -225,8 +222,6 @@ FemaleTriage = FemaleTriage.extend({labsDone: t.Boolean});
 labTestObject = {
   bgl: t.maybe(t.String),
   a1c: t.maybe(t.String),
-  hba1c: t.maybe(t.String),
-  hb: t.maybe(t.String),
   fasting: t.maybe(t.Boolean),
   pregnancyTest: t.maybe(t.String)
 };

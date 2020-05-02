@@ -24,6 +24,7 @@ import LabScreen from './LabScreen';
 import Container from '../components/Container';
 import GrowthChartScreen from './GrowthChartScreen';
 
+
 const Page = ({ label }) =>
     (<View style = { styles.container }>
     <Text style = { styles.welcome }>
@@ -39,6 +40,8 @@ const Page = ({ label }) =>
     </Text>
     </View>
 );
+
+
 
 const Tab = ({ tab, page, isTabActive, onPressHandler, onTabLayout, styles }) => {
     const { label } = tab;
@@ -121,16 +124,10 @@ class PatientHomeScreen extends Component {
     }
 
     onNavigatorEvent(event) {
-      switch (event.id) {
-      case 'willAppear':
+        if (event.id === 'willAppear') {
             let patientInfo = localData.getPatient(this.props.patientKey);
             this.setState({ patientInfo: patientInfo });
-        this.setState({contentProps: {style: { flex: 1}}});
-        break;
-      case 'willDisappear':
-        this.setState({contentProps: {style: { flex: 0}}});
-        break;
-      }
+        }
     }
 
     goToTriage = (date) => {
@@ -166,54 +163,49 @@ class PatientHomeScreen extends Component {
               </Text>
             </View>
             <ScrollableTabView style = { styles.tabContainer }
-              ref={(ref) => { this.scrollableTabView = ref; }}
-              contentProps={this.state.contentProps}
               renderTabBar = {
-                () => {
-                  return( <TabBar tabBarActiveTextColor = "#53ac49"
-                    underlineColor = "#00A2BD"
-                    tabBarStyle = {
-                      { backgroundColor: "#fff", borderTopColor: '#d2d2d2', borderTopWidth: 0 } }
-                    renderTab = {
-                      (tab, page, isTabActive, onPressHandler, onTabLayout) => {
-                        return ( <Tab key = { page }
-                          tab = { tab }
-                          page = { page }
-                          isTabActive = { isTabActive }
-                          onPressHandler = { onPressHandler }
-                          onTabLayout = { onTabLayout }
-                          styles = { this.interpolators[page] }/>);
-                      }
-                    }/>
-                  );
-                }
+                  () =>
+                    ( <TabBar tabBarActiveTextColor = "#53ac49"
+                      underlineColor = "#00A2BD"
+                      tabBarStyle = {
+                          { backgroundColor: "#fff", borderTopColor: '#d2d2d2', borderTopWidth: 0 } }
+                      renderTab = {
+                          (tab, page, isTabActive, onPressHandler, onTabLayout) =>
+                            ( <Tab key = { page }
+                              tab = { tab }
+                              page = { page }
+                              isTabActive = { isTabActive }
+                              onPressHandler = { onPressHandler }
+                              onTabLayout = { onTabLayout }
+                              styles = { this.interpolators[page] }/>)
+                      }/>
+                )
               }
               onScroll = {
-                (x) => this._scrollX.setValue(x) } >
-              <TriagePageNew 
-                currentPatientKey = { this.state.patientInfo.key }
-                gender = { this.state.patientInfo.gender }
-                goToTriage = { a => this.goToTriage(a) }
-                label = "Page #1 Hot"
-                canModify = { this.props.canModify }
-                tabLabel = { { label: triageLabel } }
-                status = { this.props.status }
-                showHistory = { this.props.showHistory }
-                showForm = { this.props.showForm }
-              />
-              <SoapScreen 
-                tabLabel = { { label: "SOAP" } }
-                label = "Page #2 SOAP" / >
-              <GrowthChartScreen 
-                tabLabel = { { label: "GROWTH CHART" } }
-                label = "Page #3 GC"
-                currentPatientKey = { this.state.patientInfo.key } />
-              <LabScreen 
-                tabLabel = { { label: "LABS" } }
-                canModify = { false }
-                currentPatientKey = { this.state.patientInfo.key }
-                doctorView = { true }
-                label = "Page #4 LABS" / >
+                  (x) => this._scrollX.setValue(x) } >
+            <TriagePageNew 
+              currentPatientKey = { this.state.patientInfo.key }
+              gender = { this.state.patientInfo.gender }
+              goToTriage = { a => this.goToTriage(a) }
+              label = "Page #1 Hot"
+              canModify = { this.props.canModify }
+              tabLabel = { { label: triageLabel } }
+              status = { this.props.status }
+              showHistory = { this.props.showHistory }
+              showForm = { this.props.showForm }
+            />
+            <SoapScreen 
+              tabLabel = { { label: "SOAP" } }
+              label = "Page #2 SOAP" / >
+            <GrowthChartScreen 
+              tabLabel = { { label: "GROWTH CHART" } }
+              label = "Page #3 GC"
+              currentPatientKey = { this.state.patientInfo.key } />
+            <LabScreen 
+              tabLabel = { { label: "LABS" } }
+              canModify = { this.props.canModify }
+              currentPatientKey = { this.state.patientInfo.key }
+              label = "Page #4 LABS" / >
             </ScrollableTabView>
           </View>
         );
