@@ -202,8 +202,11 @@ class PatientHomeScreen extends Component {
                 showForm = { this.props.showForm }
               />
               <SoapScreen 
+                currentPatientKey = { this.state.patientInfo.key } 
+                lmao ={"hey"}
                 tabLabel = { { label: "SOAP" } }
-                label = "Page #2 SOAP" / >
+                label = "Page #2 SOAP"
+                />
               <GrowthChartScreen 
                 tabLabel = { { label: "GROWTH CHART" } }
                 label = "Page #3 GC"

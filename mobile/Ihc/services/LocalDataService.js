@@ -14,11 +14,12 @@ import DrugUpdate from '../models/DrugUpdate';
 import Settings from '../models/Settings';
 import MedicationCheckmarks from '../models/MedicationCheckmarks';
 import LabRequest from '../models/LabRequest';
+import MedicationRequest from '../models/MedicationRequest';
 
 import Realm from 'realm';
 
 const realm = new Realm({
-  schema: [Patient, Status, Soap, Triage, Medication, DrugUpdate, Settings, MedicationCheckmarks, LabRequest],
+  schema: [Patient, Status, Soap, Triage, Medication, DrugUpdate, Settings, MedicationCheckmarks, LabRequest, MedicationRequest],
   deleteRealmIfMigrationNeeded: true, // TODO: delete when done with dev
 });
 
@@ -223,6 +224,44 @@ export function getTriage(patientKey, strDate) {
   const triage = realm.objects('Triage').filtered('date = "' +
       strDate + '" AND patientKey = "' + patientKey + '"')['0'];
   return triage;
+}
+
+export function markMedicationRequestComplete(key) {
+  const existingMedicationRequest = realm.objects('MedicationRequest')
+    .filtered('key = "' + key + '"')['0'];
+
+  if (!existingMedicationRequest) {
+    throw new Error('LabRequest does not exist');
+  }
+
+  realm.write( () => {
+    existingMedicationRequest['dateCompleted'] = new Date().getMonth() + "/" + new Date().getDay() + "/" + new Date().getFullYear();
+    return existingMedicationRequest;
+  });
+}
+
+export function enqueueMedicationRequest(medicationRequest) {
+  const request = realm.objects('MedicationRequest')
+    .filtered('patientKey = "' + medicationRequest.patientKey + '"')[0];
+  realm.write( () => {
+    realm.create('MedicationRequest', medicationRequest);
+  });
+  realm.write( () => {
+    try {
+      realm.delete(request);
+    } catch(e) {
+    }
+  });
+}
+
+export function getMedicationRequests() {
+  return Object.values(realm.objects('MedicationRequest'));
+}
+
+export function getMedicationRequest(key) {
+  const medicationRequest = realm.objects('MedicationRequest')
+    .filtered('key = "' + key + '"')[0];
+  return medicationRequest;
 }
 
 // Create LabRequest
