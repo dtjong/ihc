@@ -61,8 +61,10 @@ class PatientList extends Component {
             .finally(() => {
                 this.setState({ isFetching: false });
             });
-
+        
     }
+
+
 
     onNavigatorEvent(event) {
         if (event.id === 'willAppear') {
@@ -107,67 +109,70 @@ class PatientList extends Component {
 
 
 
+checkOut = item => {
+    if (item.checkinTime == -1) {
+        throw new Error("Already checked out")
+    }
+    //const patient = this.state.arrQ.find(obj => patientKey == obj.key);
+    const patient = item;
+    //throw new Error(patient)
+    s = ""
+    for (i in patient) {
+        s += i + ":"
+        s += patient[i]
+        s += " "
+    }
+    //throw new Error(s);
+    
+    let statusObj = {};
+    this.props.setLoading(true);
 
-checkOut(item) => {
-    //TODO
-    print("here");
-}
-
-
-/*
-
-    checkOut = ({ patientKey, name }) => {
-        const patient = this.state.arrQ.find(obj => patientKey == obj.patientKey);
-        let statusObj = {};
-        s = "";
-        for (i in patient) {
-            s += i
-            s += " "
-        }
-        //throw new Error("patient " + s);
-        this.props.setLoading(true);
-        try {
-            statusObj = localData.signoutPatient(patient);
-            console.log("checked in locally");
-        } catch (e) {
-            this.props.setLoading(false);
-            this.props.setErrorMessage(e.message);
-            return;
-        }
-        try {
-            serverData.updateStatus(statusObj)
-                .then(() => {
-                    // View README: Handle syncing the tablet, point 3 for explanation
-                    if (this.props.loading) {
-                        this.props.setLoading(false);
-                        this.setState({ arrQ: this.state.arrq.splice(key, 1) });
-                        this.props.setSuccessMessage(`${patient.firstName} signed in successfully`);
-                    }
-                })
-                .catch((e) => {
-                    if (this.props.loading) {
-                        // If server update fails, mark the patient as need to upload
-                        this.props.setLoading(false, true);
-                        this.props.setErrorMessage(e.message);
-
-                        localData.markPatientNeedToUpload(patient.key);
-                    }
-                });
-        } catch (e) {
-            this.props.setLoading(false, true);
-            this.props.setErrorMessage('Tablet is not connected to server.');
-            return;
-        }
+    try {
+        statusObj = localData.signoutPatient(patient, true);
+        console.log("checked out locally");
+    } catch (e) {
+        this.props.setLoading(false);
+        this.props.setErrorMessage(e.message);
+        return;
     }
 
+    //throw new Error(statusObj)
+    s = ""
+    for (i in statusObj) {
+        s += i + ":"
+        s += statusObj[i]
+    
+    }
+    
+    //throw new Error(s)
 
-*/
+    try {
+        serverData.updateStatus(statusObj)
+            .then(() => {
+                // View README: Handle syncing the tablet, point 3 for explanation
+                if (this.props.loading) {
+                    this.props.setLoading(false);
+                    this.setState({ arrQ: this.state.arrq.splice(key, 1) });
+                    this.props.setSuccessMessage(`${patient.firstName} signed in successfully`);
+                }
+            })
+            .catch((e) => {
+                if (this.props.loading) {
+                    // If server update fails, mark the patient as need to upload
+                    this.props.setLoading(false, true);
+                    this.props.setErrorMessage(e.message);
 
+                    localData.markPatientNeedToUpload(patient.key);
+                }
+            });
+    } catch (e) {
+        this.props.setLoading(false, true);
+        this.props.setErrorMessage('Tablet is not connected to server.');
+        return;
+    }
 
-
-
-
-
+    this.props.navigator.pop()    
+}
 
 
 

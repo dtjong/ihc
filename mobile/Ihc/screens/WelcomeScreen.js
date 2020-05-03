@@ -75,7 +75,6 @@ class newWelcomeScreen extends Component {
     }
 
     goToSignin = () => {
-<<<<<<< HEAD
         this.props.navigator.push({
             screen: 'Ihc.PatientCheckIn',
             title: 'Patient Check In',
@@ -89,25 +88,10 @@ class newWelcomeScreen extends Component {
         });
     }
 
-    goToMedicationInventory = () => {
-        this.props.navigator.push({
-=======
-        this.props.navigator.push({
-            screen: 'Ihc.PatientCheckIn',
-            title: 'Patient Check In',
-        });
-    }
 
-    goToSelectPatient = () => {
-        this.props.navigator.push({
-            screen: 'Ihc.PatientList',
-            title: 'Select patient'
-        });
-    }
 
     goToMedicationInventory = () => {
         this.props.navigator.push({
->>>>>>> parent of 8ba4810... Added Lab Requests Page (#108)
             screen: 'Ihc.MedicationInventoryScreen',
             title: 'Medication Inventory'
         });
