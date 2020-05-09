@@ -105,8 +105,8 @@ class MedicationRequestScreen extends Component {
         {
           text: 'Yes', 
           onPress: () => {
-            localData.dequeueLabRequest(item.key);
-            this.syncAndLoadLabRequests();
+            localData.dequeueMedicationRequest(item.key);
+            //this.syncAndLoadLabRequests();
           }
         }, 
         {

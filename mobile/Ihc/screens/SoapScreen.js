@@ -17,6 +17,7 @@ import Button from '../components/Button';
 import {downstreamSyncWithServer} from '../util/Sync';
 import Medication from '../models/Medication';
 import MedicationRequest from '../models/MedicationRequest';
+import MedicationHistory from '../components/MedicationHistory';
 
 const blank = "-";
 
@@ -304,6 +305,10 @@ class SoapScreen extends Component<{}> {
             text="Update" />
 
         </View>
+
+        <MedicationHistory
+          patientKey={this.props.currentPatientKey}
+        />
       </Container>
     );
   }
