@@ -203,7 +203,6 @@ class PatientHomeScreen extends Component {
               />
               <SoapScreen 
                 currentPatientKey = { this.state.patientInfo.key } 
-                lmao ={"hey"}
                 tabLabel = { { label: "SOAP" } }
                 label = "Page #2 SOAP"
                 />
