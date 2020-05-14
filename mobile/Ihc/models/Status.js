@@ -15,23 +15,11 @@ export default class Status {
       medicationCheckmarks: [],
       checkinTime: new Date().getTime(),
       lastUpdated: new Date().getTime(),
+      checkedIn: true,
     };
     return obj;
   }
 
-  
-  static checkoutStatus(patient, checkout) {
-    const obj = {
-      patientKey: patient.patientKey,
-      name: Patient.fullName(patient),
-      birthday: patient.birthday,
-      date: stringDate(new Date()),
-      medicationCheckmarks: [],
-      checkinTime: -1,
-      lastUpdated: new Date().getTime(),
-    };
-    return obj;
-  }
 
   
   
@@ -54,5 +42,6 @@ Status.schema = {
     medicationCheckmarks: 'MedicationCheckmarks[]',
     notes: 'string?',
     lastUpdated: 'int',
+    checkedIn: 'bool',
   }
 };

@@ -87,7 +87,7 @@ export default class Patient {
     patient.birthday = stringDate(form.birthday);
     patient.key = Patient.makeKey(patient);
     patient.needToUpload = false;
-    patient.checkedOut = true;
+    patient.checkedIn = true;
     patient.lastUpdated = new Date().getTime();
 
     patient.gender = form.gender in Gender ? Gender[form.gender] : Gender[Undefined];
@@ -131,6 +131,6 @@ Patient.schema = {
     statuses: 'Status[]',
     lastUpdated: 'int', // timestamp
     needToUpload: 'bool?',
-    checkedOut: 'bool',
+    checkedIn: 'bool',
   }
 };

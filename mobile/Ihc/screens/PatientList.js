@@ -34,7 +34,8 @@ class PatientList extends Component {
         this.props.setLoading(true);
         this.props.clearMessages();
         const today = stringDate(new Date());
-        const oldStatuses = localData.getStatuses(today);
+        const oldStatuses = localData.getCheckedInStatuses(today);
+        //const oldStatuses = localData.getStatuses(today)
         this.setState({ fullarr: oldStatuses, arrQ: oldStatuses });
 
         downstreamSyncWithServer()
@@ -45,7 +46,9 @@ class PatientList extends Component {
                     if (failedPatientKeys.length > 0) {
                         throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
                     }
-                    let newStatuses = localData.getStatuses(today);
+                    let newStatuses = localData.getCheckedInStatuses(today);
+                    //let newStatuses = localData.getStatuses(today)
+
                     newStatuses = newStatuses.filter(obj => !(obj.soapCompleted && obj.triageCompleted));
                     this.setState({ fullarr: newStatuses, arrQ: newStatuses });
                     this.props.setLoading(false);
@@ -153,7 +156,7 @@ checkOut = item => {
                 if (this.props.loading) {
                     this.props.setLoading(false);
                     this.setState({ arrQ: this.state.arrq.splice(key, 1) });
-                    this.props.setSuccessMessage(`${patient.firstName} signed in successfully`);
+                    this.props.setSuccessMessage(`${patient.firstName} signed out successfully`);
                 }
             })
             .catch((e) => {
