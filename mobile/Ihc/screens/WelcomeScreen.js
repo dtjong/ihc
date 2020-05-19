@@ -149,7 +149,7 @@ class newWelcomeScreen extends Component {
                   <MenuItem itemImage = { require('../images/WelcomeScreen/Labs.png') }
                   />
                 </TouchableOpacity>
-                <TouchableOpacity onPress = { () => this.goToScreen("Ihc.MedicationInventoryScreen", "Medication Inventory") }
+                <TouchableOpacity onPress = { () => this.goToScreen("Ihc.MedicationRequestScreen", "Medication Inventory") }
                 style = { styles.TouchableOpacityStyle } >
                   <MenuItem itemImage = { require('../images/WelcomeScreen/Pharmacy.png') }
                   />
