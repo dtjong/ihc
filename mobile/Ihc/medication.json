@@ -1,0 +1,231 @@
+{
+  "Analgesics, Pain": [
+    "Acetaminophen Children's 80 mg",
+    "Acetaminophen 160",
+    "Liquid10Acetaminophen 325 mg",
+    "Acetaminophen475Acetaminophen 500 mg",
+    "Aspirin 325 mg",
+    "Cyclobenzaprine 10 mg",
+    "Diclofenac 50 mg",
+    "Diclofenac 75 mg",
+    "Ibuprofen 800 mg",
+    "Ibuprofen 200 mg",
+    "Meloxicam 15 mg",
+    "Naproxen 220 mg",
+    "Naproxen 550 mg",
+    "Nimesulida 100 mg 19"
+  ],
+  "Antacids, Antiflatulents, Digestive Health": [
+    "Dicyclomine 20 mg",
+    "Esomeprazole 40 mg",
+    "Metoclopramide 5 mg",
+    "Omeprazole 20 mg",
+    "Omeprazole 20 mg",
+    "Omeprazole 40 mg",
+    "Ranitidine 150 mg",
+    "Ranitidine 150 mg",
+    "Ranitidine 300 mg"
+  ],
+  "Anti-Inflammatory, Antigout": [
+    "Methylprednisolone 4 mg",
+    "Allopurinol 100 mg",
+    "Allopurinol 100 mg",
+    "Prednisone 10 mg",
+    "Prednisone 20 mg",
+    "Prednisone 50 mg",
+    "Prednisone 5 mg"
+  ],
+  "Antiemetics": [
+    "Meclizine HCl 25 mg",
+    "Ondasetron (Zofran) 4 mg",
+    "Ondasetron (Zofran) 4 mg",
+    "Ondasetron (Zofran) 8 mg 95"
+  ],
+  "Allergies/ Antihistamine": [
+    "Benadryl liquid 12.5 mg",
+    "Chloropheniramine allergy",
+    "Diphenhydramine 25 mg",
+    "Fexofenadine 180 mg",
+    "Ipratropium Bromide Nasal Spray 0.06%",
+    "Loratadine 10 mg liquid",
+    "Loratadine 10 mg",
+    "Montelukast 10 mg",
+    "Oxymetazoline HCl 0.05% nasal spray",
+    "Triomcinolone Acetonide 55 mcg nasal spray"
+  ],
+  "Antipsychotics, Antidepressants": [
+    "Amitriptyline 25 mg",
+    "Fluoxetine 20 mg",
+    "Paroxetine 30 mg",
+    "Paroxetine 20 mg",
+    "Trazadone 50 mg",
+    "Trazadone 150 mg 25"
+  ],
+  "Blood Pressure, Heart": [
+    "Amlodipine 5 mg",
+    "Amlodipine 10 mg",
+    "Furosemide 20 mg",
+    "Furosemide 40 mg",
+    "Hydrochlorothiazide 12.5 mg",
+    "Hydrochlorothiazide 25 mg",
+    "Hydrochlorothiazide 50 mg",
+    "Labetalol HCl 100 mg",
+    "Labetalol HCl 200 mg",
+    "Losartan 50 mg",
+    "Lisinopril 10 mg",
+    "Lisinopril 20 mg",
+    "Lisinopril and Hydrochlorothiazide 20mg/12.5mg",
+    "Lisinopril and Hydrochlorothiazide 20mg/25mg",
+    "Metoprolol ER 12.5 mg",
+    "Metoprolol ER 50 mg",
+    "Nitroglycerin 0.4 mg",
+    "Prazosin 1 mg",
+    "Prazosin 2 mg",
+    "Propranolol 80 mg",
+    "Propranolol ER 60 mg",
+    "Valsartan 320 mg"
+  ],
+  "Cholesterol": [
+    "Atorvastatin 10 mg",
+    "Atorvastatin 20 mg",
+    "Atorvastatin 40 mg",
+    "Atorvastatin 80 mg",
+    "Bezafibrate 200 mg",
+    "Ezetimibe and Simvastatin",
+    "Levothyroxine 50 mcg (Synthroid)",
+    "Levothyroxine 25 mcg (Synthroid)",
+    "Levothyroxine 75 mcg (synthroid)",
+    "Levothyroxine 88 mcg",
+    "Pravastatin 10 mg",
+    "Simvastatin 20 mg",
+    "Simvastatin 40 mg"
+  ],
+  "Contraceptives": [
+    "Lo Loestrin Fe 4"
+  ],
+  "Decongestants, Cough": [
+    "Robutussin", 
+    "Tussin", 
+    "Children's cold and allergy (brompheniramine/dextromethorphan 10 mg/phenylephrine 5 mg)", 
+    "Cough drops 3", 
+    "Dextromethorphan/ Guaifenesin 20mg/200 mg Liquid", 
+    "Dextromethorphan 15 mg", 
+    "Dextromethorphan HBR 20 mg, Guaifenesin 400 mg", 
+    "Dextromethorphan-Guaifenesin liquid 20mg/400 mg", 
+    "Sudafed", 
+    "Phenylephrine HCl 10 mEq"
+  ],
+  "Diabetes, Hypoglycemics": [
+    "Empagliflozen 10 mg (Jardiance)", 
+    "Empaglifozin and Metformin (Synjardy) 10 mg/1000 mg", 
+    "Empaglifozin and Metformin 25 mg/1000 mg", 
+    "Empaglifozin and Metformin (Synjardy) 5 mg/1000 mg", 
+    "Fluconazole 150 mg", 
+    "Glibenclamida (Glyburide) 5 mg", 
+    "Glibenclamida (Glyburide) 5 mg 4", 
+    "Glipizide 5 mg", 
+    "Glipizide 10 mg", 
+    "Glimepiride 4 mg", 
+    "Januvia 100 mg", 
+    "Metformin 500 mg", 
+    "Metformin 850 mg"
+  ],
+  "Infections, Antibiotics": [
+    "Amoxicillin and Clavulanate (oral susp. powder)", 
+    "Amoxicillin and Potassium Clavulanate 625 mg", 
+    "Amoxicillin 125 mg Oral susp", 
+    "Amoxicillin 500 mg", 
+    "Azithromycin 250 mg", 
+    "Azithromycin 250 mg", 
+    "Bactrim 800-160 mg", 
+    "Bactrim 800-160 mg", 
+    "Ciprofloxacin 500 mg", 
+    "Metronidazole 100 mg", 
+    "Metronidazole 250 mg", 
+    "Metronidazole 500 mg"
+  ],
+  "Infections, Antibiotics- Antiviral": [
+    "Acyclovir 200 mg", 
+    "Oseltamivir Phosphate 75 mg (Tamiflu)"
+  ],
+  "Infections, Antibiotics- Antifungal": [
+    "Griseofluvin 125 mg", 
+    "Itraconazole 100 mg", 
+    "Itraconazole 100 mg", 
+    "Terbinafine 250 mg"
+  ],
+  "Injections": [
+    "Epipen"
+  ],
+  "Ophthalmics, Optics": [
+    "Lubricant Eye Propylene Glycol 0.6%", 
+    "Naphazoline HCl-pheniramine maleate 0.025%/0.3% ophthalmic", 
+    "Ofloxacin Ophthalmic 0.3%", 
+    "Polyvinyl alcohol and povidone 0.5%/0.6%", 
+    "Refresh Tear Lubricant (carboxymethylcellulose 0.5%)", 
+    "Retaine", 
+    "Restatin 500,000 units"
+  ],
+  "Laxative, Antidiarrheal": [
+    "Biscodyl- Ducolax 5 mg", 
+    "Docusate Sodium 100 mg", 
+    "Loperamide HCl 2 mg", 
+    "Milk of Magnesia"
+  ],
+  "Miscellaneous": [
+    "\"Breathe right\" nasal strips", 
+    "Sunglasses protection"
+  ],
+  "Respiratory": [
+    "Albuterol Sulfate (25mg/3ml)", 
+    "Breo Ellipta (100 mcg/25mcg)", 
+    "Dulera (200 mcg/5 mcg)", 
+    "Fluticasone Propionate 50 mcg", 
+    "Fluticasone (Flovent) 50 mcg", 
+    "Ipratropium Bromide Spray (18 mcg)", 
+    "Pulmicort flexhaler", 
+    "Saline Nasal Moisturizing spray", 
+    "Symbicort (160mcg/4.5mcg)"
+  ],
+  "Topical": [
+    "Bacitracin 0.9 g", 
+    "Banophen", 
+    "Bengay patch", 
+    "Benzocaine 20% (oral analgesic gel)", 
+    "Clotrimazole 1% cream", 
+    "Clotrimazole 1% cream", 
+    "Dermarest Psoriasis", 
+    "Domeboro (Rash relief)", 
+    "Hydrocortisone cream 1%", 
+    "Kerydin 5%", 
+    "Lidocaine Patch 5%", 
+    "Lidocaine and Prilosec cream (2.5%/2.5%)", 
+    "Maxitrol cream", 
+    "Mupirocin ointment 2%", 
+    "Pain Relief Cream (Trolamine Salicylate 10%)", 
+    "Scopolamine 1.5 mg", 
+    "Triple antibiotic ointment", 
+    "Vasaline", 
+    "White Petrolatum"
+  ],
+  "Urinary": [
+    "Tamsulosin 0.4 mg", 
+    "Uribel"
+  ],
+  "Vitamins, Minerals, Dietary Supplement": [
+    "Alendronate Sodium 70 mg", 
+    "Adult Multivitamin", 
+    "Calcium Carbonate 500 mg", 
+    "Children Multivitamin", 
+    "Children's Vitamin", 
+    "Ferrous Sulfate 65 mg", 
+    "Fiber gummies", 
+    "Folic Acid 1 mg", 
+    "K Citrate ER 10 meq", 
+    "Melatonin 3 mg", 
+    "Melatonin 5 mg", 
+    "Probiotics", 
+    "Prenatal vitamin", 
+    "Vitamin D3 10 mcg"
+  ]
+}
