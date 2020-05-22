@@ -253,21 +253,29 @@ class TriagePageNew extends Component{
                 <View style={styles.inputsection}>
                   <Text style={{fontSize: 18, marginTop:12}}>Height</Text>
                   <Text style={{fontSize: 18, marginTop:25}}>Weight</Text>
-                  <Text style={{fontSize: 18, marginTop:25}}>Respiration Rate</Text>
                   <Text style={{fontSize: 18, marginTop:25}}>Temperature</Text>
+                  <Text style={{fontSize: 18, marginTop:25}}>Respiration Rate</Text>
+
                 </View>
                 <View style={styles.inputsection}>
                   <TextInput
                     style={styles.input, {width: 300}}
                     onChangeText={(height) => this.setState({height})}
-                    value={this.state.height}
+                    value={this.state.heightswitch ? "" + (parseFloat(this.state.height) / 2.54) : this.state.height}
                     keyboardType={'numeric'}
                     editable={false}
                     />
                   <TextInput
                     style={styles.input, {width: 300}}
                     onChangeText={(weight) => this.setState({weight})}
-                    value={this.state.weight}
+                    value={this.state.weightswitch ? "" + (parseFloat(this.state.weight) * 2.204) :  this.state.weight}
+                    keyboardType={'numeric'}
+                    editable={false}
+                    />
+                  <TextInput
+                    style={styles.input, {width: 300}}
+                    onChangeText={(temp) => this.setState({temp})}
+                    value={this.state.tempswitch ? "" + (9.0 * (parseFloat(this.state.temp)) / 5.0 + 32) : this.state.temp}
                     keyboardType={'numeric'}
                     editable={false}
                     />
@@ -278,19 +286,12 @@ class TriagePageNew extends Component{
                     keyboardType={'numeric'}
                     editable={false}
                     />
-                  <TextInput
-                    style={styles.input, {width: 300}}
-                    onChangeText={(temp) => this.setState({temp})}
-                    value={this.state.temp}
-                    keyboardType={'numeric'}
-                    editable={false}
-                    />
                 </View>
                 <View style={styles.inputunitsection}>
-                  <Text style={styles.units}>{this.state.heightswitch?'cm':'in'}</Text>
-                  <Text style={styles.units}>{this.state.weightswitch?'kg':'lb'}</Text>
-                  <Text style={styles.units}>{this.state.unitswitch?'unit1':'unit2'}</Text>
-                  <Text style={styles.units}>{this.state.tempswitch?'C':'F'}</Text>
+                  <Text style={styles.units}>{this.state.heightswitch?'in':'cm'}</Text>
+                  <Text style={styles.units}>{this.state.weightswitch?'lb':'kg'}</Text>
+                  <Text style={styles.units}>{this.state.tempswitch?'F':'C'}</Text>
+                  <Text style={styles.units}>{'breaths/min'}</Text>
                 </View>
                 <View style={styles.inputsection, {marginLeft: 0}}>
                   <Switch
@@ -301,10 +302,11 @@ class TriagePageNew extends Component{
                     style={{marginTop: 22}}
                     onValueChange = {this.weightSwitch}
                     value = {this.state.weightswitch}/>
-                  <Switch
+                  {/*<Switch
                     style={{marginTop: 22}}
                     onValueChange = {this.unitSwitch}
-                    value = {this.state.unitswitch}/>
+                    disabled = {true}
+                  value = {this.state.unitswitch}/>*/}
                   <Switch
                     style={{marginTop: 22}}
                     onValueChange = {this.tempSwitch}
@@ -336,12 +338,12 @@ class TriagePageNew extends Component{
                     />
                 </View>
                 <View style={styles.inputunitsection}>
-                  <Text style={styles.units}>{this.state.unitswitch?'unit1':'unit2'}</Text>
-                  <Text style={styles.units}>{this.state.unitswitch?'unit1':'unit2'}</Text>
-                  <Text style={styles.units}>{this.state.unitswitch?'unit1':'unit2'}</Text>
+                  <Text style={styles.units}>{'%'}</Text>
+                  <Text style={styles.units}>{'mmHg'}</Text>
+                  <Text style={styles.units}>{'bpm'}</Text>
                 </View>
                 <View style={styles.inputsection, {marginLeft: 0}}>
-                  <Switch
+                  {/*<Switch
                     style={{marginTop: 22}}
                     onValueChange = {this.unitSwitch}
                     value = {this.state.unitswitch}/>
@@ -352,7 +354,7 @@ class TriagePageNew extends Component{
                   <Switch
                     style={{marginTop: 22}}
                     onValueChange = {this.unitSwitch}
-                    value = {this.state.unitswitch}/>
+                  value = {this.state.unitswitch}/>*/}
                 </View>
 
               </View>
@@ -474,19 +476,19 @@ class TriagePageNew extends Component{
                     />
                   <TextInput
                   style={styles.input, {width: 300}}
-                    onChangeText={(bloodglucose) => this.setState({bloodglucose})}
-                    value={this.state.bloodglucose}
+                    onChangeText={(bgl) => this.setState({bgl})}
+                    value={this.state.bgl}
                     editable={false}
                   />
                 </View>
 
                 <View style={styles.inputsection, {flexDirection:'row', marginLeft: '17%', marginTop: 10}}>
                   <Text style={{fontSize:20}}>Fasting?</Text>
-                  <CheckBox/>
+                  <CheckBox value={this.state.fasting} disabled={true}/>
                 </View>
                 <View style={styles.inputsection, {flexDirection:'row', marginLeft: '10%', marginTop: 11}}>
                   <Text style={{fontSize:20}}>Pregnant?</Text>
-                  <CheckBox/>
+                  <CheckBox value={this.state.pregnant} disabled={true}/>
                 </View>
 
               </View>

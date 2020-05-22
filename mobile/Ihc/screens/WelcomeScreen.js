@@ -10,39 +10,74 @@ import Container from '../components/Container';
 import Button from '../components/Button';
 import { downstreamSyncWithServer } from '../util/Sync';
 import MenuItem from '../components/MenuItem';
+import UnitSwitch from '../components/UnitSwitch'
 
 
 class newWelcomeScreen extends Component {
+
+
+    static _navigatorButtons = {
+        _rightButtons: [
+            {
+                title: "Test",
+                id: "test_id",
+                disabled: false,
+                buttonColor: 'blue',
+            }
+        ],
+        get rightButtons() {
+            return this._rightButtons;
+        },
+        set rightButtons(value) {
+            this._rightButtons = value;
+        },
+    };
+    static get navigatorButtons() {
+        return newWelcomeScreen._navigatorButtons;
+    }
+    static set navigatorButtons(value) {
+        newWelcomeScreen._navigatorButtons = value;
+    }
     constructor(props) {
         super(props);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+       /**
+        this.state = {
+            unitSwitchValue: false,
+        }
+        */
     }
+
+    /*
+    toggleUnitSwitch = (value) => {
+        this.setState({ unitSwitchValue: value })
+        console.log('Switch 1 is: ' + value)
+    }
+    */
 
     onNavigatorEvent(event) {
         if (event.id == 'willAppear') {
             this.upload();
             this.download();
+        } 
+        if (event.id == 'test_id') {
+            console.log(event)
+            console.log(this.props.navigator)
+            console.log(newWelcomeScreen._navigatorButtons)
+            let myButton = newWelcomeScreen._navigatorButtons._rightButtons[0]
+            console.log(myButton)
+            myButton.setState({buttonColor: "green"})
+            //this.forceUpdate()
+            console.log(myButton)
+            //navigatorButtons.rightButtons.test_id.buttonColor = 'green'
+            //navigation.navigatorButtons.test_id.buttonColor = 'green'
         }
     }
 
-    goToSignin = () => {
+    goToScreen = (screenName, title) => {
         this.props.navigator.push({
-            screen: 'Ihc.PatientCheckIn',
-            title: 'Patient Check In',
-        });
-    }
-
-    goToSelectPatient = () => {
-        this.props.navigator.push({
-            screen: 'Ihc.PatientList',
-            title: 'Select patient'
-        });
-    }
-
-    goToMedicationInventory = () => {
-        this.props.navigator.push({
-            screen: 'Ihc.MedicationInventoryScreen',
-            title: 'Medication Inventory'
+            screen: screenName,
+            title: title,
         });
     }
 
@@ -99,22 +134,22 @@ class newWelcomeScreen extends Component {
         return (
             <Container >
               <View style = { styles.menuContainer } >
-                <TouchableOpacity onPress = { this.goToSignin }
+                <TouchableOpacity onPress = { () => this.goToScreen("Ihc.PatientCheckIn", "Patient Check In") }
                 style = { styles.TouchableOpacityStyle } >
                   <MenuItem itemImage = { require('../images/WelcomeScreen/CheckInPatient.png') }
                   />
                 </TouchableOpacity>
-                <TouchableOpacity onPress = { this.goToSelectPatient }
+                <TouchableOpacity onPress = { () => this.goToScreen("Ihc.PatientList", "Select Patient") }
                 style = { styles.TouchableOpacityStyle } >
                   <MenuItem itemImage = { require('../images/WelcomeScreen/PatientList.png') }
                   />
                 </TouchableOpacity >
-                <TouchableOpacity onPress = { this.goToSignin }
+                <TouchableOpacity onPress = { () => this.goToScreen("Ihc.LabRequestScreen", "Lab Requests") }
                 style = { styles.TouchableOpacityStyle } >
                   <MenuItem itemImage = { require('../images/WelcomeScreen/Labs.png') }
                   />
                 </TouchableOpacity>
-                <TouchableOpacity onPress = { this.goToMedicationInventory }
+                <TouchableOpacity onPress = { () => this.goToScreen("Ihc.MedicationRequestScreen", "Medication Inventory") }
                 style = { styles.TouchableOpacityStyle } >
                   <MenuItem itemImage = { require('../images/WelcomeScreen/Pharmacy.png') }
                   />

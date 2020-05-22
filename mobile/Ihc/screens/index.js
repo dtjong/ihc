@@ -13,9 +13,13 @@ import TestServerScreen from './TestServerScreen';
 import MedicationInventoryScreen from './MedicationInventoryScreen';
 import LoginScreen from './LoginScreen';
 import PatientHomeScreen from './PatientHomeScreen';
+import LabRequestScreen from './LabRequestScreen';
+import MedicationRequestScreen from './MedicationRequestScreen';
+import MedicationFilloutScreen from './MedicationFilloutScreen';
 
 import PatientList from './PatientList.js';
 import PatientCheckIn from './PatientCheckIn.js';
+import LabFilloutScreen from './LabFilloutScreen.js';
 
 
 // register all screens of the app (including internal ones)
@@ -38,5 +42,9 @@ export function registerScreens(store, Provider) {
   Navigation.registerComponent('Ihc.MedicationInventoryScreen', () => MedicationInventoryScreen, store, Provider);
   Navigation.registerComponent('Ihc.LoginScreen', () => LoginScreen, store, Provider);
   Navigation.registerComponent('Ihc.PatientList', () => PatientList, store, Provider);
+  Navigation.registerComponent('Ihc.LabRequestScreen', () => LabRequestScreen, store, Provider);
   Navigation.registerComponent('Ihc.PatientCheckIn', () => PatientCheckIn, store, Provider);
+  Navigation.registerComponent('Ihc.LabFilloutScreen', () => LabFilloutScreen, store, Provider);
+  Navigation.registerComponent('Ihc.MedicationRequestScreen', () => MedicationRequestScreen, store, Provider);
+  Navigation.registerComponent('Ihc.MedicationFilloutScreen', () => MedicationFilloutScreen, store, Provider);
 }
