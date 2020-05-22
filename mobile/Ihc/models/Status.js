@@ -15,10 +15,17 @@ export default class Status {
       medicationCheckmarks: [],
       checkinTime: new Date().getTime(),
       lastUpdated: new Date().getTime(),
+      checkedIn: true,
     };
     return obj;
   }
+
+
+  
+  
 }
+
+
 
 Status.schema = {
   name: 'Status',
@@ -35,5 +42,6 @@ Status.schema = {
     medicationCheckmarks: 'MedicationCheckmarks[]',
     notes: 'string?',
     lastUpdated: 'int',
+    checkedIn: 'bool',
   }
 };

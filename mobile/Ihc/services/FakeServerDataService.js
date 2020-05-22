@@ -87,20 +87,4 @@ export function getUpdatedPatients(lastSynced) {
     }, 500);
   });
 }
-
-export function getUpdatedLabRequests(lastSynced) {
-  return new Promise((res,rej) => {
-    setTimeout(() => {
-      res([]);
-    }, 500);
-  });
-}
-
-export function getUpdatedMedications(lastSynced) {
-  return new Promise((res,rej) => {
-    setTimeout(() => {
-      res([]);
-    }, 500);
-  });
-}
 /* eslint-enable */

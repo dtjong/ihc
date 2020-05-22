@@ -83,8 +83,6 @@ export default class Triage {
       labsDone: 'bool',
       //---IF LABS DONE---
       bgl: 'string?',
-      hba1c: 'string?',
-      hb: 'string?',
       a1c: 'string?',
       fasting: 'bool?',
       pregnancyTest: 'string?',
@@ -144,8 +142,6 @@ Triage.schema = {
     labsDone: 'bool',
     //---IF LABS DONE---
     bgl: 'string?',
-    hba1c: 'string?',
-    hb: 'string?',
     a1c: 'string?',
     fasting: 'bool?',
     pregnancyTest: 'string?',
@@ -225,8 +221,6 @@ FemaleTriage = FemaleTriage.extend({labsDone: t.Boolean});
 labTestObject = {
   bgl: t.maybe(t.String),
   a1c: t.maybe(t.String),
-  hba1c: t.maybe(t.String),
-  hb: t.maybe(t.String),
   fasting: t.maybe(t.Boolean),
   pregnancyTest: t.maybe(t.String)
 };

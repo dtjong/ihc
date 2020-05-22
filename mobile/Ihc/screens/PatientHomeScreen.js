@@ -202,19 +202,16 @@ class PatientHomeScreen extends Component {
                 showForm = { this.props.showForm }
               />
               <SoapScreen 
-                currentPatientKey = { this.state.patientInfo.key } 
                 tabLabel = { { label: "SOAP" } }
-                label = "Page #2 SOAP"
-                />
+                label = "Page #2 SOAP" / >
               <GrowthChartScreen 
                 tabLabel = { { label: "GROWTH CHART" } }
                 label = "Page #3 GC"
                 currentPatientKey = { this.state.patientInfo.key } />
               <LabScreen 
                 tabLabel = { { label: "LABS" } }
-                canModify = { false }
+                canModify = { this.props.canModify }
                 currentPatientKey = { this.state.patientInfo.key }
-                doctorView = { true }
                 label = "Page #4 LABS" / >
             </ScrollableTabView>
           </View>

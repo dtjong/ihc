@@ -83,6 +83,7 @@ class SigninScreen extends Component<{}> {
     const form = this.refs.form.getValue();
     const patient = Patient.extractFromForm(form);
 
+
     this.props.setLoading(true);
     this.props.clearMessages();
     this.props.isUploading(true);

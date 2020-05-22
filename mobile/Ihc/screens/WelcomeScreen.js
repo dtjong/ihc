@@ -74,10 +74,26 @@ class newWelcomeScreen extends Component {
         }
     }
 
-    goToScreen = (screenName, title) => {
+    goToSignin = () => {
         this.props.navigator.push({
-            screen: screenName,
-            title: title,
+            screen: 'Ihc.PatientCheckIn',
+            title: 'Patient Check In',
+        });
+    }
+
+    goToSelectPatient = () => {
+        this.props.navigator.push({
+            screen: 'Ihc.PatientList',
+            title: 'Select patient'
+        });
+    }
+
+
+
+    goToMedicationInventory = () => {
+        this.props.navigator.push({
+            screen: 'Ihc.MedicationInventoryScreen',
+            title: 'Medication Inventory'
         });
     }
 
@@ -134,22 +150,22 @@ class newWelcomeScreen extends Component {
         return (
             <Container >
               <View style = { styles.menuContainer } >
-                <TouchableOpacity onPress = { () => this.goToScreen("Ihc.PatientCheckIn", "Patient Check In") }
+                <TouchableOpacity onPress = { this.goToSignin }
                 style = { styles.TouchableOpacityStyle } >
                   <MenuItem itemImage = { require('../images/WelcomeScreen/CheckInPatient.png') }
                   />
                 </TouchableOpacity>
-                <TouchableOpacity onPress = { () => this.goToScreen("Ihc.PatientList", "Select Patient") }
+                <TouchableOpacity onPress = { this.goToSelectPatient }
                 style = { styles.TouchableOpacityStyle } >
                   <MenuItem itemImage = { require('../images/WelcomeScreen/PatientList.png') }
                   />
                 </TouchableOpacity >
-                <TouchableOpacity onPress = { () => this.goToScreen("Ihc.LabRequestScreen", "Lab Requests") }
+                <TouchableOpacity onPress = { this.goToSignin }
                 style = { styles.TouchableOpacityStyle } >
                   <MenuItem itemImage = { require('../images/WelcomeScreen/Labs.png') }
                   />
                 </TouchableOpacity>
-                <TouchableOpacity onPress = { () => this.goToScreen("Ihc.MedicationRequestScreen", "Medication Inventory") }
+                <TouchableOpacity onPress = { this.goToMedicationInventory }
                 style = { styles.TouchableOpacityStyle } >
                   <MenuItem itemImage = { require('../images/WelcomeScreen/Pharmacy.png') }
                   />
