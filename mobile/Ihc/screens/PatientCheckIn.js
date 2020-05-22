@@ -54,6 +54,8 @@ class PatientCheckIn extends React.Component {
 
 
             const list = localData.getPatients(0);
+            
+            /*
             const objs = list.map(obj => {
                 const fullName = obj.firstName + ' ' + obj.fatherName + ' ' + obj.motherName;
                 const lastVisitNum = Math.max.apply(null, obj.statuses.map(o => o.lastUpdated));
@@ -61,7 +63,7 @@ class PatientCheckIn extends React.Component {
                 return ({
                     ...obj,
                     fullName: fullName,
-                    lastVisit: lastVisit
+                    lastVisit: lastVisit,
                 });
             });
 
@@ -73,6 +75,33 @@ class PatientCheckIn extends React.Component {
                 obj.lastVisit = stringDate(obj.lastVisit);
                 return obj;
             });
+            */
+
+            const objs = list.map(obj => {
+                const fullName = obj.firstName + ' ' + obj.fatherName + ' ' + obj.motherName;
+                const lastVisitNum = Math.max.apply(null, obj.statuses.map(o => o.lastUpdated));
+                const lastVisit = new Date(lastVisitNum);
+                const checkedIn = obj.checkedIn
+                return ({
+                    ...obj,
+                    fullName: fullName,
+                    lastVisit: lastVisit,
+                    checkedIn: checkedIn,
+                });
+            });
+
+            const patients = objs.filter((i) => {
+                const today = new Date();
+                return (i.lastVisit.getDate() != today.getDate()) || (i.lastVisit.getMonth() != today.getMonth()) ||
+                    (i.lastVisit.getFullYear() != today.getFullYear() || (i.checkedIn == false));
+            }).map(obj => {
+                obj.lastVisit = stringDate(obj.lastVisit);
+                return obj;
+            });
+
+
+
+
 
             this.setState({
                 fullarr: patients,
@@ -159,6 +188,8 @@ class PatientCheckIn extends React.Component {
                 this.props.setErrorMessage('Tablet is not connected to server.');
                 return;
             }
+            this.props.navigator.pop()    
+
         }
 
         render() {

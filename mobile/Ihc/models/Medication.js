@@ -1,3 +1,4 @@
+import categories from "../medication.json";
 export default class Medication {
   //for testing purposes
   static getInstance(drugName = 'ibuprofen', quantity = 500, dosage = 200, units = 'mg',
@@ -17,6 +18,7 @@ export default class Medication {
     return medication;
   }
 
+  static categories = categories;
 }
 
 Medication.schema = {
@@ -34,3 +36,4 @@ Medication.schema = {
     needToUpload: 'bool?',
   }
 };
+

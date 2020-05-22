@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
-  View
+  View,
+  Picker,
+  FlatList
 } from 'react-native';
 let t = require('tcomb-form-native');
 let Form = t.form.Form;
@@ -13,6 +15,11 @@ import {stringDate} from '../util/Date';
 import Container from '../components/Container';
 import Button from '../components/Button';
 import {downstreamSyncWithServer} from '../util/Sync';
+import Medication from '../models/Medication';
+import MedicationRequest from '../models/MedicationRequest';
+import MedicationHistory from '../components/MedicationHistory';
+
+const blank = "-";
 
 class SoapScreen extends Component<{}> {
   /*
@@ -31,7 +38,10 @@ class SoapScreen extends Component<{}> {
     const todayDate = this.props.todayDate || stringDate(new Date());
     this.state = {
       formValues: {date: todayDate},
-      todayDate: todayDate
+      todayDate: todayDate,
+      selectedCategory: blank,
+      selectedMedication: blank,
+      requestedMedication: []
     };
   }
 
@@ -79,6 +89,18 @@ class SoapScreen extends Component<{}> {
     if (soap) {
       this.setState({ formValues: soap });
     }
+
+    // TODO: Make get last medication request by patient, also clean up
+    // medication fillout screen.
+    //const medication = localData.getMedicationRequest(this.props.currentPatientKey);
+    //if(medication) {
+      //console.log("med: " + medication.medicationRequested);
+      //console.log("key: " + this.props.currentPatientKey);
+    //}
+
+    //if(medication && medication != null && medication.medicationRequested) {
+      //this.setState({requestedMedication: medication.medicationRequested.map(m => {return {key: m}})});
+    //}
 
     // Attempt server download and reload information if successful
     downstreamSyncWithServer()
@@ -141,6 +163,10 @@ class SoapScreen extends Component<{}> {
   }
 
   submit = () => {
+    const meds = this.state.requestedMedication.map(medication => medication.key);
+    console.log("key: " + this.props.currentPatientKey);
+    const medicationRequest = MedicationRequest.newMedicationRequest(this.props.currentPatientKey, meds);
+    localData.enqueueMedicationRequest(medicationRequest);
     //validations 
     if(!this.refs.form.validate().isValid()) {
       this.props.setErrorMessage('Form not correct. Review form.');
@@ -163,6 +189,7 @@ class SoapScreen extends Component<{}> {
       this.props.setLoading(false);
       return;
     }
+
 
     // Send updates to server
     serverData.updateSoap(soap)
@@ -188,6 +215,73 @@ class SoapScreen extends Component<{}> {
     });
   }
 
+  addMedication = () => {
+    var list = Object.assign([], this.state.requestedMedication);
+    list.push({key: this.state.selectedMedication});
+    this.setState({requestedMedication: list});
+  }
+
+  MedicationSelection = () => {
+    return (
+      <View>
+        <Text style={styles.title}>
+          Select Medication: 
+        </Text>
+        <View style={{display: "flex", alignItems: "center", flexDirection: "row"}}>
+          <Text
+            style={styles.label} 
+          >
+            Category:
+          </Text>
+          <Text
+            style={styles.label} 
+          >
+            Medication:
+          </Text>
+        </View>
+        <View style={{display: "flex", alignItems: "center", flexDirection: "row"}}>
+          <Picker 
+            selectedValue={this.state.selectedCategory}
+            style={{ height: 50, width: "50%", }} 
+            onValueChange={(itemValue, itemIndex) => this.setState({selectedCategory: itemValue})}
+          >
+            <Picker.Item label={blank} value={blank}/>
+            {
+              Object.getOwnPropertyNames(Medication.categories).map(entry => 
+                <Picker.Item label={entry} value={entry} key={entry}/>
+              )
+            }
+          </Picker>
+
+          <Picker 
+            selectedValue={this.state.selectedMedication}
+            style={{ height: 50, width: "50%" }} 
+            onValueChange={(itemValue, itemIndex) => this.setState({selectedMedication: itemValue})}
+          >
+            {
+              this.state.selectedCategory == blank ? <Picker.Item label={blank} value={blank}/>
+              : Medication.categories[this.state.selectedCategory].map(entry => 
+                <Picker.Item label={entry} value={entry} key={entry}/>
+              )
+            }
+          </Picker>
+        </View>
+        <Text
+          style={styles.label} 
+        >
+          Requested Medication: 
+        </Text>
+        <FlatList
+          data= {this.state.requestedMedication}
+          extraData={this.props}
+          renderItem={({item}) => <Text style={styles.item}>{item.key}</Text>}
+        />
+        <Button onPress={this.addMedication}
+          text='Add medication' />
+      </View>
+    );
+  }
+
   render() {
     return (
       <Container>
@@ -202,6 +296,7 @@ class SoapScreen extends Component<{}> {
             options={this.formOptions}
             onChange={this.onFormChange}
           />
+          <this.MedicationSelection/>
 
           <Button onPress={this.completed}
             text='SOAP completed' />
@@ -210,6 +305,10 @@ class SoapScreen extends Component<{}> {
             text="Update" />
 
         </View>
+
+        <MedicationHistory
+          patientKey={this.props.currentPatientKey}
+        />
       </Container>
     );
   }
@@ -224,6 +323,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10,
   },
+  label: {
+    fontSize: 20,
+    height: 50,
+    width: "50%"
+  }
 });
 
 // Redux
@@ -232,7 +336,6 @@ import { connect } from 'react-redux';
 
 const mapStateToProps = state => ({
   loading: state.loading,
-  currentPatientKey: state.currentPatientKey
 });
 
 const mapDispatchToProps = dispatch => ({

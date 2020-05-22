@@ -10,18 +10,67 @@ import Container from '../components/Container';
 import Button from '../components/Button';
 import { downstreamSyncWithServer } from '../util/Sync';
 import MenuItem from '../components/MenuItem';
+import UnitSwitch from '../components/UnitSwitch'
 
 
 class newWelcomeScreen extends Component {
+
+
+    static _navigatorButtons = {
+        _rightButtons: [
+            {
+                title: "Test",
+                id: "test_id",
+                disabled: false,
+                buttonColor: 'blue',
+            }
+        ],
+        get rightButtons() {
+            return this._rightButtons;
+        },
+        set rightButtons(value) {
+            this._rightButtons = value;
+        },
+    };
+    static get navigatorButtons() {
+        return newWelcomeScreen._navigatorButtons;
+    }
+    static set navigatorButtons(value) {
+        newWelcomeScreen._navigatorButtons = value;
+    }
     constructor(props) {
         super(props);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+       /**
+        this.state = {
+            unitSwitchValue: false,
+        }
+        */
     }
+
+    /*
+    toggleUnitSwitch = (value) => {
+        this.setState({ unitSwitchValue: value })
+        console.log('Switch 1 is: ' + value)
+    }
+    */
 
     onNavigatorEvent(event) {
         if (event.id == 'willAppear') {
             this.upload();
             this.download();
+        } 
+        if (event.id == 'test_id') {
+            console.log(event)
+            console.log(this.props.navigator)
+            console.log(newWelcomeScreen._navigatorButtons)
+            let myButton = newWelcomeScreen._navigatorButtons._rightButtons[0]
+            console.log(myButton)
+            myButton.setState({buttonColor: "green"})
+            //this.forceUpdate()
+            console.log(myButton)
+            //navigatorButtons.rightButtons.test_id.buttonColor = 'green'
+            //navigation.navigatorButtons.test_id.buttonColor = 'green'
         }
     }
 
@@ -38,6 +87,8 @@ class newWelcomeScreen extends Component {
             title: 'Select patient'
         });
     }
+
+
 
     goToMedicationInventory = () => {
         this.props.navigator.push({

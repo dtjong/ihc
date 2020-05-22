@@ -34,7 +34,8 @@ class PatientList extends Component {
         this.props.setLoading(true);
         this.props.clearMessages();
         const today = stringDate(new Date());
-        const oldStatuses = localData.getStatuses(today);
+        const oldStatuses = localData.getCheckedInStatuses(today);
+        //const oldStatuses = localData.getStatuses(today)
         this.setState({ fullarr: oldStatuses, arrQ: oldStatuses });
 
         downstreamSyncWithServer()
@@ -45,7 +46,9 @@ class PatientList extends Component {
                     if (failedPatientKeys.length > 0) {
                         throw new Error(`${failedPatientKeys.length} patients didn't properly sync.`);
                     }
-                    let newStatuses = localData.getStatuses(today);
+                    let newStatuses = localData.getCheckedInStatuses(today);
+                    //let newStatuses = localData.getStatuses(today)
+
                     newStatuses = newStatuses.filter(obj => !(obj.soapCompleted && obj.triageCompleted));
                     this.setState({ fullarr: newStatuses, arrQ: newStatuses });
                     this.props.setLoading(false);
@@ -61,8 +64,10 @@ class PatientList extends Component {
             .finally(() => {
                 this.setState({ isFetching: false });
             });
-
+        
     }
+
+
 
     onNavigatorEvent(event) {
         if (event.id === 'willAppear') {
@@ -104,9 +109,76 @@ class PatientList extends Component {
         }
     }
 
-    checkOut = () => {
-        console.log("CHECKING OUT WILL FIX LATER");
+
+
+
+checkOut = item => {
+    if (item.checkinTime == -1) {
+        throw new Error("Already checked out")
     }
+    //const patient = this.state.arrQ.find(obj => patientKey == obj.key);
+    const patient = item;
+    //throw new Error(patient)
+    s = ""
+    for (i in patient) {
+        s += i + ":"
+        s += patient[i]
+        s += " "
+    }
+    //throw new Error(s);
+    
+    let statusObj = {};
+    this.props.setLoading(true);
+
+    try {
+        statusObj = localData.signoutPatient(patient, true);
+        console.log("checked out locally");
+    } catch (e) {
+        this.props.setLoading(false);
+        this.props.setErrorMessage(e.message);
+        return;
+    }
+
+    //throw new Error(statusObj)
+    s = ""
+    for (i in statusObj) {
+        s += i + ":"
+        s += statusObj[i]
+    
+    }
+    
+    //throw new Error(s)
+
+    try {
+        serverData.updateStatus(statusObj)
+            .then(() => {
+                // View README: Handle syncing the tablet, point 3 for explanation
+                if (this.props.loading) {
+                    this.props.setLoading(false);
+                    this.setState({ arrQ: this.state.arrq.splice(key, 1) });
+                    this.props.setSuccessMessage(`${patient.firstName} signed out successfully`);
+                }
+            })
+            .catch((e) => {
+                if (this.props.loading) {
+                    // If server update fails, mark the patient as need to upload
+                    this.props.setLoading(false, true);
+                    this.props.setErrorMessage(e.message);
+
+                    localData.markPatientNeedToUpload(patient.key);
+                }
+            });
+    } catch (e) {
+        this.props.setLoading(false, true);
+        this.props.setErrorMessage('Tablet is not connected to server.');
+        return;
+    }
+
+    this.props.navigator.pop()    
+}
+
+
+
 
     render() {
         let triageNum = 0;
@@ -177,7 +249,7 @@ class PatientList extends Component {
                               </DataTable.Cell>
                               <DataTable.Cell style = { styles.button }
                               onPress = {
-                                  () => this.checkOut(item.patientKey)
+                                  () => this.checkOut(item)
                               }>
                               <Text style = {
                                   { color: 'white', fontSize: 20 }

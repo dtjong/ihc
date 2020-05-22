@@ -14,11 +14,14 @@ import DrugUpdate from '../models/DrugUpdate';
 import Settings from '../models/Settings';
 import MedicationCheckmarks from '../models/MedicationCheckmarks';
 import LabRequest from '../models/LabRequest';
+import MedicationRequest from '../models/MedicationRequest';
 
 import Realm from 'realm';
+import { stringDate } from '../util/Date';
+import { TextInputBase } from 'react-native';
 
 const realm = new Realm({
-  schema: [Patient, Status, Soap, Triage, Medication, DrugUpdate, Settings, MedicationCheckmarks, LabRequest],
+  schema: [Patient, Status, Soap, Triage, Medication, DrugUpdate, Settings, MedicationCheckmarks, LabRequest, MedicationRequest],
   deleteRealmIfMigrationNeeded: true, // TODO: delete when done with dev
 });
 
@@ -33,8 +36,10 @@ export function createPatient(patient) {
   const patientObjs = realm.objects('Patient').filtered('key = "' + patient.key + '"');
   const existingPatient = patientObjs['0'];
 
+
   // Also sign them in
   const statusObj = Status.newStatus(patient);
+  statusObj.patientKey = patient.key
 
   statusObj.lastUpdated = timestamp;
   patient.lastUpdated = timestamp;
@@ -64,30 +69,101 @@ export function signinPatient(patientForm) {
     throw new Error('More than one patient with key' + patientForm.key);
   }
 
-  const timestamp = new Date().getTime();
-  const statusObj = Status.newStatus(patientForm);
-  statusObj.lastUpdated = timestamp;
+  const today = stringDate(new Date());
+  status = null 
+  try {
+    status = getStatus(key, today);
+  } catch (e) {
+    // Perhaps the patient has not checked in today yet
+  }
+  if (status == null) {
+    const timestamp = new Date().getTime();
+    const statusObj = Status.newStatus(patientForm);
+    statusObj.lastUpdated = timestamp;
 
-  for ( let k in patient.statuses ){
-    if(patient.statuses[k].date === statusObj.date) {
-      throw new Error('This patient already checked in');
+    patient.checkedOut = false;
+
+    for ( let k in patient.statuses ){
+      if(patient.statuses[k].date === statusObj.date) {
+        throw new Error('This patient already checked in');
+      }
     }
+
+    realm.write(() => {
+      patient.statuses.push(statusObj);
+    });
+    return statusObj;
+  } else {
+      const timestamp = new Date().getTime();
+      realm.write(() => {
+        status.checkedIn = true
+        patient.checkedIn = true
+        status.lastUpdated = timestamp
+      });
+  }
+
+  
+}
+
+
+
+// input - Status
+export function signoutPatient(patientForm) {
+  const key = patientForm.patientKey;
+  const patientObjs = realm.objects('Patient').filtered('key = "' + key + '"');
+  const patient = patientObjs['0'];
+
+  if(!patient) {
+    throw new Error('Patient doesn\'t exist');
+  }
+
+  if(Object.keys(patientObjs).length > 1) {
+    throw new Error('More than one patient with key' + patientForm.key);
+  }
+
+  const today = stringDate(new Date());
+  status = null 
+  try {
+    status = getStatus(key, today);
+  } catch (e) {
+    throw new Error("Cannot grab status of today")
+  }
+  if (status == null) {
+    throw new Error("Error grabbing status")
   }
 
   realm.write(() => {
-    patient.statuses.push(statusObj);
+    status.checkedIn = false
+    patient.checkedIn = false
   });
 
-  return statusObj;
+  return status;
 }
+
+
 
 export function getStatus(patientKey, strDate) {
   const statusObj = realm.objects('Status').filtered(`patientKey="${patientKey}" AND date="${strDate}"`)[0];
   if(!statusObj) {
     throw new Error('Status doesn\'t exist');
   }
+
   return statusObj;
 }
+
+
+filterCheckedIn = (statuses) => {
+  res = []
+  arr = Array.from(statuses);
+  arr.forEach(function(status) {
+    if (status.checkedIn) {
+      res.push(status)
+    }
+  })
+  //throw new Error(res.length + " " + arr.length + " " + arr[0].checkedIn)
+  return res
+}
+
 
 // Update a single field for a Status object, particularly the _Completed fields
 // with timestamps
@@ -223,6 +299,63 @@ export function getTriage(patientKey, strDate) {
   const triage = realm.objects('Triage').filtered('date = "' +
       strDate + '" AND patientKey = "' + patientKey + '"')['0'];
   return triage;
+}
+
+export function markMedicationRequestComplete(key) {
+  const existingMedicationRequest = realm.objects('MedicationRequest')
+    .filtered('key = "' + key + '"')['0'];
+
+  if (!existingMedicationRequest) {
+    throw new Error('LabRequest does not exist');
+  }
+
+  realm.write( () => {
+    existingMedicationRequest['dateCompleted'] = new Date().getMonth() + "/" + new Date().getDay() + "/" + new Date().getFullYear();
+    return existingMedicationRequest;
+  });
+}
+
+export function enqueueMedicationRequest(medicationRequest) {
+  const request = realm.objects('MedicationRequest')
+    .filtered('key = "' + medicationRequest.key + '"')[0];
+  realm.write( () => {
+    realm.create('MedicationRequest', medicationRequest);
+  });
+  realm.write( () => {
+    try {
+      realm.delete(request);
+    } catch(e) {
+    }
+  });
+}
+
+export function getMedicationRequests() {
+  return Object.values(realm.objects('MedicationRequest'));
+}
+
+export function getPatientMedicationRequests(patientKey) {
+  const medicationRequests = realm.objects('MedicationRequest')
+    .filtered('patientKey = "' + patientKey + '"');
+  return medicationRequests;
+}
+
+export function getMedicationRequest(key) {
+  const medicationRequest = realm.objects('MedicationRequest')
+    .filtered('key = "' + key + '"')[0];
+  return medicationRequest;
+}
+
+export function dequeueMedicationRequest(key) {
+  const medicationRequest = realm.objects('MedicationRequest')
+    .filtered('key = "' + key + '"')['0'];
+
+  if (!medicationRequest) {
+    throw new Error('MedicationRequest does not exist');
+  }
+
+  realm.write( () => {
+    realm.delete(medicationRequest);
+  });
 }
 
 // Create LabRequest
@@ -391,7 +524,13 @@ export function getMedicationUpdates(patientKey) {
 // Return the statuses of the patients for this date
 export function getStatuses(strDate) {
   const statuses = Object.values(realm.objects('Status').filtered(`date = "${strDate}"`));
-  return statuses;
+  return statuses 
+}
+
+// Returns the statuses of patients that are checked in for this date
+export function getCheckedInStatuses(strDate) {
+  const statuses = Object.values(realm.objects('Status').filtered(`date = "${strDate}"`));
+  return filterCheckedIn(statuses);
 }
 
 // Parameter 'all' should be true if want to upload all patients
