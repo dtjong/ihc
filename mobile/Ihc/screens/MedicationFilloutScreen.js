@@ -25,8 +25,7 @@ class MedicationFilloutScreen extends Component {
     return (
       <Container>
         <View>
-        <View style={{height:30}}/>
-          <Text style={styles.subtitle}>
+          <Text style={styles.title}>
             {Patient.fullName(patient)}
           </Text>
           <FlatList
@@ -53,21 +52,12 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10,
   },
-  subtitle: {
-    fontSize: 20,
-    textAlign: 'left',
-    margin: 2,
-    color:'#0055FF'
-  },
   button: {
-    width: '80%',
-    alignItems: 'center',
-    marginBottom: 50,
-  },
-  item: {
-    textAlign: 'center',
-    fontSize: 15,
-    height:30
+    borderColor: 'white',
+    borderWidth: 2.0,
+    borderRadius: 10,
+    justifyContent: 'center',
+    backgroundColor: '#00ac3d',
   }
 });
 

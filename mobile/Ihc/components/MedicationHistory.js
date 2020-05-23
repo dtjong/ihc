@@ -16,7 +16,7 @@ export default class MedicationHistory extends Component {
     console.log("requests", medicationRequests);
     return(
       <View>
-        <Text style={styles.subtitle}>
+        <Text style={styles.title}>
           Medication Request History
         </Text>
         <FlatList
@@ -30,19 +30,12 @@ export default class MedicationHistory extends Component {
             </View>
           }
         />
-        <View style={{height:30}}/>
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  subtitle: {
-    fontSize: 20,
-    textAlign: 'left',
-    margin: 2,
-    color:'#0055FF'
-  },
   title: {
     fontSize: 20,
     textAlign: 'center',
