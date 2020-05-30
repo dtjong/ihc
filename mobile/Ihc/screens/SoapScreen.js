@@ -166,6 +166,7 @@ class SoapScreen extends Component<{}> {
     const meds = this.state.requestedMedication.map(medication => medication.key);
     console.log("key: " + this.props.currentPatientKey);
     const medicationRequest = MedicationRequest.newMedicationRequest(this.props.currentPatientKey, meds);
+    serverData.enqueueMedicationRequest(medicationRequest);
     localData.enqueueMedicationRequest(medicationRequest);
     this.props.setLoading(true);
     setTimeout(() => this.props.setLoading(false), 5);
